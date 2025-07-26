@@ -104,8 +104,7 @@ lighting in the room is warm and cozy.<|im_end|>
 
 在 **In‑Context Learning (ICL)** 训练阶段，除了采用与 **Thinker** 类似的文本监督外，我们还通过下一 token 预测执行语音续写任务，利用大量融合多模态上下文与口语回应的对话数据。Talker 学会将语义表示单调映射到语音，并能在韵律、情感、口音等多维属性上做出符合语境的表达。此外，我们使用音色解耦技术，防止模型把特定声音与低频文本模式绑定。
 
-$$
-\mathcal{L}_{\mathrm{DPO}}\!\bigl(\mathcal{P}_{\theta};\mathcal{P}_{\mathrm{ref}}\bigr)
+$$\mathcal{L}_{\mathrm{DPO}}\!\bigl(\mathcal{P}_{\theta};\mathcal{P}_{\mathrm{ref}}\bigr)
 = -\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}
 \!\left[
   \log\sigma\!\left(
@@ -113,8 +112,7 @@ $$
     -\,
     \beta\log\frac{\mathcal{P}_{\theta}(y_l\mid x)}{\mathcal{P}_{\mathrm{ref}}(y_l\mid x)}
   \right)
-\right].
-$$
+\right].$$
 
 为覆盖更多说话人和场景，预训练数据难免含有标签噪声与发音错误，易导致模型幻觉。为缓解该问题，我们引入强化学习阶段来提升语音生成的稳定性。具体而言，对每条 **请求–回复文本** 及其 **参考语音**，构建数据集 $(x, y_w, y_l)$：其中 $x$ 为输入文本序列，$y_w$ 与 $y_l$ 分别是优质与劣质的生成语音序列。我们依据与 **词错误率（WER）** 和 **标点停顿错误率** 相关的奖励分对样本进行排序。
 
