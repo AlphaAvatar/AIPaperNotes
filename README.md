@@ -7,7 +7,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ### Flow
 
-- Flow Matching [[paper](https://arxiv.org/pdf/2210.02747)]
+- Flow Matching [[paper](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 
 ### LLM
 
