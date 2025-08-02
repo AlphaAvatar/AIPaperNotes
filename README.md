@@ -7,11 +7,11 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ### Flow
 
-- Flow Matching [[paper](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
+- Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 
 ### LLM
 
 - **Omni**: LLM-based full modal model
-    - Qwen2.5 - Omni [[paper](https://arxiv.org/pdf/2503.20215)]
+    - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
 
 - **Survey**
