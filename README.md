@@ -5,6 +5,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ## Paper Catalog
 
+### Flow
+
+- Flow Matching [[paper](https://arxiv.org/pdf/2210.02747)]
+
 ### LLM
 
 - **Omni**: LLM-based full modal model
