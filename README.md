@@ -14,4 +14,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
 
+- **Agent**: LLM-based Single/Multi Agent model/system
+    - **DeepResearch**:
+        - WebSailor
+
 - **Survey**
+    - DeepRearch
