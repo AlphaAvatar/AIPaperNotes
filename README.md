@@ -16,7 +16,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Agent**: LLM-based Single/Multi Agent model/system
     - **DeepResearch**:
-        - WebSailor
+        - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
 
 - **Survey**
     - DeepRearch
