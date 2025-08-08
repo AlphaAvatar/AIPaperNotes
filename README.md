@@ -11,6 +11,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ### LLM
 
+- **Base Model**: Large Language Model
+    - **OpenAI**
+        - gpt-oss
+
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
 
