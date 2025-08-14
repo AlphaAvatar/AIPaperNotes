@@ -23,7 +23,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
 
 - **Reasoning**:
-    - Deepseek - R1
+    - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
 
 - **Survey**
     - DeepRearch
