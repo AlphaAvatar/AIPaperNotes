@@ -27,3 +27,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Survey**
     - DeepRearch
+
+### Visual Encoder
+
+- **Natural Language Supervision**:
+    - CLIP
+    - SigLIP
