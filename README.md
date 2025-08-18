@@ -30,6 +30,6 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ### Visual Encoder
 
-- **Natural Language Supervision**:
-    - CLIP
+- **Language Image Pretraining**:
+    - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Natural%20Language%20Supervision/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
     - SigLIP
