@@ -8,6 +8,8 @@
 
 # 1.介绍
 
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b6488dba274b40ec956a2117949019f2.png)
+
 使用网络上找到的图像-文本对进行弱监督的对比预训练，正成为获取通用计算机视觉主干模型的首选方法，并逐渐取代在大型带标签多种类数据集上进行预训练。其高阶思想是使用成对数据同时学习图像和文本的对齐表征空间。开创性的工作 CLIP 和 ALIGN 确立了这种方法在大规模数据集上的可行性，随着它们的成功，许多大型图像-文本数据集开始在私有和公共场合开放。
 
 预训练此类模型的标准方法是利用图文对比目标。它对齐图像和文本嵌入，以匹配（正例）图文对，同时确保不相关的（负例）图文对在嵌入空间中不相似。这是通过基于 batch 级softmax的对比损失实现的，该损失应用两次，以对所有图像和所有文本的成对相似度得分进行归一化。softmax的简单实现在数值上不稳定；通常通过在应用softmax之前减去最大输入值来使其稳定，这需要对整个 batch 进行另一次传递。
@@ -28,8 +30,50 @@
 
 # 3.Method
 
+在本节中，我们首先回顾一下广泛使用的基于softmax的对比损失。然后，我们介绍成对sigmoid损失，并讨论其高效的实现。
+
+给定一个 mini-batch $\mathcal B = \{(I_1, T_1),(I_2, T_2), ... }$ 的图像-文本对，对比学习目标鼓励匹配对 $(I_i, T_i)$ 的嵌入彼此对齐，同时将不匹配对 $(I_i, T_{j\ne i})$ 的嵌入推开。出于实际目的，**假设对于所有图像 $i$，与另一幅图像 $j$ 相关联的文本与 $i$ 无关，反之亦然。这种假设通常存在噪声且不完善**。
+
 ## 3.1 Softmax loss for language image pre-training
+
+当使用softmax损失来形式化该目标时，训练图像模型 $f(·)$ 和文本模型 $g(·)$ 以最小化以下目标：
+
+$$
+-\frac{1}{2|\mathcal{B}|} \sum_{i=1}^{|\mathcal{B}|} \left(
+\underbrace{\log \frac{e^{t x_i \cdot y_i}}{\sum_{j=1}^{|\mathcal{B}|} e^{t x_i \cdot y_j}}}_{\text{image}\to\text{text softmax}}
++
+\underbrace{\log \frac{e^{t x_i \cdot y_i}}{\sum_{j=1}^{|\mathcal{B}|} e^{t x_j \cdot y_i}}}_{\text{text}\to\text{image softmax}}
+\right)
+$$
+
+其中，$\textbf x_i=\frac{f(I_i)}{||f(I_i)||_2}$ 以及 $\textbf y_i = \frac{g(T_i)}{||g(T_i)||_2}$。在本文中，我们采用视觉Transformer架构处理图像，并采用Transformer架构处理文本。需要注意的是，由于softmax损失函数的非对称性，我们分别对图像和文本进行了两次归一化。标量$t$的参数化形式为$\exp(t')$，其中$t'$是一个全局可自由学习的参数。
 
 ## 3.2 Sigmoid loss for language image pre-training
 
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/835592021f264f47820855cada57f9eb.png)
+
+我们提出了一个更简单的替代方案，取代基于softmax的对比损失，它不需要计算全局归一化因子。基于sigmoid的损失函数独立处理每个图像-文本对，有效地将学习问题转化为所有组合对数据集上的标准二分类问题，匹配对 $(I_i,T_i)$ 标记为正标签，其余对 $(I_i, T_{j\ne =i})$ 标记为负标签。其定义如下：
+
+$$-\frac{1}{|\mathcal B|}\sum^{|\mathcal B|}_{i=1}\sum^{|\mathcal B|}_{j=1}\underbrace{log\frac{1}{1+e^{z_{ij}(-t\textbf x_i·\textbf y_j+b)}}}_{\mathcal L_{ij}}$$
+
+其中 $z_{ij|$ 是给定图像和文本输入的标签，如果它们是配对的，则为 1，否则为 -1。在初始化时，由大量负样本引起的严重不平衡在损失函数中占主导地位，导致初始优化步骤需要大量步骤来尝试纠正这种偏差。为了缓解这个问题，我们引入了一个类似于温度 $t$ 的额外可学习偏差项 $b$。我们将 $t'$ 和 $b$ 分别初始化为 $log~10$ 和 -10。这确保训练开始时大致接近先验，并且不需要大量的过度校正。算法 1 给出了用于语言图像预训练的 Sigmoid 损失函数的伪代码实现。
+
 ## 3.3 Efficient “chunked” implementation
+
+![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1ff5a498ae1c46038f473950f1f39694.png)
+
+对比训练通常利用数据并行性。当数据被拆分到 $D$ 个设备时，计算损失需要使用昂贵的全收集算法来收集所有嵌入，更重要的是，需要实现一个内存密集型的 $|\mathcal B| × |\mathcal B|$ 成对相似性矩阵。
+
+然而，Sigmoid 损失函数尤其适用于内存高效、快速且数值稳定的实现，从而改善这两个问题。设每个设备的 batch size 为 $b = \frac{|B|}{D}$，则损失函数可重新表述为：
+
+$$ - \frac{1}{|\mathcal{B}|} 
+\underbrace{\sum_{d_i=1}^{D}}_{\text{A: }\forall \text{ device } d_i} 
+\underbrace{\sum_{d_j=1}^{D}}_{\text{B: swap negs across devices}} 
+\underbrace{\sum_{i=b d_i}^{b(d_i+1)} \sum_{j=b d_j}^{b(d_j+1)}}_{\substack{\text{C: per device loss} \\ \text{all local positives, negs from next device}}} 
+\mathcal{L}_{ij}$$
+
+对于 Sigmoid 损失来说，这尤其简单，因为每对数据都是损失中的独立项。图 1 展示了这种方法。简而言之，我们首先计算正样本对和 b - 1 个负样本对对应的损失分量。然后，我们跨设备置换表示，使每个设备从其相邻设备获取负样本（next iteration of sum **B**）。然后针对该数据块计算损失（sum **C**）。这在每个设备中独立完成，因此每个设备都针对其本地批次 b 计算损失。然后，可以简单地将所有设备的损失相加（sum **A**）。单个集体置换（for sum **B**）速度很快（实际上，D 个集体置换通常比 D 个设备之间的两次全收集更快），并且任何给定时刻的内存成本从 |B|2 降低到 b2（for sum **C**）。通常 b 是常数，因为扩展 |B| 是通过增加加速器数量来实现的。由于 vanilla 损失的计算是 batch size 的二次方，因此它很快就会成为扩展的瓶颈。这种分块方法可以在相对较少的设备上进行 batch size 超过 100 万的训练。
+
+# 4.Results
+
+

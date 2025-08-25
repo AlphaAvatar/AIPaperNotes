@@ -14,6 +14,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Agent**: LLM-based Single/Multi Agent model/system
     - **DeepResearch**:
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
+        - WebWatcher
 
 - **Base Model**: Large Language Model
     - **OpenAI**
@@ -32,4 +33,4 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Language Image Pretraining**:
     - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
-    - SigLIP
+    - SigLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2023/Sigmoid%20Loss%20for%20Language%20Image%20Pre-Training.md)]

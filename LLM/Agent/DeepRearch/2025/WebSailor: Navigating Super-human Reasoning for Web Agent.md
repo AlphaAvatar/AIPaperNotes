@@ -1,6 +1,6 @@
 论文链接：https://arxiv.org/pdf/2507.02592
 
-代码链接：https://github.com/Alibaba-NLP/WebAge
+代码链接：https://github.com/Alibaba-NLP/WebAgent
 
 # 摘要
 
