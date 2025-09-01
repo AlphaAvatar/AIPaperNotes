@@ -14,14 +14,17 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Agent**: LLM-based Single/Multi Agent model/system
     - **DeepResearch**:
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
-        - WebWatcher
+        - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
 
 - **Base Model**: Large Language Model
+    - **Zhipu AI**
+        - GLM 4.5
     - **OpenAI**
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
 
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
+    - M3 - Agent
 
 - **Reasoning**: Long CoT model
     - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
