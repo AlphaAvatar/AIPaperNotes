@@ -18,7 +18,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Base Model**: Large Language Model
     - **Zhipu AI**
-        - GLM 4.5
+        - GLM 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-4.5%3A%20Agentic%2C%20Reasoning%2C%20and%20Coding%20(ARC)%20Foundation%20Models.md)]
     - **OpenAI**
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
 
@@ -26,11 +26,17 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
     - M3 - Agent
 
+- **Quantization**: Model Weight/Optimizer/Activation Compressing
+    - COAT
+
 - **Reasoning**: Long CoT model
     - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
 
 - **Survey**
-    - DeepRearch
+    - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
+
+- **VLM**: Model Weight/Optimizer/Activation Compressing
+    - Qwen - VL
 
 ### Visual Encoder
 
