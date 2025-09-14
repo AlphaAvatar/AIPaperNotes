@@ -24,10 +24,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
-    - M3 - Agent
+    - M3 - Agent [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Seeing%2C%20Listening%2C%20Remembering%2C%20and%20Reasoning%3A%20A%20Multimodal%20Agent%20with%20Long-Term%20Memory.md)]
 
 - **Quantization**: Model Weight/Optimizer/Activation Compressing
-    - COAT
+    - COAT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Quantization/2025/COAT%3A%20COMPRESSING%20OPTIMIZER%20STATES%20AND%20ACTIVATION%20FOR%20MEMORY-EFFICIENT%20FP8%20TRAINING.md)]
 
 - **Reasoning**: Long CoT model
     - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
@@ -35,11 +35,15 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Survey**
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
 
+- **Training**: LLM Model Training:
+    - Multi-token Prediction (Meta)
+
 - **VLM**: Model Weight/Optimizer/Activation Compressing
-    - Qwen - VL
+    - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
 
 ### Visual Encoder
 
-- **Language Image Pretraining**:
+- **Language-Image Representation Learning**:
     - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
     - SigLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2023/Sigmoid%20Loss%20for%20Language%20Image%20Pre-Training.md)]
+    - LIFT
