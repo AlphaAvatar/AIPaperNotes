@@ -36,14 +36,15 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
 
 - **Training**: LLM Model Training:
-    - Multi-token Prediction (Meta)
+    - Multi-token Prediction (Meta) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Multi-token%20Prediction/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
+    - LLaVA
 
 ### Visual Encoder
 
 - **Language-Image Representation Learning**:
     - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
     - SigLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2023/Sigmoid%20Loss%20for%20Language%20Image%20Pre-Training.md)]
-    - LIFT
+    - LIFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2025/Language-Image%20Alignment%20with%20Fixed%20Text%20Encoders.md)]
