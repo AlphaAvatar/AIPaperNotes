@@ -5,6 +5,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ## Paper Catalog
 
+### Embedding
+
+- NV-EMBED
+
 ### Flow
 
 - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
@@ -40,7 +44,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
-    - LLaVA
+    - LLaVA [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Visual%20Instruction%20Tuning.md)]
 
 ### Visual Encoder
 
