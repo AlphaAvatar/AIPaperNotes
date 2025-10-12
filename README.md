@@ -7,7 +7,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ### Embedding
 
-- NV-EMBED
+- NV-EMBED [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Embedding/2025/NV-EMBED%3A%20IMPROVED%20TECHNIQUES%20FOR%20TRAINING%20LLMS%20AS%20GENERALIST%20EMBEDDING%20MODELS.md)]
 
 ### Flow
 
@@ -19,6 +19,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **DeepResearch**:
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
         - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
+    - **Reflection**
+        - Metacognitive Reuse
 
 - **Base Model**: Large Language Model
     - **Zhipu AI**
@@ -40,6 +42,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
 
 - **Training**: LLM Model Training:
+    - FIM (fill-in-the-middle)
     - Multi-token Prediction (Meta) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Multi-token%20Prediction/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
