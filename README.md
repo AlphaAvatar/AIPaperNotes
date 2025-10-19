@@ -20,13 +20,17 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
         - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
     - **Reflection**
-        - Metacognitive Reuse
+        - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
 
 - **Base Model**: Large Language Model
     - **Zhipu AI**
         - GLM 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-4.5%3A%20Agentic%2C%20Reasoning%2C%20and%20Coding%20(ARC)%20Foundation%20Models.md)]
     - **OpenAI**
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
+
+- **Prompt**: Prompt Engineering
+    - **Context Learning**
+        - ACE
 
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
@@ -37,6 +41,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Reasoning**: Long CoT model
     - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
+
+- **Speech**: Speech LLM
+    - **ALM**: Audio LLM for auido Input
+        - Audio Flamingo 3
 
 - **Survey**
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
