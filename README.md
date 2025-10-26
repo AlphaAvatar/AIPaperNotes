@@ -19,8 +19,12 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **DeepResearch**:
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
         - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
-    - **Reflection**
+    - **Memory**:
+        - Dynamic Cheatsheet
+    - **Reflection**:
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
+    - **Router**:
+        - Router-R1
 
 - **Base Model**: Large Language Model
     - **Zhipu AI**
@@ -30,7 +34,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Prompt**: Prompt Engineering
     - **Context Learning**
-        - ACE
+        - ACE [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Context%20Learning/2025/Agentic%20Context%20Engineering%3A%20Evolving%20Contexts%20for%20Self-Improving%20Language%20Models.md)]
 
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
@@ -44,7 +48,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Speech**: Speech LLM
     - **ALM**: Audio LLM for auido Input
-        - Audio Flamingo 3
+        - Audio Flamingo 3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Speech/ALM/2025/Audio%20Flamingo%203%3A%20Advancing%20Audio%20Intelligence%20with%20Fully%20Open%20Large%20Audio%20Language%20Models.md)]
 
 - **Survey**
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
