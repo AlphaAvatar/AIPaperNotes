@@ -24,7 +24,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **Reflection**:
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
-        - Router-R1
+        - Router-R1 [[Link]()]
 
 - **Base Model**: Large Language Model
     - **Zhipu AI**
@@ -43,9 +43,6 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Quantization**: Model Weight/Optimizer/Activation Compressing
     - COAT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Quantization/2025/COAT%3A%20COMPRESSING%20OPTIMIZER%20STATES%20AND%20ACTIVATION%20FOR%20MEMORY-EFFICIENT%20FP8%20TRAINING.md)]
 
-- **Reasoning**: Long CoT model
-    - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
-
 - **Speech**: Speech LLM
     - **ALM**: Audio LLM for auido Input
         - Audio Flamingo 3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Speech/ALM/2025/Audio%20Flamingo%203%3A%20Advancing%20Audio%20Intelligence%20with%20Fully%20Open%20Large%20Audio%20Language%20Models.md)]
@@ -54,8 +51,16 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
 
 - **Training**: LLM Model Training:
-    - FIM (fill-in-the-middle)
-    - Multi-token Prediction (Meta) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Multi-token%20Prediction/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
+    - **Long CoT**
+        - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
+        - Dr.GRPO
+        - DAPO
+        - GCG
+        - LUFFY
+    - **Ptrtrain**
+        - FIM (fill-in-the-middle) [[Link]()]
+    - **MTP**: Multi-token Prediction
+        - Better & Faster Large Language Models via Multi-token Prediction [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Multi-token%20Prediction/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
