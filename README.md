@@ -32,6 +32,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **OpenAI**
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
 
+- **Dataset**: Data building and processing for Model training
+    - DELT
+
 - **Prompt**: Prompt Engineering
     - **Context Learning**
         - ACE [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Context%20Learning/2025/Agentic%20Context%20Engineering%3A%20Evolving%20Contexts%20for%20Self-Improving%20Language%20Models.md)]
@@ -52,15 +55,16 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Training**: LLM Model Training:
     - **Long CoT**
-        - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Reasoning/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
-        - Dr.GRPO
-        - DAPO
-        - GCG
-        - LUFFY
+        - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
+        - Dr.GRPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Understanding%20R1-Zero-Like%20Training%3A%20A%20Critical%20Perspective.md)]
+        - DAPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DAPO%3A%20An%20Open-Source%20LLM%20Reinforcement%20Learning%20System%20at%20Scale.md)]
+        - GCG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/GPG%3A%20A%20Simple%20and%20Strong%20Reinforcement%20Learning%20Baseline%20for%20Model%20Reasoning.md)]
+        - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
     - **Ptrtrain**
         - FIM (fill-in-the-middle) [[Link]()]
     - **MTP**: Multi-token Prediction
         - Better & Faster Large Language Models via Multi-token Prediction [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Multi-token%20Prediction/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
+        - CAFT
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
