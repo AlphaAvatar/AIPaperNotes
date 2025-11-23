@@ -21,7 +21,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
     - **Memory**:
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
-        - EgoMem
+        - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
     - **Reflection**:
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
@@ -63,9 +63,12 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
     - **Ptrtrain**
         - FIM (fill-in-the-middle) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Pretrain/2022/Efficient%20Training%20of%20Language%20Models%20to%20Fill%20in%20the%20Middle.md)]
-    - **Speculative Decoding**: Multi-token Prediction
+    - **RL**
+        - BCO
+    - **Speculative Decoding or MTP**: Speculative Decoding or Multi-token Prediction
         - Better & Faster Large Language Models via Multi-token Prediction [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
         - CAFT
+        - EAGLE3
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
