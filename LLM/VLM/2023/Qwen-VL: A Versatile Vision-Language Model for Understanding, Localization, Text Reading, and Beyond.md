@@ -1,6 +1,6 @@
-论文链接：https://arxiv.org/pdf/2410.19313
+论文链接：https://arxiv.org/pdf/2308.12966
 
-代码链接：https://github.com/NVlabs/COAT
+代码链接：https://github.com/QwenLM/Qwen-VL
 
 # 摘要
 

@@ -53,6 +53,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Survey**
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
+    - Vibe Coding
 
 - **Training**: LLM Model Training:
     - **Long CoT**
@@ -67,13 +68,15 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - BCO
     - **Speculative Decoding or MTP**: Speculative Decoding or Multi-token Prediction
         - Better & Faster Large Language Models via Multi-token Prediction [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
-        - CAFT
-        - EAGLE3
+        - CAFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Improving%20Large%20Language%20Models%20with%20Concept-Aware%20Fine-Tuning.md)]
+        - EAGLE3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/EAGLE-3%3A%20Scaling%20up%20Inference%20Acceleration%20of%20Large%20Language%20Models%20via%20Training-Time%20Test.md)]
 
 - **VLM**: Model Weight/Optimizer/Activation Compressing
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
     - LLaVA [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Visual%20Instruction%20Tuning.md)]
-    - MiniCPM-V 4.5
+    - Qwen2 - VL
+    - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
+    - DeepSeek - OCR
 
 ### Visual Encoder
 
