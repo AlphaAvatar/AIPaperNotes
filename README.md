@@ -27,7 +27,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **Router**:
         - Router-R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Router/2025/Router-R1%3A%20Teaching%20LLMs%20Multi-Round%20Routing%20and%20Aggregation%20via%20Reinforcement%20Learning.md)]
     - **Visual Reasoning**
-        - PixelCraft
+        - PixelCraft [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Reasoning/2025/PIXELCRAFT%3A%20A%20MULTI-AGENT%20SYSTEM%20FOR%20HIGH-FIDELITY%20VISUAL%20REASONING%20ON%20STRUCTURED%20IMAGES.md)]
 
 - **Base Model**: Large Language Model
     - **Zhipu AI**
