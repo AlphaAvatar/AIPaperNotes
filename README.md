@@ -17,11 +17,13 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Agent**: LLM-based Single/Multi Agent model/system
     - **DeepResearch**:
-        - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
-        - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepRearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
+        - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
+        - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
     - **Memory**:
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
+    - **Multi Agent Optimization**
+        - Multi-Agent Design
     - **Reflection**:
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
@@ -73,7 +75,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - CAFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Improving%20Large%20Language%20Models%20with%20Concept-Aware%20Fine-Tuning.md)]
         - EAGLE3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/EAGLE-3%3A%20Scaling%20up%20Inference%20Acceleration%20of%20Large%20Language%20Models%20via%20Training-Time%20Test.md)]
 
-- **VLM**: Model Weight/Optimizer/Activation Compressing
+- **VLM**: Visual LLM
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
     - LLaVA [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Visual%20Instruction%20Tuning.md)]
     - Qwen2 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2024/Qwen2-VL%3A%20Enhancing%20Vision-Language%20Model%E2%80%99s%20Perception%20of%20the%20World%20at%20Any%20Resolution.md)]
@@ -82,6 +84,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
 
 ### Visual Encoder
+
+- **Image Segment Pretraining**
+    - SAM
+    - SAM2
 
 - **Language-Image Representation Learning**:
     - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
