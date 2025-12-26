@@ -23,7 +23,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
     - **Multi Agent Optimization**
-        - Multi-Agent Design
+        - Multi-Agent Design [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/Multi-Agent%20Design%3A%20Optimizing%20Agents%20with%20Better%20Prompts%20and%20Topologies.md)]
+    - **RAG**
+        - BookRAG
     - **Reflection**:
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
@@ -79,7 +81,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
     - LLaVA [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Visual%20Instruction%20Tuning.md)]
     - Qwen2 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2024/Qwen2-VL%3A%20Enhancing%20Vision-Language%20Model%E2%80%99s%20Perception%20of%20the%20World%20at%20Any%20Resolution.md)]
-    - Qwen2.5 - VL
+    - Qwen2.5 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen2.5-VL%20Technical%20Report.md)]
     - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
 
