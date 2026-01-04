@@ -25,7 +25,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **Multi Agent Optimization**
         - Multi-Agent Design [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/Multi-Agent%20Design%3A%20Optimizing%20Agents%20with%20Better%20Prompts%20and%20Topologies.md)]
     - **RAG**
-        - BookRAG
+        - BookRAG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/RAG/2025/BookRAG%3A%20A%20Hierarchical%20Structure-aware%20Index-based%20Approach.md)]
     - **Reflection**:
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
@@ -78,20 +78,22 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - EAGLE3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/EAGLE-3%3A%20Scaling%20up%20Inference%20Acceleration%20of%20Large%20Language%20Models%20via%20Training-Time%20Test.md)]
 
 - **VLM**: Visual LLM
-    - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
     - LLaVA [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Visual%20Instruction%20Tuning.md)]
+    - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
     - Qwen2 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2024/Qwen2-VL%3A%20Enhancing%20Vision-Language%20Model%E2%80%99s%20Perception%20of%20the%20World%20at%20Any%20Resolution.md)]
     - Qwen2.5 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen2.5-VL%20Technical%20Report.md)]
+    - Qwen3 - VL
     - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
 
 ### Visual Encoder
 
 - **Image Segment Pretraining**
-    - SAM
-    - SAM2
+    - SAM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Image%20Segment%20Pretraining/2023/Segment%20Anything.md)]
+    - SAM2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Image%20Segment%20Pretraining/2024/SAM%202%3A%20Segment%20Anything%20in%20Images%20and%20Videos.md)]
 
 - **Language-Image Representation Learning**:
     - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
     - SigLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2023/Sigmoid%20Loss%20for%20Language%20Image%20Pre-Training.md)]
+    - SigLIP2
     - LIFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2025/Language-Image%20Alignment%20with%20Fixed%20Text%20Encoders.md)]
