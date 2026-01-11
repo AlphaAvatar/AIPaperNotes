@@ -34,6 +34,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - PixelCraft [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Reasoning/2025/PIXELCRAFT%3A%20A%20MULTI-AGENT%20SYSTEM%20FOR%20HIGH-FIDELITY%20VISUAL%20REASONING%20ON%20STRUCTURED%20IMAGES.md)]
 
 - **Base Model**: Large Language Model
+    - **Moonshot AI**
+        - KIMI LINEAR
     - **Zhipu AI**
         - GLM 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-4.5%3A%20Agentic%2C%20Reasoning%2C%20and%20Coding%20(ARC)%20Foundation%20Models.md)]
     - **OpenAI**
@@ -82,11 +84,14 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2023/Qwen-VL%3A%20A%20Versatile%20Vision-Language%20Model%20for%20Understanding%2C%20Localization%2C%20Text%20Reading%2C%20and%20Beyond.md)]
     - Qwen2 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2024/Qwen2-VL%3A%20Enhancing%20Vision-Language%20Model%E2%80%99s%20Perception%20of%20the%20World%20at%20Any%20Resolution.md)]
     - Qwen2.5 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen2.5-VL%20Technical%20Report.md)]
-    - Qwen3 - VL
+    - Qwen3 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen3-VL%20Technical%20Report.md)]
     - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
 
 ### Visual Encoder
+
+- **Architecture**
+    - NaViT
 
 - **Image Segment Pretraining**
     - SAM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Image%20Segment%20Pretraining/2023/Segment%20Anything.md)]
@@ -95,5 +100,5 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Language-Image Representation Learning**:
     - CLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2021/Learning%20Transferable%20Visual%20Models%20From%20Natural%20Language%20Supervision.md)]
     - SigLIP [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2023/Sigmoid%20Loss%20for%20Language%20Image%20Pre-Training.md)]
-    - SigLIP2
+    - SigLIP2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2025/SigLIP%202%3A%20Multilingual%20Vision-Language%20Encoders%20with%20Improved%20Semantic%20Understanding%2C%20Localization%2C%20and%20Dense%20Features.md)]
     - LIFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Language%20Image%20Pretraining/2025/Language-Image%20Alignment%20with%20Fixed%20Text%20Encoders.md)]
