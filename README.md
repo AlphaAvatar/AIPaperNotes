@@ -8,6 +8,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 ### Embedding
 
 - NV-EMBED [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Embedding/2025/NV-EMBED%3A%20IMPROVED%20TECHNIQUES%20FOR%20TRAINING%20LLMS%20AS%20GENERALIST%20EMBEDDING%20MODELS.md)]
+- Qwen3 Embedding
 
 ### Flow
 
@@ -22,6 +23,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **Memory**:
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
+        - ReasoningBank
     - **Multi Agent Optimization**
         - Multi-Agent Design [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/Multi-Agent%20Design%3A%20Optimizing%20Agents%20with%20Better%20Prompts%20and%20Topologies.md)]
     - **RAG**
@@ -91,7 +93,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 ### Visual Encoder
 
 - **Architecture**
-    - NaViT
+    - NaViT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Architecture/2023/Patch%20n%E2%80%99%20Pack%3A%20NaViT%2C%20a%20Vision%20Transformer%20for%20any%20Aspect%20Ratio%20and%20Resolution.md)]
 
 - **Image Segment Pretraining**
     - SAM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Image%20Segment%20Pretraining/2023/Segment%20Anything.md)]
