@@ -37,7 +37,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Base Model**: Large Language Model
     - **Moonshot AI**
-        - KIMI LINEAR
+        - KIMI LINEAR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Moonshot%20AI/2025/KIMI%20LINEAR%3A%20AN%20EXPRESSIVE%2C%20EFFICIENT%20ATTENTION%20ARCHITECTURE.md)]
     - **Zhipu AI**
         - GLM 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-4.5%3A%20Agentic%2C%20Reasoning%2C%20and%20Coding%20(ARC)%20Foundation%20Models.md)]
     - **OpenAI**
@@ -72,6 +72,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - DAPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DAPO%3A%20An%20Open-Source%20LLM%20Reinforcement%20Learning%20System%20at%20Scale.md)]
         - GCG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/GPG%3A%20A%20Simple%20and%20Strong%20Reinforcement%20Learning%20Baseline%20for%20Model%20Reasoning.md)]
         - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
+        - DeepSeek - R1 v2
     - **Ptrtrain**
         - FIM (fill-in-the-middle) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Pretrain/2022/Efficient%20Training%20of%20Language%20Models%20to%20Fill%20in%20the%20Middle.md)]
     - **RL**
