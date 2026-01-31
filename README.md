@@ -8,7 +8,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 ### Embedding
 
 - NV-EMBED [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Embedding/2025/NV-EMBED%3A%20IMPROVED%20TECHNIQUES%20FOR%20TRAINING%20LLMS%20AS%20GENERALIST%20EMBEDDING%20MODELS.md)]
-- Qwen3 Embedding
+- Qwen3 Embedding [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Embedding/2025/Qwen3%20Embedding%3A%20Advancing%20Text%20Embedding%20and%20Reranking%20Through%20Foundation%20Models.md)]
 
 ### Flow
 
@@ -25,6 +25,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
         - ReasoningBank
     - **Multi Agent Optimization**
+        - OWL
         - Multi-Agent Design [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/Multi-Agent%20Design%3A%20Optimizing%20Agents%20with%20Better%20Prompts%20and%20Topologies.md)]
     - **RAG**
         - BookRAG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/RAG/2025/BookRAG%3A%20A%20Hierarchical%20Structure-aware%20Index-based%20Approach.md)]
@@ -72,7 +73,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - DAPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DAPO%3A%20An%20Open-Source%20LLM%20Reinforcement%20Learning%20System%20at%20Scale.md)]
         - GCG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/GPG%3A%20A%20Simple%20and%20Strong%20Reinforcement%20Learning%20Baseline%20for%20Model%20Reasoning.md)]
         - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
-        - DeepSeek - R1 v2
+        - GSPO
+        - DeepSeek - R1 v2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2026/DeepSeek-R1%20v2.md)]
     - **Ptrtrain**
         - FIM (fill-in-the-middle) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Pretrain/2022/Efficient%20Training%20of%20Language%20Models%20to%20Fill%20in%20the%20Middle.md)]
     - **RL**
