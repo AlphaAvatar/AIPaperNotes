@@ -25,7 +25,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
         - ReasoningBank
     - **Multi Agent Optimization**
-        - OWL
+        - OWL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/OWL%3A%20Optimized%20Workforce%20Learning%20for%20General%20Multi-Agent%20Assistance%20in%20Real-World%20Task%20Automation.md)]
         - Multi-Agent Design [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/Multi-Agent%20Design%3A%20Optimizing%20Agents%20with%20Better%20Prompts%20and%20Topologies.md)]
     - **RAG**
         - BookRAG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/RAG/2025/BookRAG%3A%20A%20Hierarchical%20Structure-aware%20Index-based%20Approach.md)]
@@ -92,6 +92,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen3 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen3-VL%20Technical%20Report.md)]
     - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
+    - Kimi K2.5
 
 ### Visual Encoder
 
