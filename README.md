@@ -47,6 +47,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Dataset**: Data building and processing for Model training
     - DELT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Dataset/2025/Data%20Efficacy%20for%20Language%20Model%20Training.md)]
 
+- **Long Sequence**
+    - RLM
+
 - **Prompt**: Prompt Engineering
     - **Context Learning**
         - ACE [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Context%20Learning/2025/Agentic%20Context%20Engineering%3A%20Evolving%20Contexts%20for%20Self-Improving%20Language%20Models.md)]
