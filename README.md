@@ -70,18 +70,19 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Vibe Coding
 
 - **Training**: LLM Model Training:
-    - **Long CoT**
-        - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
-        - Dr.GRPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Understanding%20R1-Zero-Like%20Training%3A%20A%20Critical%20Perspective.md)]
-        - DAPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DAPO%3A%20An%20Open-Source%20LLM%20Reinforcement%20Learning%20System%20at%20Scale.md)]
-        - GCG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/GPG%3A%20A%20Simple%20and%20Strong%20Reinforcement%20Learning%20Baseline%20for%20Model%20Reasoning.md)]
-        - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
-        - GSPO
-        - DeepSeek - R1 v2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2026/DeepSeek-R1%20v2.md)]
     - **Ptrtrain**
         - FIM (fill-in-the-middle) [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Pretrain/2022/Efficient%20Training%20of%20Language%20Models%20to%20Fill%20in%20the%20Middle.md)]
     - **RL**
-        - BCO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/2025/Binary%20Classifier%20Optimization%20for%20Large%20Language%20Model%20Alignment.md)]
+        - **RLHF**: reinforcement learning from human feedback
+            - BCO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/2025/Binary%20Classifier%20Optimization%20for%20Large%20Language%20Model%20Alignment.md)]
+        - **RLVF**: reinforcement learning with verifiable rewards
+            - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
+            - Dr.GRPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Understanding%20R1-Zero-Like%20Training%3A%20A%20Critical%20Perspective.md)]
+            - DAPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/DAPO%3A%20An%20Open-Source%20LLM%20Reinforcement%20Learning%20System%20at%20Scale.md)]
+            - GCG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/GPG%3A%20A%20Simple%20and%20Strong%20Reinforcement%20Learning%20Baseline%20for%20Model%20Reasoning.md)]
+            - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
+            - GSPO
+            - DeepSeek - R1 v2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Long%20COT/2026/DeepSeek-R1%20v2.md)]
     - **Speculative Decoding or MTP**: Speculative Decoding or Multi-token Prediction
         - Better & Faster Large Language Models via Multi-token Prediction [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
         - CAFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Improving%20Large%20Language%20Models%20with%20Concept-Aware%20Fine-Tuning.md)]
