@@ -5,14 +5,17 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ## Paper Catalog
 
+### Architecture
+
+- **Flow**:
+    - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
+- **MOE**:
+    - Loss-Free Balancing
+
 ### Embedding
 
 - NV-EMBED [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Embedding/2025/NV-EMBED%3A%20IMPROVED%20TECHNIQUES%20FOR%20TRAINING%20LLMS%20AS%20GENERALIST%20EMBEDDING%20MODELS.md)]
 - Qwen3 Embedding [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Embedding/2025/Qwen3%20Embedding%3A%20Advancing%20Text%20Embedding%20and%20Reranking%20Through%20Foundation%20Models.md)]
-
-### Flow
-
-- Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 
 ### LLM
 
