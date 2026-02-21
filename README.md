@@ -10,7 +10,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Flow**:
     - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 - **MOE**:
-    - Loss-Free Balancing
+    - Switch Transformer
+    - Loss-Free Balancing [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/AUXILIARY-LOSS-FREE%20LOAD%20BALANCING%20STRATEGY%20FOR%20MIXTURE-OF-EXPERTS.md)]
 
 ### Embedding
 
@@ -51,7 +52,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - DELT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Dataset/2025/Data%20Efficacy%20for%20Language%20Model%20Training.md)]
 
 - **Long Sequence**
-    - RLM
+    - RLM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Long%20Sequence/2026/Recursive%20Language%20Models.md)]
 
 - **Prompt**: Prompt Engineering
     - **Context Learning**
@@ -101,7 +102,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen3 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen3-VL%20Technical%20Report.md)]
     - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
-    - Kimi K2.5
+    - Kimi K2.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2026/KIMI%20K2.5%3A%20VISUAL%20AGENTIC%20INTELLIGENCE.md)]
 
 ### Visual Encoder
 
