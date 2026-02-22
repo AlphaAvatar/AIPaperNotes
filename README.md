@@ -57,6 +57,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Prompt**: Prompt Engineering
     - **Context Learning**
         - ACE [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Context%20Learning/2025/Agentic%20Context%20Engineering%3A%20Evolving%20Contexts%20for%20Self-Improving%20Language%20Models.md)]
+    - **Skills**
+        - Extending Claude’s capabilities with skills and MCP servers
+        - Building agents with Skills: Equipping agents for specialized work
 
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]

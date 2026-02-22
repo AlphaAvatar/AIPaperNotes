@@ -2,8 +2,6 @@
 
 代码链接：https://github.com/NVIDIA/audio-flamingo
 
-主页链接：https://research.nvidia.com/labs/adlr/AF3/
-
 # 摘要
 
 我们推出了 Audio Flamingo 3 (AF3)，这是一个完全开放的、最先进的大型音频语言模型，旨在提升语音、声音和音乐的推理和理解能力。AF3 引入了以下功能：(i) **AF-Whisper**，这是一个统一的音频编码器，采用一种新的策略进行训练，以实现语音、声音和音乐三种模态的联合表征学习；(ii) **flexible, on-demand thinking**，允许模型在回答问题前进行思路链式推理；(iii) 多轮多音频聊天；(iv) 长达 10 分钟的长音频理解和推理（包括语音）；以及 (v) 语音交互。为了实现这些功能，我们提出了几个采用新策略精心设计的大规模训练数据集，包括 AudioSkills-XL、LongAudio-XL、AF-Think 和 AF-Chat，并采用一种新的五阶段课程式训练策略对 AF3 进行训练。 AF3 仅基于开源音频数据进行训练，在超过 20 个（长）音频理解和推理基准上取得了新的 SOTA 结果，超越了在更大数据集上训练的开放权重和闭源模型。
