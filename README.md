@@ -10,7 +10,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 - **Flow**:
     - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 - **MOE**:
-    - Switch Transformer
+    - Switch Transformer [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2022/Switch%20Transformers%3A%20Scaling%20to%20Trillion%20Parameter%20Models%20with%20Simple%20and%20Efficient%20Sparsity.md)]
     - Loss-Free Balancing [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/AUXILIARY-LOSS-FREE%20LOAD%20BALANCING%20STRATEGY%20FOR%20MIXTURE-OF-EXPERTS.md)]
 
 ### Embedding
@@ -41,6 +41,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - PixelCraft [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Reasoning/2025/PIXELCRAFT%3A%20A%20MULTI-AGENT%20SYSTEM%20FOR%20HIGH-FIDELITY%20VISUAL%20REASONING%20ON%20STRUCTURED%20IMAGES.md)]
 
 - **Base Model**: Large Language Model
+    - **DeepSeek**
+        - DeepSeek-V2
+        - DeepSeek-V3
+        - DeepSeek-V3.2
     - **Moonshot AI**
         - KIMI LINEAR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Moonshot%20AI/2025/KIMI%20LINEAR%3A%20AN%20EXPRESSIVE%2C%20EFFICIENT%20ATTENTION%20ARCHITECTURE.md)]
     - **Zhipu AI**
@@ -74,7 +78,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Survey**
     - DeepRearch [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/DeepRearch/2025/A%20Comprehensive%20Survey%20of%20Deep%20Research%3A%20Systems%2C%20Methodologies%2C%20and%20Applications.md)]
-    - Vibe Coding
+    - Vibe Coding [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Survey/Code/2025/A%20Survey%20of%20Vibe%20Coding%20with%20Large%20Language%20Models.md)]
 
 - **Training**: LLM Model Training:
     - **Ptrtrain**
