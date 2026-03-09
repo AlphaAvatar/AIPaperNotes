@@ -27,13 +27,14 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **Memory**:
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
-        - ReasoningBank
+        - ReasoningBank [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/ReasoningBank%3A%20Scaling%20Agent%20Self-Evolving%20with%20Reasoning%20Memory.md)]
     - **Multi Agent Optimization**
         - OWL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/OWL%3A%20Optimized%20Workforce%20Learning%20for%20General%20Multi-Agent%20Assistance%20in%20Real-World%20Task%20Automation.md)]
         - Multi-Agent Design [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Multi%20Agent%20Optimization/2025/Multi-Agent%20Design%3A%20Optimizing%20Agents%20with%20Better%20Prompts%20and%20Topologies.md)]
     - **RAG**
         - BookRAG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/RAG/2025/BookRAG%3A%20A%20Hierarchical%20Structure-aware%20Index-based%20Approach.md)]
     - **Reflection**:
+        - Reflexion
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
         - Router-R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Router/2025/Router-R1%3A%20Teaching%20LLMs%20Multi-Round%20Routing%20and%20Aggregation%20via%20Reinforcement%20Learning.md)]
@@ -42,13 +43,14 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Base Model**: Large Language Model
     - **DeepSeek**
-        - DeepSeek-V2
-        - DeepSeek-V3
-        - DeepSeek-V3.2
+        - DeepSeek-V2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/DeepSeek/2024/DeepSeek-V2%3A%20A%20Strong%2C%20Economical%2C%20and%20Efficient%20Mixture-of-Experts%20Language%20Model.md)]
+        - DeepSeek-V3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/DeepSeek/2025/DeepSeek-V3%20Technical%20Report.md)]
+        - DeepSeek-V3.2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/DeepSeek/2025/DeepSeek-V3.2%3A%20Pushing%20the%20Frontier%20of%20Open%20Large%20Language%20Models.md)]
     - **Moonshot AI**
         - KIMI LINEAR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Moonshot%20AI/2025/KIMI%20LINEAR%3A%20AN%20EXPRESSIVE%2C%20EFFICIENT%20ATTENTION%20ARCHITECTURE.md)]
     - **Zhipu AI**
         - GLM 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-4.5%3A%20Agentic%2C%20Reasoning%2C%20and%20Coding%20(ARC)%20Foundation%20Models.md)]
+        - GLM 5
     - **OpenAI**
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
 
