@@ -24,6 +24,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **DeepResearch**:
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
         - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
+        - RE-TRAC
     - **Memory**:
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
@@ -64,8 +65,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **Context Learning**
         - ACE [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Context%20Learning/2025/Agentic%20Context%20Engineering%3A%20Evolving%20Contexts%20for%20Self-Improving%20Language%20Models.md)]
     - **Skills**
-        - Extending Claude’s capabilities with skills and MCP servers
-        - Building agents with Skills: Equipping agents for specialized work
+        - Extending Claude’s capabilities with skills and MCP servers [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Skills/blob/Extending%20Claude%E2%80%99s%20capabilities%20with%20skills%20and%20MCP%20servers.md)]
+        - Building agents with Skills: Equipping agents for specialized work [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Prompt/Skills/blob/Building%20agents%20with%20Skills%3A%20Equipping%20agents%20for%20specialized%20work.md)]
 
 - **Omni**: LLM-based full modal model
     - Qwen2.5 - Omni [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Omni/2025/Qwen2.5-Omni%20Technical%20Report.md)]
@@ -111,6 +112,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Qwen3 - VL [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/Qwen3-VL%20Technical%20Report.md)]
     - MiniCPM-V 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/MiniCPM-V%204.5%3A%20Cooking%20Efficient%20MLLMs%20via%20Architecture%2C%20Data%2C%20and%20Training%20Recipes.md)]
     - DeepSeek - OCR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2025/DeepSeek-OCR%3A%20Contexts%20Optical%20Compression.md)]
+    - DeepSeek - OCR2
     - Kimi K2.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2026/KIMI%20K2.5%3A%20VISUAL%20AGENTIC%20INTELLIGENCE.md)]
 
 ### Visual Encoder
