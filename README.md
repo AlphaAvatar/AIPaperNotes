@@ -11,6 +11,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 - **MOE**:
     - Switch Transformer [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2022/Switch%20Transformers%3A%20Scaling%20to%20Trillion%20Parameter%20Models%20with%20Simple%20and%20Efficient%20Sparsity.md)]
+    - DeepSeekMoE
     - Loss-Free Balancing [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/AUXILIARY-LOSS-FREE%20LOAD%20BALANCING%20STRATEGY%20FOR%20MIXTURE-OF-EXPERTS.md)]
 
 ### Embedding
@@ -51,7 +52,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - KIMI LINEAR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Moonshot%20AI/2025/KIMI%20LINEAR%3A%20AN%20EXPRESSIVE%2C%20EFFICIENT%20ATTENTION%20ARCHITECTURE.md)]
     - **Zhipu AI**
         - GLM 4.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-4.5%3A%20Agentic%2C%20Reasoning%2C%20and%20Coding%20(ARC)%20Foundation%20Models.md)]
-        - GLM 5
+        - GLM 5 [[Link](http://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Zhipu%20AI/2025/GLM-5%3A%20from%20Vibe%20Coding%20to%20Agentic%20Engineering.md)]
     - **OpenAI**
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
 
@@ -90,7 +91,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - **RLHF**: Reinforcement Learning from Human Feedback
             - BCO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLHF/2025/Binary%20Classifier%20Optimization%20for%20Large%20Language%20Model%20Alignment.md)]
         - **RLRF**: Reinforcement Learning with Rich Feedback
-            - SDPO
+            - SDPO [[Link](http://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLRF/2026/Reinforcement%20Learning%20via%20Self-Distillation.md)]
         - **RLVR**: Reinforcement Learning with Verifiable Rewards
             - Deepseek - R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2025/DeepSeek-R1%3A%20Incentivizing%20Reasoning%20Capability%20in%20LLMs%20via%20Reinforcement%20Learning.md)]
             - Dr.GRPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2025/Understanding%20R1-Zero-Like%20Training%3A%20A%20Critical%20Perspective.md)]
