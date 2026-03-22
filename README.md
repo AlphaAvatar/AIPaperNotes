@@ -100,6 +100,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
             - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
             - GSPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2025/Group%20Sequence%20Policy%20Optimization.md)]
             - DeepSeek - R1 v2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2026/DeepSeek-R1%20v2.md)]
+    - **SFT**:
+        - EAFT
     - **Speculative Decoding or MTP**: Speculative Decoding or Multi-token Prediction
         - Better & Faster Large Language Models via Multi-token Prediction [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Better%20%26%20Faster%20Large%20Language%20Models%20via%20Multi-token%20Prediction.md)]
         - CAFT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/Speculative%20Decoding/2025/Improving%20Large%20Language%20Models%20with%20Concept-Aware%20Fine-Tuning.md)]
