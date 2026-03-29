@@ -13,6 +13,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Switch Transformer [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2022/Switch%20Transformers%3A%20Scaling%20to%20Trillion%20Parameter%20Models%20with%20Simple%20and%20Efficient%20Sparsity.md)]
     - DeepSeekMoE
     - Loss-Free Balancing [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/AUXILIARY-LOSS-FREE%20LOAD%20BALANCING%20STRATEGY%20FOR%20MIXTURE-OF-EXPERTS.md)]
+- **Vision Transformer**:
+    - ViT
+    - NaViT
 
 ### Embedding
 
@@ -57,7 +60,10 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - gpt-oss [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/OpenAI/2025/gpt-oss-120b%20%26%20gpt-oss-20b%20Model%20Card.md)]
 
 - **Dataset**: Data building and processing for Model training
-    - DELT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Dataset/2025/Data%20Efficacy%20for%20Language%20Model%20Training.md)]
+    - **Pretrain**:
+        - DELT
+    - **SFT**:
+        - OpenSeeker
 
 - **Long Sequence**
     - RLM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Long%20Sequence/2026/Recursive%20Language%20Models.md)]
@@ -119,9 +125,6 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - Kimi K2.5 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/VLM/2026/KIMI%20K2.5%3A%20VISUAL%20AGENTIC%20INTELLIGENCE.md)]
 
 ### Visual Encoder
-
-- **Architecture**
-    - NaViT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Architecture/2023/Patch%20n%E2%80%99%20Pack%3A%20NaViT%2C%20a%20Vision%20Transformer%20for%20any%20Aspect%20Ratio%20and%20Resolution.md)]
 
 - **Image Segment Pretraining**
     - SAM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Visual%20Encoder/Image%20Segment%20Pretraining/2023/Segment%20Anything.md)]
