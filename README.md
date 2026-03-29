@@ -14,8 +14,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - DeepSeekMoE
     - Loss-Free Balancing [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/AUXILIARY-LOSS-FREE%20LOAD%20BALANCING%20STRATEGY%20FOR%20MIXTURE-OF-EXPERTS.md)]
 - **Vision Transformer**:
-    - ViT
-    - NaViT
+    - ViT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Vision%20Transformer/2021/AN%20IMAGE%20IS%20WORTH%2016X16%20WORDS%3A%20TRANSFORMERS%20FOR%20IMAGE%20RECOGNITION%20AT%20SCALE.md)]
+    - NaViT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Vision%20Transformer/2023/Patch%20n%E2%80%99%20Pack%3A%20NaViT%2C%20a%20Vision%20Transformer%20for%20any%20Aspect%20Ratio%20and%20Resolution.md)]
 
 ### Embedding
 
