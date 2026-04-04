@@ -7,6 +7,8 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 ### Architecture
 
+- **Diffusion**:
+    - DiT
 - **Flow**:
     - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 - **MOE**:
@@ -28,7 +30,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **DeepResearch**:
         - WebSailor [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2025/WebSailor%3A%20Navigating%20Super-human%20Reasoning%20for%20Web%20Agent.md)]
         - WebWatcher [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2025/WebWatcher%3A%20Breaking%20New%20Frontiers%20of%20Vision-Language%20Deep%20Research%20Agent.md)]
-        - RE-TRAC
+        - RE-TRAC [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/DeepResearch/2026/RE-TRAC%3A%20REcursive%20TRAjectory%20Compression%20for%20Deep%20Search%20Agents.md)]
     - **Memory**:
         - Dynamic Cheatsheet [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/Dynamic%20Cheatsheet%3A%20Test-Time%20Learning%20with%20Adaptive%20Memory.md)]
         - EgoMem [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Memory/2025/EgoMem%3A%20Lifelong%20Memory%20Agent%20for%20Full-duplex%20Omnimodal%20Models.md)]
@@ -39,12 +41,13 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
     - **RAG**
         - BookRAG [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/RAG/2025/BookRAG%3A%20A%20Hierarchical%20Structure-aware%20Index-based%20Approach.md)]
     - **Reflection**:
-        - Reflexion
+        - Reflexion [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2023/Reflexion%3A%20Language%20Agents%20with%20Verbal%20Reinforcement%20Learning.md)]
         - Metacognitive Reuse [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Reflection/2025/Metacognitive%20Reuse%3A%20Turning%20Recurring%20LLM%20Reasoning%20Into%20Concise%20Behaviors.md)]
     - **Router**:
         - Router-R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Router/2025/Router-R1%3A%20Teaching%20LLMs%20Multi-Round%20Routing%20and%20Aggregation%20via%20Reinforcement%20Learning.md)]
-    - **Visual Reasoning**
-        - PixelCraft [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Reasoning/2025/PIXELCRAFT%3A%20A%20MULTI-AGENT%20SYSTEM%20FOR%20HIGH-FIDELITY%20VISUAL%20REASONING%20ON%20STRUCTURED%20IMAGES.md)]
+    - **Visual Agent**
+        - PixelCraft [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Agent/2025/PIXELCRAFT%3A%20A%20MULTI-AGENT%20SYSTEM%20FOR%20HIGH-FIDELITY%20VISUAL%20REASONING%20ON%20STRUCTURED%20IMAGES.md)]
+        - SWE-Vision
 
 - **Base Model**: Large Language Model
     - **DeepSeek**
@@ -61,9 +64,9 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 
 - **Dataset**: Data building and processing for Model training
     - **Pretrain**:
-        - DELT
+        - DELT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Dataset/Pretrain/2025/Data%20Efficacy%20for%20Language%20Model%20Training.md)]
     - **SFT**:
-        - OpenSeeker
+        - OpenSeeker [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Dataset/SFT/2026/OpenSeeker%3A%20Democratizing%20Frontier%20Search%20Agents%20by%20Fully%20Open-Sourcing%20Training%20Data.md)]
 
 - **Long Sequence**
     - RLM [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Long%20Sequence/2026/Recursive%20Language%20Models.md)]
