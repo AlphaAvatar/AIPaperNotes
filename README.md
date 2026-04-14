@@ -8,12 +8,12 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
 ### Architecture
 
 - **Diffusion**:
-    - DiT
+    - DiT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Diffusion/2023/Scalable%20Diffusion%20Models%20with%20Transformers.md)]
 - **Flow**:
     - Flow Matching [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Flow/2023/FLOW%20MATCHING%20FOR%20GENERATIVE%20MODELING.md)]
 - **MOE**:
     - Switch Transformer [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2022/Switch%20Transformers%3A%20Scaling%20to%20Trillion%20Parameter%20Models%20with%20Simple%20and%20Efficient%20Sparsity.md)]
-    - DeepSeekMoE
+    - DeepSeekMoE [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/DeepSeekMoE%3A%20Towards%20Ultimate%20Expert%20Specialization%20in%20Mixture-of-Experts%20Language%20Models.md)]
     - Loss-Free Balancing [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/MOE/2024/AUXILIARY-LOSS-FREE%20LOAD%20BALANCING%20STRATEGY%20FOR%20MIXTURE-OF-EXPERTS.md)]
 - **Vision Transformer**:
     - ViT [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/Architecture/Vision%20Transformer/2021/AN%20IMAGE%20IS%20WORTH%2016X16%20WORDS%3A%20TRANSFORMERS%20FOR%20IMAGE%20RECOGNITION%20AT%20SCALE.md)]
@@ -47,13 +47,16 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
         - Router-R1 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Router/2025/Router-R1%3A%20Teaching%20LLMs%20Multi-Round%20Routing%20and%20Aggregation%20via%20Reinforcement%20Learning.md)]
     - **Visual Agent**
         - PixelCraft [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Agent/2025/PIXELCRAFT%3A%20A%20MULTI-AGENT%20SYSTEM%20FOR%20HIGH-FIDELITY%20VISUAL%20REASONING%20ON%20STRUCTURED%20IMAGES.md)]
-        - SWE-Vision
+        - SWE-Vision [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Agent/Visual%20Agent/2026/SWE-Vision%3A%20A%20Minimal%20Agent%20for%20Advancing%20Visual%20Intelligence.md)]
 
 - **Base Model**: Large Language Model
     - **DeepSeek**
         - DeepSeek-V2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/DeepSeek/2024/DeepSeek-V2%3A%20A%20Strong%2C%20Economical%2C%20and%20Efficient%20Mixture-of-Experts%20Language%20Model.md)]
         - DeepSeek-V3 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/DeepSeek/2025/DeepSeek-V3%20Technical%20Report.md)]
         - DeepSeek-V3.2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/DeepSeek/2025/DeepSeek-V3.2%3A%20Pushing%20the%20Frontier%20of%20Open%20Large%20Language%20Models.md)]
+    - **Google**
+        - Gemma 3
+        - Gemma 4
     - **Moonshot AI**
         - KIMI LINEAR [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Base%20Model/Moonshot%20AI/2025/KIMI%20LINEAR%3A%20AN%20EXPRESSIVE%2C%20EFFICIENT%20ATTENTION%20ARCHITECTURE.md)]
     - **Zhipu AI**
@@ -109,6 +112,7 @@ For more notes, please follow the blog: https://nopsled.blog.csdn.net/
             - LUFFY [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2025/Learning%20to%20Reason%20under%20Off-Policy%20Guidance.md)]
             - GSPO [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2025/Group%20Sequence%20Policy%20Optimization.md)]
             - DeepSeek - R1 v2 [[Link](https://github.com/AlphaAvatar/AIPaperNotes/blob/main/LLM/Training/RL/RLVR/2026/DeepSeek-R1%20v2.md)]
+            - Truncated Importance Sampling (TIS) 
     - **SFT**:
         - EAFT
     - **Speculative Decoding or MTP**: Speculative Decoding or Multi-token Prediction
