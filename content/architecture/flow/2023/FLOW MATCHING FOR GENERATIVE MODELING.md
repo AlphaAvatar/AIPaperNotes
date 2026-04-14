@@ -1,12 +1,14 @@
+# FLOW MATCHING FOR GENERATIVE MODELING
+
 论文链接：https://arxiv.org/pdf/2210.02747
 
 代码链接：
 
-# 摘要
+## 摘要
 
 我们引入了一种基于 Continuous Normalizing Flows (CNF) 的生成建模新范式，使我们能够以前所未有的规模训练 CNF。具体而言，我们提出了 Flow Matching (FM) 的概念，这是一种无需模拟的 CNF 训练方法，该方法基于固定条件概率路径的回归矢量场。Flow Matching 与一类通用的高斯概率路径兼容，用于在噪声和数据样本之间进行转换——**这将现有的扩散路径归纳为特定实例**。有趣的是，我们发现将 FM 与扩散路径结合使用，可以为训练扩散模型提供一种更稳健、更稳定的替代方案。此外，Flow Matching 为使用其他非扩散概率路径训练 CNF 开辟了道路。一个特别值得关注的例子是使用**最优传输 (OT) 位移插值来定义条件概率路径**。这些路径比扩散路径更高效，可以提供更快的训练和采样速度，并带来更好的泛化效果。在 ImageNet 上使用 Flow Matching 训练 CNF，在似然度和样本质量方面均比其他基于扩散的方法获得更好的性能，并且可以使用现成的**数值 ODE** 求解器快速可靠地生成样本。
 
-# 1.INTRODUCTION
+## 1.INTRODUCTION
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/daae81af1bd248a3ab9f81361eab43c7.png)
 
@@ -20,7 +22,7 @@
 
 我们在 ImageNet（一个规模庞大且高度多样化的图像数据集）上通过最优传输路径构建 Flow Matching 算法进行了实证验证。我们发现，相比其他基于扩散的竞争方法，我们可以轻松训练模型，使其在似然估计和样本质量方面均取得优异表现。此外，我们发现，与现有方法相比，我们的模型在计算成本和样本质量之间取得了更佳的平衡。图 1 展示了我们模型中选定的 128×128 非条件 ImageNet 样本。
 
-# 2.PRELIMINARIES: CONTINUOUS NORMALIZING FLOWS
+## 2.PRELIMINARIES: CONTINUOUS NORMALIZING FLOWS
 
 令 $\mathbb R^d$ 表示数据空间，其中数据点为 $x = (x^1, ..., x^d) ∈ \mathbb R^d$。本文中使用的两个重要对象是：**概率密度路径** $p: [0, 1] × \mathbb R^d → \mathbb R_{>0}$，它是一个时间相关的概率密度函数，即 $\int p_t(x)dx = 1$；以及时间相关的**矢量场** $v: [0, 1] × \mathbb R^d → \mathbb R^d$。矢量场 $v_t$ 可用于**构建时间相关的微分同胚映射**，称为流 $\phi: [0, 1] × \mathbb R^d → \mathbb R^d$，其通过常微分方程 (ODE) 定义：
 
@@ -38,7 +40,7 @@ $$[\phi_t]_*p_0(x)=p_0(\phi^{-1}_t(x))det[\frac{\partial \phi^{-1}_t}{\partial x
 
 如果矢量场 $v_t$ 的流 $\phi_t$ 满足方程 3，则称该矢量场生成概率密度路径 $p_t$。测试矢量场是否生成概率路径的一种实用方法是使用连续性方程，它是我们证明中的关键组成部分，请参阅附录 B。我们在附录 C 中回顾了有关 CNF 的更多信息，特别是如何计算任意点 $x ∈ \mathbb R^d$ 处的概率 $p_1(x)$。
 
-# 3.FLOW MATCHING
+## 3.FLOW MATCHING
 
 令 $x_1$ 表示服从某个未知数据分布 $q(x_1)$ 的随机变量。我们假设我们只能访问 $q(x_1)$ 中的数据样本，但无法访问其密度函数本身。此外，我们令 $p_t$ 为一条概率路径，其中 $p_0 = p$ 为简单分布，例如标准正态分布 $p(x) = \mathcal N(x|0, I)$，并**令 $p_1$ 的分布与 $q$ 近似相等**。稍后我们将讨论如何构建这样的路径。Flow Matching 目标旨在匹配该目标概率路径，从而使我们能够从 $p_0$ 流向 $p_1$。
 
@@ -50,7 +52,7 @@ $$\mathcal L_{FM}(\theta)=\mathbb E_{t,p_t(x)}||v_t(x)-u_t(x)||^2,\tag{5}$$
 
 Flow Matching 是一个简单且有吸引力的目标，但就其本身而言，由于我们事先不知道合适的 $p_t$ 和 $u_t$ 是什么，因此在实践中很难应用。有很多概率路径可以满足 $p_1(x) ≈ q(x)$ ，更重要的是，我们通常无法获得生成所需 $p_t$ 的闭式 $u_t$。在本节中，我们将展示如何使用仅针对每个样本定义的概率路径和矢量场来构建 $p_t$ 和 $u_t$，并且适当的聚合方法可以提供所需的 $p_t$ 和 $u_t$。此外，这种构造使我们能够为 Flow Matching 创建一个更易于处理的目标。
 
-## 3.1 CONSTRUCTING $p_t, u_t$ FROM CONDITIONAL PROBABILITY PATHS AND VECTOR FIELDS
+### 3.1 CONSTRUCTING $p_t, u_t$ FROM CONDITIONAL PROBABILITY PATHS AND VECTOR FIELDS
 
 构建目标概率路径的一种简单方法是通过**混合更简单的概率路径**：给定一个特定的数据样本 $x_1$，我们用 $p_t(x|x_1)$ 表示一个条件概率路径，使得它在时间 $t = 0$ 时满足 $p_0(x|x_1) = p(x)$，并且我们将 $t = 1$ 时的 $p_1(x|x_1)$ 设计为集中在 $x = x_1$ 周围的分布，例如，$p_1(x|x_1) = N(x|x_1, σ^2I)$，这是一个具有 $x_1$ 均值和足够小的标准差 $σ > 0$ 的正态分布。对 $q(x_1)$ 上的条件概率路径进行边缘化，得到边缘概率路径：
 
@@ -76,7 +78,7 @@ $$u_t(x)=\int u_t(x|x_1)\frac{p_t(x|x_1)q(x_1)}{p_t(x)}dx_1,\tag{8}$$
 
 我们定理的完整证明均在附录 A 中提供。定理 1 也可以从 Peluchetti (2021) 中的扩散混合表示定理中推导出来，该定理提供了扩散 SDE 中的边缘漂移和扩散系数的公式。
 
-## 3.2 CONDITIONAL FLOW MATCHING
+### 3.2 CONDITIONAL FLOW MATCHING
 
 遗憾的是，由于边缘概率路径和 VF（公式 6 和 8）定义中存在难以处理的积分，因此仍然难以计算 $u_t$，进而难以简单地计算原始 Flow Matching 目标的无偏估计量。为此，我们提出了一个更简单的目标，令人惊讶的是，它将产生与原始目标相同的最优值。具体而言，我们考虑 Conditional Flow Matching (CFM) 目标，
 
@@ -90,7 +92,7 @@ $$\mathcal L_{CFM}(\theta)=\mathbb E_{t,q(x_1),p_t(x|x_1)}||v_t(x)-u_t(x|x_1)||^
 
 **Theorem 2**。假设对于所有 $x ∈ \mathbb R^d$ 且 $t ∈ [0, 1], p_t(x) > 0$，那么，在与 θ 无关的常数之前，$\mathcal L_{CFM}$ 与 $\mathcal L_{FM}$ 相等。因此，$∇_θ\mathcal L_{FM}(θ) = ∇_θ\mathcal L_{CFM}(θ)$。
 
-# 4.CONDITIONAL PROBABILITY PATHS AND VECTOR FIELDS
+## 4.CONDITIONAL PROBABILITY PATHS AND VECTOR FIELDS
 
 Conditional Flow Matching 目标适用于任何条件概率路径和条件向量场的选择。在本节中，我们讨论**高斯条件概率路径**中的 $p_t(x|x_1)$ 和 $u_t(x|x_1)$ 的构造。也就是说，我们考虑如下形式的条件概率路径
 
@@ -122,5 +124,5 @@ $$u_t(x|x_1)=\frac{\sigma'_t(x_1)}{\sigma_t(x_1)}(x-\mu_t(x_1))+\mu'_t(x_1).\tag
 
 因此，$u_t(x|x_1)$ 生成高斯路径 $p_t(x|x_1)$。
 
-## 4.1  SPECIAL INSTANCES OF GAUSSIAN CONDITIONAL PROBABILITY PATHS
+### 4.1  SPECIAL INSTANCES OF GAUSSIAN CONDITIONAL PROBABILITY PATHS
 

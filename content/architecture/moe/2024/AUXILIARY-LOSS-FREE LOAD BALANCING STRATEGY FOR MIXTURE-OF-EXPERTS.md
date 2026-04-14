@@ -1,12 +1,14 @@
+# AUXILIARY-LOSS-FREE LOAD BALANCING STRATEGY FOR MIXTURE-OF-EXPERTS
+
 论文链接：https://arxiv.org/pdf/2408.15664
 
 代码链接：
 
-# 摘要
+## 摘要
 
 对于混合专家（MoE）模型，**专家负载不均衡会导致路由崩溃或计算开销增加**。现有方法通常采用辅助损失来促进负载均衡，但**较大的辅助损失会在训练过程中引入不可忽略的干扰梯度，从而降低模型性能**。为了在训练过程中控制负载均衡而不产生不必要的梯度，我们提出了一种名为 **Loss-Free Balancing** 的策略，其特点是采用无辅助损失的负载均衡方法。具体来说，在做出 $top-K$ 个路由决策之前，Loss-Free Balancing 首先会根据每个专家的路由得分应用一个专家级偏差。通过根据每个专家的近期负载动态更新其偏差，Loss-Free Balancing 可以持续地维持专家负载的均衡分布。此外，由于 Loss-Free Balancing 不会产生任何干扰梯度，因此它也提高了混合专家模型训练所能达到的性能上限。我们使用参数高达 3B、训练数据高达 2000B token 的混合专家模型验证了 Loss-Free Balancing 的性能。实验结果表明，与传统的辅助损失控制负载均衡策略相比，Loss-Free Balancing 能够实现更好的性能和更好的负载均衡。
 
-# 1.介绍
+## 1.介绍
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1f439ae7f8d243b7b0c48767f03db741.png)
 
@@ -16,9 +18,9 @@
 
 为了验证  Loss-Free Balancing 算法的性能，我们从零开始训练了参数量分别为 1B 和 3B 的 MoE 语言模型，前者使用 100B token，后者使用 200B token。实验结果表明，Loss-Free Balancing 算法生成的 MoE 模型比传统的辅助损失控制模型具有更低的验证损失。同时，在保持性能优势的同时，Loss-Free Balancing 算法在全局和 batch 层面也实现了显著更优的负载均衡，并且天然兼容专家并行计算，后者通常用于训练超大规模的 MoE 模型。
 
-# 2.BACKGROUND
+## 2.BACKGROUND
 
-## 2.1 MIXTURE-OF-EXPERTS
+### 2.1 MIXTURE-OF-EXPERTS
 
 目前主流的 MoE 架构用 MoE 层替换了标准 Transformer 中的 MLP 层。在 MoE 层中，采用 Top-K 路由为每个 token 选择专家。令 $\textbf u_t$ 表示第 $t$ 个token到具有 $N$ 个专家的 MoE 层的输入，则输出 $\textbf h_t$ 计算如下：
 
@@ -33,7 +35,7 @@ s_{i,t}=G(\textbf u^T_t\textbf e_i),
 
 其中 $G$ 为非线性门控函数，$e_i$ 为第 $i$ 个专家的质心。
 
-## 2.2 AUXILIARY LOSS FOR LOAD BALANCE
+### 2.2 AUXILIARY LOSS FOR LOAD BALANCE
 
  ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/539ca1b9ec7b4aa4ac6e096a2918200f.png)
 
@@ -49,7 +51,7 @@ P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},
 
 **The Dilemma Between Load Balance and Model Performance**。上述辅助损失可以促进负载均衡，但作为额外的正则化项，它也会干扰语言模型训练。缺少辅助损失或辅助损失系数 $α$ 过小会导致负载均衡效果不佳，而 $α$ 过大则会损害训练，导致模型性能欠佳。为了说明这一困境，我们在图 2 中展示了负载均衡与模型性能之间的关系。我们将 $α$ 的值分别设置为 1e-2、1e-3、1e-4 和 0，并给出了相应的 $MaxVio_{global}$ 值，该值用于衡量负载均衡程度，其计算细节在 §4.1 中描述。如图所示，较小的 $α$ 值会导致路由崩溃，影响模型效率，并可能导致某些专家未被充分学习或利用；而较大的 $α$ 值虽然能够控制负载均衡，但会显著降低模型性能。为了解决这一困境，我们提出了 Loss-Free Balancing 方案，该方案直接控制专家负载均衡，且不会引入除语言模型损失梯度之外的其他梯度。
 
-# 3. AUXILIARY-LOSS-FREE LOAD BALANCING STRATEGY
+## 3. AUXILIARY-LOSS-FREE LOAD BALANCING STRATEGY
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/31ac064a39f942a88edfd2b47d20a970.png)
 
@@ -68,4 +70,4 @@ s_{i,t}, & s_{i,t}+b_i\in Topk(\{s_{j,t}+b_j|1\le j\le N\},k),\\
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/98d7746940c241268abd39ed4fcd02e3.png)
 
-# 4.EXPERIMENTS
+## 4.EXPERIMENTS

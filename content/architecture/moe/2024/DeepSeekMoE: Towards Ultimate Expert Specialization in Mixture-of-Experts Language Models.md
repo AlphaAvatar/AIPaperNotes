@@ -1,12 +1,14 @@
+# DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models
+
 论文链接：https://arxiv.org/pdf/2401.06066
 
 代码链接：https://github.com/deepseek-ai/DeepSeek-MoE
 
-# 摘要
+## 摘要
 
 在大语言模型时代，混合专家（MoE）架构在模型参数扩展时，是一种管理计算成本的有效方法。然而，传统的混合专家架构（例如 GShard）从 $N$ 个专家中激活排名 $top-K$ 的专家，**在确保专家专业化方面面临挑战，即每个专家获取的知识不重叠且具有针对性**。为此，我们提出了 DeepSeekMoE 架构，旨在实现极致的专家专业化。该架构包含两个主要策略：（1）将专家精细划分为 $mN$ 个专家，并从中激活 $mK$ 个专家，从而实现更灵活的专家组合；（2）将 $K$ 个专家隔离为共享专家，旨在捕获共同知识并减少路由专家中的冗余。从参数量较小的 2B 参数开始，我们证明了 DeepSeekMoE-2B 的性能与参数量和计算量均为其 1.5 倍的 GShard 2.9B 相当。此外，DeepSeekMoE-2B 的性能几乎与参数量相同的密集模型相当，后者设定了 MoE 模型性能的上限。随后，我们将 DeepSeekMoE 的参数量扩展到 16B 参数，并证明其性能与 LLaMA2 7B 相当，而计算量仅为后者的约 40%。此外，我们初步尝试将 DeepSeekMoE 的参数量扩展到 145B 参数，结果始终验证了其相对于 GShard 架构的显著优势，并表明其性能与 DeepSeek 67B 相当，而计算量仅为后者的 28.5%（甚至可能低至 18.2%）。
 
-# 1.介绍
+## 1.介绍
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bdd915c7111040efa958703f44ec73f5.png)
 
@@ -28,7 +30,7 @@
 - **Alignment for MoE**。我们成功地对 DeepSeekMoE 16B 进行了有监督微调，创建了一个对齐的聊天模型，展示了 DeepSeekMoE 16B 的适应性和多功能性。
 - **Public Release**。秉持开放研究的精神，我们向公众发布了 DeepSeekMoE 16B 的模型 checkpoint。值得注意的是，该模型无需量化即可部署在配备 40GB 显存的单 GPU 上。
 
-# 2.Preliminaries: Mixture-of-Experts for Transformers
+## 2.Preliminaries: Mixture-of-Experts for Transformers
 
 我们首先介绍一种常用于 Transformer 语言模型的通用 MoE 架构。标准的 Transformer 语言模型由 $L$ 层标准 Transformer 模块堆叠而成，其中每个模块可以表示如下：
 
@@ -51,13 +53,13 @@ $$s_{i,t}=Softmax({\textbf u^l_t}^T\textbf e^l_i),\tag{5}$$
 
 其中，$N$ 表示专家总数，$FFN_i(·)$ 表示第 $i$ 位专家的 FFN，$g_{i,t}$ 表示第 $i$ 位专家的门控值，$s_{i,t}$ 表示 token 到专家的亲和度，$Topk(·, K)$ 表示包含第 $t$ 个 token 与所有 $N$ 位专家之间亲和度得分最高的 $K$ 个元素的集合，$\textbf e^l_i$ 表示第 $i$ 位专家在第 $l$ 层中的质心。注意，$g_{i,t}$ 是稀疏的，表明在 $N$ 个门控值中只有 $K$ 个非零。这种稀疏性确保了 MoE 层内的计算效率，即每个 token 仅由 K 个专家进行分配和计算。此外，为了简洁起见，上述公式中省略了层归一化操作。
 
-# 3.DeepSeekMoE Architecture
+## 3.DeepSeekMoE Architecture
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ced63c391ddb4016a0be5877292fe741.png)
 
 在第 2 节概述的通用 MoE 架构之上，我们引入了 DeepSeekMoE，它专门用于发挥专家专业化的潜力。如图 2 所示，我们的架构融合了两种主要策略：细粒度的专家分割和共享专家隔离。这两种策略旨在提升专家的专业化水平。
 
-## 3.1 Fine-Grained Expert Segmentation
+### 3.1 Fine-Grained Expert Segmentation
 
 在专家数量有限的情况下，分配给特定专家的 token 更有可能涵盖多种类型的知识。因此，指定的专家需要学习的参数范围内的知识类型非常广泛，难以同时有效利用。然而，如果每个 token 可以分配给更多专家，那么不同的知识就有可能被分解并分别由不同的专家学习。在这种情况下，每位专家仍然可以保持高度的专业化水平，从而有助于实现更集中、更全面的知识分布。
 
@@ -76,7 +78,7 @@ $$s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_t),\tag{8}$$
 
 从组合学的角度来看，细粒度的专家分割策略显著提升了激活专家的组合灵活性。例如，我们考虑 $N = 16$ 的情况。典型的 top-2 路由策略可以产生 $\binom{16}{2} = 120$ 种可能的组合。相比之下，如果将每个专家分割成 $4$ 个更小的专家，细粒度的路由策略可以产生 $\binom{64}{8} = 4,426,165,368$ 种潜在组合。组合灵活性的显著提升了实现更精准、更有针对性的知识获取的可能性。
 
-## 3.2 Shared Expert Isolation
+### 3.2 Shared Expert Isolation
 
 采用传统的路由策略，分配给不同专家的 token 可能需要一些共同的知识或信息。因此，多位专家可能会在其各自的参数中获取共享知识，从而导致专家参数冗余。然而，如果存在专门负责在不同情境下捕获和整合通用知识的共享专家，则可以缓解其他已路由专家之间的参数冗余。这种冗余的缓解将有助于构建一个参数效率更高、专家更专业的模型。
 
@@ -93,7 +95,7 @@ $$s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_i).\tag{11}$$
 
 最后，在 DeepSeekMoE 中，共享专家的数量为 $K_s$，路由专家的总数为 $mN − K_s$，非零门的数量为 $mK − K_s$。
 
-## 3.3 Load Balance Consideration
+### 3.3 Load Balance Consideration
 
 自动学习的路由策略可能会遇到负载不均衡的问题，这会导致两个显著的​​缺陷。首先，存在路由崩溃的风险，即模型总是只选择少数专家，导致其他专家无法得到充分的训练。其次，如果专家分布在多个设备上，负载不均衡会加剧计算瓶颈。
 
@@ -117,4 +119,4 @@ $$P'_i = \sum_{j \in \mathcal{E}_i} P_j,\tag{17}$$
 
 其中，$\alpha_2$ 是一个称为设备级平衡因子的超参数。在实际中，我们设置一个较小的专家级平衡因子以降低路由坍塌（routing collapse）的风险，同时设置一个较大的设备级平衡因子以促进设备之间的计算均衡。
 
-# 4.Validation Experiments
+## 4.Validation Experiments
