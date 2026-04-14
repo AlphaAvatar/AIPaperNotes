@@ -1,12 +1,14 @@
+# AN IMAGE IS WORTH 16X16 WORDS: TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE
+
 论文链接：https://arxiv.org/pdf/2010.11929
 
 代码链接：https://github.com/google-research/vision_transformer
 
-# 摘要
+## 摘要
 
 尽管 Transformer 架构已成为自然语言处理任务的事实标准，但其在计算机视觉领域的应用仍然有限。在视觉领域，注意力机制要么与卷积神经网络结合使用，要么用于替换卷积神经网络的某些组件，同时保持其整体结构不变。我们证明，这种对卷积神经网络的依赖并非必要，直接将纯 Transformer 应用于图像块序列也能在图像分类任务中表现出色。当使用大量数据进行预训练并迁移到多个中小型图像识别基准数据集（ImageNet、CIFAR-100、VTAB等）时，**Vision Transformer**（ViT）与最先进的卷积神经网络相比取得了优异的成绩，同时训练所需的计算资源也显著减少。
 
-# 1.介绍
+## 1.介绍
 
 基于自注意力机制的架构，特别是 Transformer 模型，已成为自然语言处理（NLP）领域的首选模型。主流方法是在大型文本语料库上进行预训练，然后在规模较小的特定任务数据集上进行微调。得益于 Transformer 模型的计算效率和可扩展性，训练规模空前的模型已成为可能，其参数量已超过100B。尽管模型和数据集规模不断增长，但性能仍未出现饱和的迹象。
 
@@ -18,7 +20,7 @@
 
 然而，如果模型在更大的数据集（1400万至3亿张图像）上进行训练，情况则有所不同。我们发现，大规模训练优于归纳偏置。我们的 **Vision Transformer**（ViT）在足够大的数据集上进行预训练并迁移到数据点较少的任务时，取得了优异的成绩。当在公开的 ImageNet-21k 数据集或内部的 JFT-300M 数据集上进行预训练时，ViT 在多个图像识别基准测试中达到或超过了当前最佳水平。具体而言，最佳模型在 ImageNet 上的准确率达到88.55%，在 ImageNet-Real 数据集上达到 90.72%，在 CIFAR-100 数据集上达到 94.55%，在包含 19 个任务的 VTAB 测试套件上达到 77.63%。
 
-# 2.相关工作
+## 2.相关工作
 
 Vaswani et al. (2017) 提出了 Transformer 模型用于机器翻译，此后 Transformer 已成为许多自然语言处理任务中最先进的方法。大型 Transformer 模型通常在大型语料库上进行预训练，然后针对具体任务进行微调：BERT 使用去噪自监督预训练任务，而 GPT 系列则使用语言建模作为其预训练任务。
 
@@ -32,11 +34,11 @@ Vaswani et al. (2017) 提出了 Transformer 模型用于机器翻译，此后 Tr
 
 我们的工作进一步丰富了探索比标准 ImageNet 数据集更大规模图像识别的论文集。利用额外的数据源，我们在标准基准测试中取得了最先进的结果。此外，Sun et al. (2017) 研究了 CNN 性能如何随数据集规模扩展，Kolesnikov et al. (2020) 和 Djolonga et al. (2020) 则对 CNN 在 ImageNet-21k 和 JFT-300M 等大规模数据集上的迁移学习进行了实证探索。我们也关注后两个数据集，但训练的是 Transformer 模型，而不是先前工作中使用的基于 ResNet 的模型。
 
-# 3.METHOD
+## 3.METHOD
 
 在模型设计方面，我们尽可能地遵循原始的Transformer模型。这种有意简化的设置的优势在于，可扩展的 NLP Transformer 架构及其高效实现几乎可以开箱即用。
 
-## 3.1 VISION TRANSFORMER (VIT)
+### 3.1 VISION TRANSFORMER (VIT)
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/940ab196d528439a9dc68eb24be53d8f.png)
 
@@ -60,8 +62,8 @@ $$\textbf y=LN(\textbf z^0_L)\tag{4}$$
 
 **Hybrid Architecture**。除了原始图像块之外，输入序列还可以由卷积神经网络（CNN）的特征图构成。在该混合模型中，图像块嵌入投影 $\textbf E$（公式1）应用于从 CNN 特征图中提取的图像块。特殊情况下，图像块的空间大小可以为 1x1，这意味着输入序列是通过简单地展平特征图的空间维度并投影到Transformer维度而获得的。分类输入嵌入和位置嵌入的添加方式如上所述。
 
-## 3.2 FINE-TUNING AND HIGHER RESOLUTION
+### 3.2 FINE-TUNING AND HIGHER RESOLUTION
 
 通常，我们会在大型数据集上预训练 ViT，然后针对（较小的）下游任务进行微调。为此，我们会移除预训练的预测头，并添加一个初始值为零的 $D × K$ 前馈层，其中 $K$ 为下游类别数。通常，在比预训练更高的分辨率下进行微调是有益的。当输入更高分辨率的图像时，我们保持图像块大小不变，从而获得更大的有效序列长度。Vision Transformer 可以处理任意长度的序列（在内存限制范围内），**但是，预训练的位置嵌入可能不再有意义。因此，我们会根据预训练的位置嵌入在原始图像中的位置对其进行二维插值**。需要注意的是，分辨率调整和图像块提取是唯一需要手动将关于图像二维结构的归纳偏置注入 Vision Transformer 的步骤。
 
-# 4.EXPERIMENTS
+## 4.EXPERIMENTS
