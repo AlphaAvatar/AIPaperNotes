@@ -1,20 +1,22 @@
 {
-	
-  "name": "aipapernotes",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
+	"name": "aipapernotes",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint"
+	},
 	"dependencies": {
+		"katex": "^0.16.45",
 		"next": "^16.2.3",
 		"nextra": "^4.6.1",
 		"nextra-theme-docs": "^4.6.1",
 		"react": "^19.2.5",
-		"react-dom": "^19.2.5"
+		"react-dom": "^19.2.5",
+		"rehype-katex": "^7.0.1",
+		"remark-math": "^6.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^25.6.0",
