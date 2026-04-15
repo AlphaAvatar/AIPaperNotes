@@ -27,7 +27,12 @@ OpenCompass 评估的综合实验结果表明，MiniCPM-V 4.5 的性能优于广
 
 ## 2.1 Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/95257116f8a6412b81939516534d8bd1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/95257116f8a6412b81939516534d8bd1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 如图 1 所示，MiniCPM-V 4.5 的架构包含三个主要模块：（1）一个轻量级视觉编码器，它采用特殊的分割策略灵活处理高分辨率图像。（2）一个统一的 3D 重采样器，它利用视觉信息中的时间冗余，将图像和视频编码成紧凑的特征。（3）一个 LLM 解码器，它能够理解图像、视频和文本，并生成文本输出。
 
@@ -74,7 +79,12 @@ OpenCompass 评估的综合实验结果表明，MiniCPM-V 4.5 的性能优于广
 
 ### 2.2.3 Unified Paradigm for Document Knowledge and OCR Learning
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/59e81a1fbaa74f5cb4b476d7126f7916.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/59e81a1fbaa74f5cb4b476d7126f7916.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 文档，例如科学论文、教科书和网页，是学习各种布局和获取跨领域多学科知识的重要资源。然而，大多数 MLLM 依赖于脆弱的外部解析器将文档 PDF 转换为用于训练的交错图像文本序列。这种**噪声大**且效率低下的过程常常引入结构性错误，或者需要大量的数据工程工作来修复错误案例。
 

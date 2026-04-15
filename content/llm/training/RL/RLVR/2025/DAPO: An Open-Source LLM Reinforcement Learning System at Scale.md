@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3a7e35b2fa3e48fa93bac0b6de0ecf92.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/3a7e35b2fa3e48fa93bac0b6de0ecf92.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 诸如 OpenAI 的 o1 和 DeepSeek 的 R1 等测试时扩展技术，为大语言模型 (LLM) 带来了深刻的范式转变。测试时扩展技术能够支持更长的思维链，并诱导出更复杂的推理行为，这使得这些模型在 AIME 和 Codeforces 等数学和编程竞赛任务中表现优异。
 
@@ -31,34 +36,46 @@
 
 PPO 引入了一种用于策略优化的裁剪代理目标。通过**使用裁剪将策略更新限制在先前策略的邻近区域内**，PPO 可以稳定训练并提高样本效率。具体来说，PPO 通过最大化以下目标来更新策略：
 
-$$\mathcal J_{PPO}(\theta)=\mathbb E_{(q,a)\sim\mathcal D,o_{\le t}\sim\pi_{\theta_{old}}(\cdot|q)}[min(\frac{\pi_{\theta}(o_t|q,o_{\le t})}{\pi_{old}(o_t|q,o_{\le t})}\hat A_t,clip(\frac{\pi_{\theta}(o_t|q,o_{\le t})}{\pi_{old}(o_t|q,o_{\le t})}, 1-ε,1+ε)\hat A_t)],\tag{1}$$
+```math
+\mathcal J_{PPO}(\theta)=\mathbb E_{(q,a)\sim\mathcal D,o_{\le t}\sim\pi_{\theta_{old}}(\cdot|q)}[min(\frac{\pi_{\theta}(o_t|q,o_{\le t})}{\pi_{old}(o_t|q,o_{\le t})}\hat A_t,clip(\frac{\pi_{\theta}(o_t|q,o_{\le t})}{\pi_{old}(o_t|q,o_{\le t})}, 1-ε,1+ε)\hat A_t)],\tag{1}
+```
 
 其中 $(q, a)$ 是来自数据分布 $\mathcal D$ 的问答对，$ε$ 是重要性抽样率的裁剪范围，$\hat A_t$ 是时刻 $t$ 的优势估计值。给定价值函数 $V$ 和奖赏函数 $R$，$\hat A_t$ 使用广义优势估计 (GAE) 计算：
 
-$$\hat A^{GAE(γ,λ)}_t=\sum^{∞}_{l=0}(γλ)^lδ_{t+l},\tag{2}$$
+```math
+\hat A^{GAE(γ,λ)}_t=\sum^{∞}_{l=0}(γλ)^lδ_{t+l},\tag{2}
+```
 
 其中，
 
-$$δ_l = R_l + γV(s_l+1) − V(s_l),\quad 0 ≤ γ, λ ≤ 1.\tag{3}$$
+```math
+δ_l = R_l + γV(s_l+1) − V(s_l),\quad 0 ≤ γ, λ ≤ 1.\tag{3}
+```
 
 ## 2.2 Group Relative Policy Optimization (GRPO)
 
 与 PPO 相比，**GRPO 消除了价值函数**，并以租相对的方式估计优势函数。对于特定的问答对 $(q, a)$，行为策略 $π_{θ_{old}}$ 对 $G$ 个个体响应 $\{o_i\}^G_{i=1}$ 进行采样。然后，通过对组层面的奖励 $\{R_i\}^G_{i=1}$ 进行归一化来计算第 $i$ 个响应的优势：
 
-$$\hat A_{i,t}=\frac{r_i-mean(\{R_i\}^G_{i=1})}{std(\{R_i\}^G_{i=1})}.\tag{4}$$
+```math
+\hat A_{i,t}=\frac{r_i-mean(\{R_i\}^G_{i=1})}{std(\{R_i\}^G_{i=1})}.\tag{4}
+```
 
 与 PPO 类似，GRPO 采用截断目标函数，并直接施加 KL 惩罚项：
 
-$$\mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^G \sim \pi_{\theta_{\text{old}}}(\cdot|q)} \left[ \frac{1}{G} \sum_{i=1}^{G} \frac{1}{|o_i|} \sum_{t=1}^{|o_i|} \left( \min \big( r_{i,t}(\theta)\hat{A}_{i,t}, \mathrm{clip}(r_{i,t}(\theta), 1-\varepsilon, 1+\varepsilon)\hat{A}_{i,t} \big) - \beta D_{\mathrm{KL}}(\pi_\theta \,\|\, \pi_{\mathrm{ref}}) \right) \right],\tag{5}$$
+```math
+\mathcal{J}_{\text{GRPO}}(\theta) = \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^G \sim \pi_{\theta_{\text{old}}}(\cdot|q)} \left[ \frac{1}{G} \sum_{i=1}^{G} \frac{1}{|o_i|} \sum_{t=1}^{|o_i|} \left( \min \big( r_{i,t}(\theta)\hat{A}_{i,t}, \mathrm{clip}(r_{i,t}(\theta), 1-\varepsilon, 1+\varepsilon)\hat{A}_{i,t} \big) - \beta D_{\mathrm{KL}}(\pi_\theta \,\|\, \pi_{\mathrm{ref}}) \right) \right],\tag{5}
+```
 
 其中，
 
-$$r_{i,t}(\theta) =
+```math
+r_{i,t}(\theta) =
 \frac{
 \pi_{\theta}(o_{i,t} \mid q, o_{i,<t})
 }{
 \pi_{\theta_{\text{old}}}(o_{i,t} \mid q, o_{i,<t})
-}.\tag{6}$$
+}.\tag{6}
+```
 
 值得注意的是，**GRPO是在样本级别计算目标函数的**。更准确地说，GRPO首先计算每个生成序列内的平均损失，然后再对不同样本的损失进行平均。正如我们将在3.3节讨论的那样，这种差异可能会影响算法的性能。
 
@@ -70,23 +87,28 @@ KL 惩罚项用于调节在线策略与冻结参考策略之间的偏差。在RL
 
 使用奖赏模型通常会遇到奖赏作弊问题。因此，我们直接使用可验证任务的最终准确率作为结果奖赏，计算规则如下：
 
-$$
+```math
 R(\hat{y}, y) =
 \begin{cases}
 1, & \text{if } \mathrm{is\_equivalent}(\hat{y}, y) \\
 -1, & \text{otherwise}
 \end{cases}\tag{7}
-$$
+```
 
 其中 $y$ 是真实答案，$\hat y$ 是预测答案。这已被证明是激活基础模型推理能力的有效方法，如自动定理证明、计算机编程和数学竞赛等多个领域所示。
 
 # 3.DAPO
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e1a18f3ba9b1411a9791b802456f8542.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/e1a18f3ba9b1411a9791b802456f8542.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们提出了一种**解耦裁剪**和**动态采样**策略优化（DAPO）算法。DAPO 为每个问题 $q$ 及其答案 $a$ 生成一组输出 $\{o_i\}^G_{i=1}$，并通过以下目标函数优化策略：
 
-$$
+```math
 \mathcal{J}_{\text{DAPO}}(\theta) =
 \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^G \sim \pi_{\theta_{\text{old}}}(\cdot|q)}
 \left[
@@ -97,16 +119,16 @@ r_{i,t}(\theta)\hat{A}_{i,t},
 \mathrm{clip}\!\big(r_{i,t}(\theta), 1-\varepsilon_{\text{low}}, 1+\varepsilon_{\text{high}}\big)\hat{A}_{i,t}
 \right)
 \right],\tag{8}
-$$
+```
 
-$$
+```math
 \text{s.t.} \quad
 0 < \big|\{ o_i \mid \mathrm{is\_equivalent}(a, o_i) \}\big| < G.
-$$
+```
 
 其中，
 
-$$
+```math
 r_{i,t}(\theta) =
 \frac{
 \pi_{\theta}(o_{i,t} \mid q, o_{i,<t})
@@ -120,13 +142,18 @@ R_i - \mathrm{mean}(\{R_i\}_{i=1}^{G})
 }{
 \mathrm{std}(\{R_i\}_{i=1}^{G})
 }.\tag{9}
-$$
+```
 
 完整的算法见算法 1。本节将介绍与 DAPO 相关的关键技术。
 
 ## 3.1 Raise the Ceiling: Clip-Higher
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7733c88070a54f27bc720c4584747bc6.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7733c88070a54f27bc720c4584747bc6.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在我们最初使用 PPO 或GRPO​​ 的实验中，我们观察到了熵崩溃现象：**随着训练的进行，策略的熵迅速下降（图2b）。某些组的采样响应趋于完全相同**。这表明探索有限，并且早期策略确定性较强，这可能会阻碍扩展过程。
 
@@ -136,7 +163,7 @@ $$
 
 遵循 Clip-Higher 策略，我们将较低和较高的裁剪范围解耦为 $ε_{low}$ 和 $ε_{high}$，如公式 10 所示：
 
-$$
+```math
 \mathcal{J}_{\text{DAPO}}(\theta) =
 \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^{G} \sim \pi_{\theta_{\text{old}}}(\cdot|q)}
 \left[
@@ -151,25 +178,30 @@ r_{i,t}(\theta),
 \big)\hat{A}_{i,t}
 \right)
 \right],
-$$
+```
 
-$$
+```math
 \text{s.t.} \quad
 0 < \big|\{ o_i \mid \mathrm{is\_equivalent}(a, o_i) \}\big| < G.
 \tag{10}
-$$
+```
 
 我们增大 $ε_{high}$ 的值，以便为低概率 token 的增加留出更多空间。如图 2 所示，这一调整有效地提高了策略的熵，并有助于生成更多样化的样本。我们保持 $ε_{low}$ 的值不变，因为增大 $ε_{low}$ 会将这些 token 的概率抑制到 0，导致采样空间坍缩。
 
 ## 3.2 The More the Merrier: Dynamic Sampling
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2ec624f5cc7d4cefb79872e68b5e11da.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/2ec624f5cc7d4cefb79872e68b5e11da.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 当某些提示的准确率等于 1 时，现有的强化学习算法会面临梯度下降问题。例如，对于 GRPO 算法，如果某个提示的所有输出 $\{o_i\}^G_{i=1}$ 都正确且获得相同的奖赏，则该组的优势为零。零优势会导致策略梯度为零，从而减小当前 batch 梯度的幅度并增加其对噪声的敏感性，进而降低样本效率。如图 3b 所示，经验表明准确率为 1 的样本数量会持续增加。这意味着每个 batch 中有效提示的数量会不断减少，这会导致梯度方差增大，并抑制模型训练的梯度信号。
 
 为此，我们提出对提示进行过采样，并过滤掉准确率等于 1 和 0 的提示（如公式 11 所示），从而保留 batch 中所有具有有效梯度的提示，并保持提示数量一致。每个 batch 的采样成本是动态的。在训练之前，我们会持续采样，直到 batch 完全被准确率既非 0 也非 1 的样本填充。
 
-$$
+```math
 \mathcal{J}_{\text{DAPO}}(\theta) =
 \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^{G} \sim \pi_{\theta_{\text{old}}}(\cdot|q)}
 \left[
@@ -184,23 +216,33 @@ r_{i,t}(\theta),
 \big)\hat{A}_{i,t}
 \right)
 \right],
-$$
+```
 
-$$
+```math
 \text{s.t.} \quad
 \textcolor{red}{
 0 < \big|\{ o_i \mid \mathrm{is\_equivalent}(a, o_i) \}\big| < G
 }.
 \tag{11}
-$$
+```
 
 需要注意的是，这种策略并不一定会降低训练效率，因为如果强化学习系统是同步的且生成阶段不是流水线式的，那么生成时间通常主要取决于长尾样本的生成。此外，如图 6 所示，我们发现采用动态采样后，实验能够更快地达到相同的性能。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f1d70baba3d948bba8a8fac1da0f098c.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/f1d70baba3d948bba8a8fac1da0f098c.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 3.3 Rebalancing Act: Token-Level Policy Gradient Loss
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5f4c295b680d484c8eb2f367e8a2ab18.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/5f4c295b680d484c8eb2f367e8a2ab18.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 原始的 GRPO 算法采用样本级损失计算方法，首先对每个样本内的每个 token 的损失进行平均，然后将所有样本的损失进行聚合。在这种方法中，每个样本在最终损失计算中被赋予相同的权重。然而，我们发现，在长 CoT 强化学习场景下，这种损失降低方法会带来一些挑战。
 
@@ -208,7 +250,7 @@ $$
 
 为了解决上述局限性，我们在长CoT RL场景中引入了Token级策略梯度损失：
 
-$$
+```math
 \mathcal{J}_{\text{DAPO}}(\theta) =
 \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^{G} \sim \pi_{\theta_{\text{old}}}(\cdot|q)}
 \left[
@@ -227,19 +269,24 @@ r_{i,t}(\theta),
 \big)\hat{A}_{i,t}
 \right)
 \right],
-$$
+```
 
-$$
+```math
 \text{s.t.} \quad
 0 < \big|\{ o_i \mid \mathrm{is\_equivalent}(a, o_i) \}\big| < G.
 \tag{12}
-$$
+```
 
 在这种情况下，较长的序列对整体梯度更新的影响可能比短序列更大。此外，从单个 token 的角度来看，如果某种特定的生成模式能够导致奖励的增加或减少，那么无论它出现在响应中的长度如何，它都会被同等地触发或抑制。
 
 ## 3.4 Hide and Seek: Overlong Reward Shaping
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bbfd71324d5b41509b35041713961143.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/bbfd71324d5b41509b35041713961143.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在强化学习训练中，我们通常会设置样本的最大长度，过长的样本会被相应地截断。**我们发现，对截断后的样本进行不恰当的奖赏设计会引入奖赏噪声，并显著干扰训练过程**。
 
@@ -249,7 +296,7 @@ $$
 
 此外，我们提出了一种名为“**Soft Overlong Punishment**”（公式 13）的机制，这是一种长度感知惩罚机制，旨在调整截断样本的奖励。具体而言，当响应长度超过预定义的最大值时，我们定义一个惩罚区间。在该区间内，响应越长，受到的惩罚越大。该惩罚会添加到基于规则的原始正确性奖励中，从而提醒模型避免过长的响应。
 
-$$
+```math
 R_{\text{length}}(y) =
 \begin{cases}
 0, &
@@ -260,7 +307,7 @@ L_{\max} - L_{\text{cache}} < |y| \le L_{\max} \\[10pt]
 L_{\max} < |y|
 \end{cases}
 \tag{13}
-$$
+```
 
 ## 3.5 Dataset Transformation
 
@@ -270,7 +317,12 @@ $$
 
 ## 4.1 Training Details
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/359903f3996645ceaa364b6e0d75f210.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/359903f3996645ceaa364b6e0d75f210.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 本文重点关注数学任务，以评估我们的算法，该算法可轻松迁移到其他任务。我们采用 verl 框架进行训练。我们使用朴素 GRPO 作为基线算法，并使用组奖赏归一化来评估算法优势。
 

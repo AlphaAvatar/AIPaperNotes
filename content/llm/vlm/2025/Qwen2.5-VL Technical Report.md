@@ -28,7 +28,12 @@ Qwen2.5-VL 的特性如下：
 
 ## 2.1 Model Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7b9153f4f4504350a8a362fa7135f846.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7b9153f4f4504350a8a362fa7135f846.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 Qwen2.5-VL 的整体模型架构由三个组件构成：
 
@@ -40,7 +45,12 @@ Qwen2.5-VL 的整体模型架构由三个组件构成：
 
 表 1 详细列出了 Qwen2.5-VL 的架构和配置。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e362cc13492847dfbaf10ee3052df292.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/e362cc13492847dfbaf10ee3052df292.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ### 2.1.1 Fast and Efficient Vision Encoder
 
@@ -100,7 +110,12 @@ Qwen2.5-VL 在空间和时间维度上都进行了改进，以有效处理各种
 
 以下是 QwenVL 的 HTML 格式：
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5a797008582f43f9997e7a3d07b5681f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/5a797008582f43f9997e7a3d07b5681f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 此格式确保所有文档元素以结构化和易于访问的方式表示，从而使 Qwen2.5-VL 能够高效地处理和理解。
 

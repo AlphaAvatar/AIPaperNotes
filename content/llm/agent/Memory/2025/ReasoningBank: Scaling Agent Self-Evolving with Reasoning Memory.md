@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e28c0ef802674c8a9f71917e0d2dec8f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/e28c0ef802674c8a9f71917e0d2dec8f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 大语言模型（LLM）的快速发展显著加速了 LLM Agent 的开发，而 LLM Agent 对于处理需要与环境进行多步骤交互的复杂现实世界任务至关重要，例如网页浏览和计算机使用。随着这些 Agent 越来越多地被部署在持久、长期运行的角色中，它们在其生命周期内自然会遇到源源不断的任务。然而，它们大多无法从跨任务积累的经验中学习。由于每个任务都是孤立处理的，它们注定会重复过去的错误，忽略相关问题中的宝贵见解，并且缺乏自我进化的能力，无法随着时间的推移提升 Agent 系统的能力。**这凸显了构建能够从过去经验中学习的记忆感知型 Agent 系统的必要性**。
 
@@ -40,7 +45,12 @@
 
 ## 3.2. ReasoningBank
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5505ea4c542f4791a8912652744e6fcd.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/5505ea4c542f4791a8912652744e6fcd.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 过去的原始轨迹（或经验）虽然全面且独到，但通常过于冗长且杂乱，无法直接应用于当前用户的 qeury。如图 2 所示，ReasoningBank 将过去经验中的有用策略和推理提示提炼成结构化的记忆项，并存储起来以供将来重用。
 
@@ -50,7 +60,12 @@
 
 ## 3.3 MaTTS: Memory-aware Test-Time Scaling
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/fab302bba28541c785e9c71ef9d54a0f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/fab302bba28541c785e9c71ef9d54a0f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **ReasoningBank** 能够从经验中学习，从而将更多经验转化为更大的改进。测试时扩展最近作为一种提升 LLM Agent 性能的有效策略展现出巨大的潜力，它通过分配额外的推理时计算来生成丰富的探索历史。图 3(a) 展示了 ReasoningBank 与测试时扩展的直接结合，其中更多轨迹被独立地转换为更多记忆项。然而，这种原始方法并非最优，因为它没有利用同一问题上重复探索所产生的固有对比信号，从而限制了测试时扩展带来的性能优势。为了解决这个问题，我们提出了记忆感知测试时扩展（MaTTS），一种将测试时扩展与 ReasoningBank 相结合的新方法。与原始方法不同，MaTTS 会主动学习扩展过程中生成的大量成功和失败轨迹，从而更有效地管理记忆。我们为 MaTTS 设计了两种互补的实例化方式：**并行扩展**和**顺序扩展**，如图 3(b) 和 3(c) 所示，详细实现见附录 A.3。
 

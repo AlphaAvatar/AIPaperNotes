@@ -33,7 +33,12 @@
 
 # 3.Router-R1
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6bdcb3ef279847cca51c1ddf22d10126.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/6bdcb3ef279847cca51c1ddf22d10126.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在本节中，我们将我们提出的 Router-R1 分为三个部分进行详细介绍。第 3.1 节介绍了基于 LLM 路由池的强化学习公式。第 3.2 节介绍了奖赏设计，其中包括格式奖赏、最终结果奖赏和成本奖赏。第 3.3 节描述了多轮交互训练过程，包括训练提示模板和与 LLM 路由池的多轮交互。图 1 展示了 Router-R1 的架构。
 
@@ -41,7 +46,9 @@
 
 在 Router-R1 中，我们采用通用策略优化目标，其中 LLM 路由池 $\mathcal P$ 形式化如下所示：
 
-$$\mathop{max}\limits_{\pi}\mathbb E_{x\sim D,y\sim\pi(\cdot|x;\mathcal P)}[r_{\phi}(x,y)-\beta log\frac{\pi(y|x;\mathcal P)}{\pi_{ref}(y|x;\mathcal P)}],\tag{1}$$
+```math
+\mathop{max}\limits_{\pi}\mathbb E_{x\sim D,y\sim\pi(\cdot|x;\mathcal P)}[r_{\phi}(x,y)-\beta log\frac{\pi(y|x;\mathcal P)}{\pi_{ref}(y|x;\mathcal P)}],\tag{1}
+```
 
 其中 $π$ 表示待优化的策略 LLM，$π_{ref}$ 是参考 LLM，可以对其进行固定或迭代更新以实现稳定训练。$x$ 表示来自数据集 $D$ 的输入样本，$y$ 表示从策略 $π_{ref}(y | x;\mathcal P)$ 采样得到的生成输出，这些输出与访问 LLM 路由池 $\mathcal P$ 获得的结果交织在一起。$r_ϕ(x, y)$ 是奖赏函数，P 是 LLM 路由池，它提供了一组可供选择的候选 LLM。KL 正则化项确保更新后的策略保持接近参考值，正则化系数 $β$ 控制这种权衡。该公式具有通用性，涵盖各种正则化强化学习算法，例如 PPO、GRPO 和 KL 约束方法，从而允许对 LLM 候选池进行灵活的策略更新。
 
@@ -55,18 +62,20 @@ $$\mathop{max}\limits_{\pi}\mathbb E_{x\sim D,y\sim\pi(\cdot|x;\mathcal P)}[r_{\
 
 受 [8] 的启发，为了稳定训练并确保 LLM 响应符合预定义格式（详见下文 3.3 节），我们对 Router-R1 实施了严格的格式验证。具体来说，格式奖赏根据以下规则分配：如果响应不满足所需格式，则格式奖励设置为 -1；否则，设置为 0：
 
-$$
+```math
 \textbf R_{format}=\begin{cases}
 -1, & \text{if the format is incorrect}\\
 0, & \text{if the format is correct}
 \end{cases}\tag{2}
-$$
+```
 
 ### 3.2.2 Final Outcome Rewards
 
 在 Router-R1 中，我们采用精确匹配（EM）来衡量 LLM 预测答案与 ground truth 的正确性，并将其作为唯一的最终结果奖赏来指导 Router-R1 的优化：
 
-$$\textbf R_{outcome}=EM(y_a,g_t),\tag{3}$$
+```math
+\textbf R_{outcome}=EM(y_a,g_t),\tag{3}
+```
 
 其中 $y_a$ 是从生成输出 $y$ 中提取的预测答案，$g_t$ 表示基本事实。EM 强调预测答案与标准答案的完全且严格匹配，许多研究已证明它是一种简洁有效的基于规则的奖赏。
 
@@ -76,7 +85,9 @@ $$\textbf R_{outcome}=EM(y_a,g_t),\tag{3}$$
 
 形式上，成本奖赏与候选 LLM 产生的输出 token 数量以及依赖模型的每个 token 成本函数成反比，这反映了使用不同模型的计算成本：
 
-$$\textbf R_{cost} ∝ -m(P_{LLM})\cdot T_{out},\tag{4}$$
+```math
+\textbf R_{cost} ∝ -m(P_{LLM})\cdot T_{out},\tag{4}
+```
 
 其中 $P_{LLM}$ 表示所选候选 LLM 的参数数量，$T_{out}$ 表示其生成的输出 token 数量。$m(·)$ 是一个预定义的成本函数，它将模型大小映射到每个 token 的计算成本（例如，基于 LLM API 服务的定价等级）。需要注意的是，成本奖赏在训练期间将被标准化为 0 到 1 之间。
 
@@ -86,7 +97,9 @@ $$\textbf R_{cost} ∝ -m(P_{LLM})\cdot T_{out},\tag{4}$$
 
 综上所述，Router-R1的整体奖赏函数可以定义为：
 
-$$r_{\phi}(x,y)=\textbf R_{format}+(1-\alpha)\textbf R_{outcome}+\alpha\textbf R_{cost}\tag{5}$$
+```math
+r_{\phi}(x,y)=\textbf R_{format}+(1-\alpha)\textbf R_{outcome}+\alpha\textbf R_{cost}\tag{5}
+```
 
 其中 $α$ 是控制模型性能和成本之间平衡的超参数。
 
@@ -100,7 +113,12 @@ $$r_{\phi}(x,y)=\textbf R_{format}+(1-\alpha)\textbf R_{outcome}+\alpha\textbf R
 
 ### 3.3.1 Training Prompt Template
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f5e771939a254e62abea99d1f00d2bb7.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/f5e771939a254e62abea99d1f00d2bb7.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 受 [8, 13] 的启发，我们为 Router-R1 构建了如图 2 所示的训练提示模板。为了确保响应准确且合理，我们采用了一种结合内部推理和选择性外部 query 的结构化提示。收到问题后，Router-R1 首先在 `<think>` 和 ``</think>`` 块内执行内部分析，以评估是否需要更多信息。如果需要，它会根据预定义的 LLM 路由池和模型描述（包括参数大小和任务专业化等详细信息，我们将在附录 C 中详细说明）通过 ``<search> Candidate LLM: Query </search>`` 查询合适的专用 LLM。检索到的信息在 ``<info>`` 和 ``</info>`` 标签内返回，并且该过程可能会迭代以收集补充见解。最终答案在 ``<answer>`` 和 ``</answer>`` 块内输出。
 

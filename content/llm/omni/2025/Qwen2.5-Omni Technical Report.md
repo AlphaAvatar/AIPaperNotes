@@ -6,7 +6,12 @@
 在本报告中，我们介绍了 Qwen2.5-Omni，这是一个端到端的多模态模型，**旨在感知多种模态，包括文本、图像、音频和视频**，同时以流式传输的方式生成文本和自然语音响应。为了实现多模态信息输入的流式传输，音频和视觉编码器均采用了分块处理方法。该策略有效地解耦了长序列多模态数据的处理，**将感知任务分配给多模态编码器，并将扩展序列的建模委托给大语言模型**。这种分工通过共享注意力机制增强了不同模态的融合。**为了同步视频输入和音频的时间戳，我们以交错的方式按顺序组织音频和视频**，并提出了一种新的位置嵌入方法，称为 **TMRoPE**（时间对齐多模态 RoPE）。为了同时生成文本和语音，同时避免两种模态之间的干扰，我们提出了 **Thinker-Talker** 架构。在这个框架中，Thinker 是一个大语言模型，负责文本生成；而 Talker 是一个双轨自回归模型，它直接利用 Thinker 的隐藏表征生成音频 token 作为输出。Thinker 和 Talker 模型均设计为端到端训练和推理。为了以流式方式解码音频 token，我们引入了一个滑动窗口 DiT 来限制感受野，旨在减少初始数据包延迟。Qwen2.5-Omni 与类似大小的 Qwen2.5-VL 相当，并且优于 Qwen2-Audio。此外，Qwen2.5-Omni 在 Omni-Bench 等多模态基准测试中达到了最佳性能。值得注意的是，Qwen2.5-Omni 在端到端语音指令遵循方面的表现与其在文本输入方面的能力相当，MMLU 和 GSM8K 等基准测试就是明证。在语音生成方面，Qwen2.5-Omni 的流式 Talker 在稳健性和自然性方面优于大多数现有的流式和非流式替代方案。
 
 # 1.介绍
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/260fef7b0a7744bd8b263caf3ee8d4be.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/260fef7b0a7744bd8b263caf3ee8d4be.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在日常生活中，人类能够同时感知周围的视觉和听觉信息。经过大脑处理后，人类会通过书写、发声或使用工具（以及肢体动作）进行反馈，从而与世界上各种生物进行信息交换，展现出智能。近年来，通用人工智能日益受到人们的关注，这主要得益于大语言模型 (LLM) 的进步。这些模型基于海量文本数据进行训练，代表了人类创造的高级离散表征，展现了解决复杂问题和快速学习的能力。此外，在理解领域，语言-听觉-语言模型 (LALM) 和语言-视觉-语言模型 (LVLM) 帮助 LLM 以端到端的方式进一步扩展了听觉和视觉能力。然而，如何高效地以端到端的方式统一所有这些不同的理解模式，充分利用数据，并以类似于人类交流的文本和语音流提供响应，仍然是一项重大挑战。
 
@@ -24,14 +29,24 @@ Qwen2.5-Omni 的主要特点可以概括为：
 
 # 2.Architecture
 ## 2.1 Overview
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ddaf171dd14b4dbca00f572635e751ea.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ddaf171dd14b4dbca00f572635e751ea.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 如图 2 所示，Qwen2.5-Omni 采用 Thinker-Talker 架构。Thinker 的功能类似于大脑，负责处理和理解来自文本、音频和视频模态的输入，生成高级表征和相应的文本。Talker 的运作类似于人类的嘴巴，以流式方式接收 Thinker 生成的高级表征和文本，并流畅地输出离散的语音 token。Thinker 是一个 Transformer 解码器，并配有音频和图像编码器，用于信息提取。相比之下，Talker 的设计灵感源自 Mini-Omni，是一个双轨自回归 Transformer 解码器架构。在训练和推理过程中，Talker 直接从 Thinker 接收高维表征，并共享 Thinker 的所有历史上下文信息。因此，整个架构作为一个统一的模型运行，实现端到端的训练和推理。
 
 在接下来的章节中，我们首先介绍 Qwen2.5-Omni 如何感知各种输入信号，并介绍我们提出的新型位置编码算法 TMRoPE。随后，我们将详细介绍文本和语音的生成过程。最后，我们将重点介绍理解和生成模块的改进，以促进高效的流式推理。
 
 ## 2.2 Perceivation
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/fe5f9f519aa94c97b37676be6716f409.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/fe5f9f519aa94c97b37676be6716f409.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Text, Audio, Image and Video (w/o Audio)**。Thinker 通过将文本、音频、图像和视频（不含音轨）转换为一系列隐藏表征来处理输入。对于文本的分词，我们使用 Qwen 的 tokenizer，它采用字节级字节对编码，词表包含 151,643 个常规分词。对于音频输入和视频音频，我们将其重采样至 16kHz 频率，并将原始波形转换为 128 通道梅尔频谱图，窗口大小为 25ms，跳频大小为 10ms。我们采用 Qwen2-Audio 的音频编码器，使每帧音频表征大致对应于原始音频信号的 40ms 片段。此外，我们还采用了 Qwen2.5-VL 的视觉编码器，该编码器基于 Vision Transformer (ViT) 模型，拥有约 6.75 亿个参数，能够有效处理图像和视频输入。视觉编码器采用融合图像和视频数据的混合训练方案，确保图像理解和视频理解的熟练程度。为了在适应音频采样率的同时尽可能完整地保留视频信息，我们使用动态帧率对视频进行采样。**此外，为了保持一致性，我们将每幅图像视为两个相同的帧**。
 
@@ -44,7 +59,12 @@ Qwen2.5-Omni 的主要特点可以概括为：
 将位置信息融入每个模态后，我们按顺序排列这些表征。为了使模型能够同时接收视觉和听觉信息，如图 3 所示，我们针对带音频的视频设计了一种称为时间交织方法的特殊方法，该方法根据实际时间每 2 秒将带音频的视频中的表征分割成多个块。然后，我们将视觉表征排列在最前面，音频表征排列在最后，并在 2 秒内将视频和音频的表征交织在一起。
 
 ## 2.3 Generation
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f980ad56d1de46feb27479687fa8d215.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/f980ad56d1de46feb27479687fa8d215.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Text**。文本由 Thinker 直接生成。文本生成的逻辑与广泛使用的 LLM 基本相同，后者通过基于词表概率分布的自回归采样来生成文本。生成过程可能采用重复惩罚和 top-p 采样等技术来增强文本的多样性。
 
@@ -104,7 +124,8 @@ lighting in the room is warm and cozy.<|im_end|>
 
 在 **In‑Context Learning (ICL)** 训练阶段，除了采用与 **Thinker** 类似的文本监督外，我们还通过下一 token 预测执行语音续写任务，利用大量融合多模态上下文与口语回应的对话数据。Talker 学会将语义表示单调映射到语音，并能在韵律、情感、口音等多维属性上做出符合语境的表达。此外，我们使用音色解耦技术，防止模型把特定声音与低频文本模式绑定。
 
-$$\mathcal{L}_{\mathrm{DPO}}\!\bigl(\mathcal{P}_{\theta};\mathcal{P}_{\mathrm{ref}}\bigr)
+```math
+\mathcal{L}_{\mathrm{DPO}}\!\bigl(\mathcal{P}_{\theta};\mathcal{P}_{\mathrm{ref}}\bigr)
 = -\mathbb{E}_{(x,y_w,y_l)\sim\mathcal{D}}
 \!\left[
   \log\sigma\!\left(
@@ -112,7 +133,8 @@ $$\mathcal{L}_{\mathrm{DPO}}\!\bigl(\mathcal{P}_{\theta};\mathcal{P}_{\mathrm{re
     -\,
     \beta\log\frac{\mathcal{P}_{\theta}(y_l\mid x)}{\mathcal{P}_{\mathrm{ref}}(y_l\mid x)}
   \right)
-\right].$$
+\right].
+```
 
 为覆盖更多说话人和场景，预训练数据难免含有标签噪声与发音错误，易导致模型幻觉。为缓解该问题，我们引入强化学习阶段来提升语音生成的稳定性。具体而言，对每条 **请求–回复文本** 及其 **参考语音**，构建数据集 $(x, y_w, y_l)$：其中 $x$ 为输入文本序列，$y_w$ 与 $y_l$ 分别是优质与劣质的生成语音序列。我们依据与 **词错误率（WER）** 和 **标点停顿错误率** 相关的奖励分对样本进行排序。
 

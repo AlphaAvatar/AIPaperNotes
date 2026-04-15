@@ -8,7 +8,12 @@
 
 # 1.Introduction
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/828e735238bc46e584f772f7181ff582.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/828e735238bc46e584f772f7181ff582.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 基于大语言模型 (LLM) 的现代人工智能应用，例如 LLM Agent 和复合人工智能系统，越来越依赖于上下文自适应。上下文自适应并非修改模型权重，而是通过将清晰的指令、结构化的推理步骤或特定领域的输入格式直接融入模型输入，从而提升模型训练后的性能。上下文是许多人工智能系统组件的基础，包括指导下游任务的 **system prompt**、承载过去事实和经验的 **memory**，以及减少幻觉和补充知识的事实 **evidence**。
 
@@ -34,7 +39,12 @@
 
 ## 2.2 Limitations of Existing Context Adaptation Methods
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/537b98747f634e1d85c1c016cf359932.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/537b98747f634e1d85c1c016cf359932.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **The Brevity Bias**。上下文自适应方法的一个反复出现的局限性是简洁性bias：优​​化过程倾向于倾向于简短、通用的提示。Gao et al. 在测试生成的提示优化中记录了这种效应，其中迭代方法反复生成几乎相同的指令（例如，“创建单元测试以确保方法按预期运行”），从而牺牲了多样性并忽略了特定领域的细节。这种收敛不仅缩小了搜索空间，还会在迭代过程中传播重复的错误，因为优化后的提示通常会继承与其种子相同的错误。更广泛地说，这种偏差会损害需要详细、上下文丰富指导的领域的性能——例如多步骤 Agent、程序合成或知识密集型推理——在这些领域中，成功取决于积累而非压缩特定任务的洞察力。
 
@@ -42,7 +52,12 @@
 
 # 3.Agentic Context Engineering (ACE)
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d6c7f1771771485c8fb84ffcc47ff154.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/d6c7f1771771485c8fb84ffcc47ff154.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们提出了 ACE（Agentic Context Engineering）框架，用于在离线（例如 system prompt 优化）和在线（例如测试时记忆调整）场景中实现可扩展且高效的上下文自适应。**ACE 并非将知识浓缩为简洁的摘要或静态指令，而是将上下文视为不断演进的剧本，随着时间的推移，这些剧本会不断积累、完善和组织策略**。基于 Dynamic Cheatsheet 的 Agent 设计，ACE 引入了三个角色的结构化分工（图 4）：生成器（Generator），生成推理轨迹；反思器（Reflector），从成功和错误中提炼具体的洞察；以及策略生成器（Curator），将这些洞察整合到结构化的上下文更新中。这反映了人类的学习方式——实验、反思和巩固——同时避免了单个模型承担所有职责所带来的瓶颈。
 

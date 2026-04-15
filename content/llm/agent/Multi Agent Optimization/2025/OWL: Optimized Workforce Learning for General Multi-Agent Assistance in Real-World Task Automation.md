@@ -8,7 +8,12 @@
 
 # 1.Introduction
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/14479fb9ac3d430d8a4c2ce161651842.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/14479fb9ac3d430d8a4c2ce161651842.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 大语言模型（LLM）经历了快速发展时期，从简单的文本预测器演变为能够进行规划、工具使用和多步骤推理的强大自主 Agent。近年来，多 Agent 系统（MAS）已成为处理复杂现实世界任务的一种很有前景的方法，证明将任务分配给专门的 Agent 可以提高性能。
 
@@ -36,7 +41,12 @@
 
 ## 3.1 WORKFORCE
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0ec5ca56f6c74decac6b677decd14f8e.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/0ec5ca56f6c74decac6b677decd14f8e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Motivation**。当代多智能体系统受限于领域特定性和架构刚性，每个新的应用领域都需要进行完全的重新设计和训练。我们提出的 WORKFORCE 通过模块化架构解决了这一根本性挑战，特别是将领域无关的规划与领域特定的执行分离。有关 WORKFORCE 的更多详细信息，请参见附录 D。
 

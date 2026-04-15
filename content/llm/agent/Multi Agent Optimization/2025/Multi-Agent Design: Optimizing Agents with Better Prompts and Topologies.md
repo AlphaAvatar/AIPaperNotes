@@ -8,7 +8,12 @@
 
 # 1.Introduction
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0cdde7ea0c7f41c6accbd9cff306d755.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/0cdde7ea0c7f41c6accbd9cff306d755.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 大语言模型（LLM）展现了卓越的理解、推理和基于用户提示生成连贯响应的能力，彻底革新了众多应用领域。基于 LLM 的 Agent 能够自主处理跨多个领域的复杂任务，包括代码生成和调试、检索生成、数据分析和交互式决策，从而提升用户体验。这些 Agent 通常通过提示进行编程，以强化其与环境的交互，利用可用工具，并在多个轮次中逐步实现目标。除了单个 Agent 之外，LLM还可以构建在复杂的拓扑结构中，协调多个 Agent 朝着共同目标前进。这种多 Agent 系统（MAS）通常比单 Agent 系统性能更优，因为它能够引入更多样化的 Agent 视角或角色，例如 Agent 作为验证者或进行多 Agent 辩论。
 
@@ -24,13 +29,20 @@
 
 在本节中，我们首先提供了一种多智能体系统（MAS）的设计方法，然后分析提示和拓扑设计的影响。**我们将智能体的结构排列（或等价为模块构建）称为智能体拓扑，并将工作流 $\mathcal W$ 定义为构建 MAS 的不同拓扑之间的逻辑序列**。因此，MAS 的设计可以大致分为两个层次：模块级设计和工作流级编排。在**模块级**，我们的目标是设计出能够最佳执行其预期角色的高效个体智能体，并优化提示的设计。另一方面，在**工作流级**，优化涉及确定要包含的智能体的类型和数量，以及如何以最有效的方式排列它们，这被称为拓扑优化。形式上，给定一个定义所有模块上有效配置 $a$ 的搜索空间 $\mathcal A$（参见图 4），工作流拓扑优化可以表示为以下优化问题，其目标函数为 $f(·,·)$，目标输入输出集为 $(x, y) ∼ \mathcal D$：
 
-$$\mathcal W^*(a)=\mathop{argmax}\limits_{a\sim\mathcal A}\mathbb E_{(x,y)\sim\mathcal D}[f(\mathcal W(a(x), y))].\tag{1}$$
+```math
+\mathcal W^*(a)=\mathop{argmax}\limits_{a\sim\mathcal A}\mathbb E_{(x,y)\sim\mathcal D}[f(\mathcal W(a(x), y))].\tag{1}
+```
 
 在本节的其余部分，我们将对 MAS 设计的每个组成部分进行深入分析。
 
 ## 2.1 Block-level: Prompt Design for Agents
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/97d183628c094ecf8bd7fbcb353e8a8d.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/97d183628c094ecf8bd7fbcb353e8a8d.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在模块层面，对下游性能影响最大的主要“可优化组件”是 $prompt$。$prompt$ 定义了智能体的角色（例如，“You are an expert in reflecting on errors...”），提供了塑造其行为的额外指令（例如，“You should think step by step...”），并且可以选择性地包含少量示例（上下文示例）来指导智能体的响应。例如，最先进的提示信息优化器会同时搜索指令和少量示例，其中示例是基于验证指标，从模型自身在验证集上的正确预测中引导生成的。在示例的基础上，提示信息优化器会提出一些指令候选方案，并提供数据集摘要或各种提示以提高候选方案的多样性。然后，指令和示例会被联合优化。
 
@@ -40,7 +52,12 @@ $$\mathcal W^*(a)=\mathop{argmax}\limits_{a\sim\mathcal A}\mathbb E_{(x,y)\sim\m
 
 ## 2.2 Workflow-level Search Space Design
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dccee1b5a1494c01a59486ec47e2c2cd.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/dccee1b5a1494c01a59486ec47e2c2cd.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在工作流层面，主要关注点在于如何协调智能体以高效地实现最佳性能。拓扑优化作为多智能体系统（MAS）特有的一个相对较新的概念，近年来备受关注。然而，尽管现有的大部分研究都侧重于搜索方法——例如发现识别最优配置的最有效途径——但对搜索空间的设计却关注较少，而**搜索空间的设计决定了任何搜索算法的边界和范围**。这种不平衡与神经架构搜索（NAS）的历史发展有相似之处。最初，该领域专注于复杂的搜索方法，例如贝叶斯优化和可微分搜索。后续研究强调了搜索空间设计的重要性，认为它同样重要，甚至更为关键。受此启发，我们假设手动设计的拓扑结构可能并非最优，而自动拓扑优化（可以将其视为一个严格的优化问题）可以通过巧妙地设计 MAS 的搜索空间发挥类似的关键作用。为了实现这一目标，我们首先定义了一个类似于先前工作的结果空间，该结果空间由以下构建模块之间的连接构成：
 - **Aggregate**：多个智能体可以并行协作，做出多样化的预测，然后通过聚合算子获得最一致的预测结果。聚合模块可以由 $N_a$ 个并行运行的智能体进行参数化。多数投票和自洽推理是该拓扑结构的核心。
@@ -53,7 +70,12 @@ $$\mathcal W^*(a)=\mathop{argmax}\limits_{a\sim\mathcal A}\mathbb E_{(x,y)\sim\m
 
 # 3.MASS: Multi-Agent System Search
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4949455cee2a4920bee6bc9456e5282f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/4949455cee2a4920bee6bc9456e5282f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
  
 我们在第 2 节的分析强调了为各个智能体精心设计的提示以及对搜索空间的仔细定义对于实现高效多智能体系统 (MAS) 性能的重要性。基于此，我们提出了一种多阶段优化算法——**多智能体系统搜索 (MASS)**，它超越了以往仅关注优化工作流拓扑而忽略提示设计的现有技术。相反，我们的方法展示了通过适当优化的提示和精心设计的搜索空间来提高 MAS 设计的有效性。MASS 框架在算法 1 和图 4 中进行了说明，遵循从局部到全局、从模块级到工作流级的思路，通过下文详述的高效分阶段优化来克服组合优化的复杂性。
 
@@ -63,7 +85,12 @@ $$\mathcal W^*(a)=\mathop{argmax}\limits_{a\sim\mathcal A}\mathbb E_{(x,y)\sim\m
 
 **3) Workflow-level prompt optimization**。最后，我们将整个多智能体系统（MAS）设计视为一个整体，并基于阶段（2）中发现的最佳拓扑结构 $\mathcal W^* = \mathcal O_{\mathcal D} (\mathcal W^*_c)$ 进行额外一轮的提示优化。值得注意的是，尽管提示在阶段（1）中已针对个体层面进行了优化，但此阶段的作用在于进行调整或微调，确保提示能够适应 MAS 内部的协调运作，并适当优化智能体之间的相互依赖性。我们的实验（图 5 和图 6）表明，此阶段通常能够带来实际效益。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/264c55894e4b417693c43cee87d4dd7f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/264c55894e4b417693c43cee87d4dd7f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 4.Related Work
 

@@ -8,7 +8,12 @@
 
 # 1.INTRODUCTION
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a1c1268dfcd444e789d44a32b09a8619.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/a1c1268dfcd444e789d44a32b09a8619.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 结构化图像，例如图表和几何图形，对当前的多模态大语言模型（MLLM）提出了巨大的挑战。自然图像通常以物体、纹理和局部视觉模式等形式为特征，这些特征可以被现有的视觉模型有效地捕捉；而**结构化图像则编码了坐标、数据点、线连接和数值标注等符号和结构元素**。解释这些结构化表示需要精确的符号抽象，而不仅仅是模式识别。此外，对结构化图像进行推理需要更高的粒度和精度。虽然粗略的视觉特征可能足以理解自然图像，但即使是结构化图像中细微的差异（例如，对单个柱状图高度的轻微误读）也可能显著改变对图像的解释和后续的推理。
 
@@ -31,7 +36,12 @@
 
 # 3.PIXELCRAFT
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bed0bef7a6e847ffbf9d122ba78e1273.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/bed0bef7a6e847ffbf9d122ba78e1273.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们考虑图表和几何理解中复杂的视觉推理任务，这些任务需要逐步获取中间视觉线索才能得出最终答案。为了实现这一目标，我们提出了 high-fidelity agents (PixelCraft)，这是一个多模态多 Agent 系统，能够对结构化图像进行高保真且灵活的视觉推理。其设计基于两个核心原则：将 MLLM 的智能与计算机视觉（CV）算法相结合，以实现高保真工具的使用；并通过以规划器为中心、基于讨论的工作流程，实现灵活的非线性推理。如图2所示，MLLM充当调度器、规划器、推理器和评论器的角色，与专门的工具智能体协作执行三阶段流程：1）基于查询的智能体选择；2）基于角色的智能体讨论；3）迭代改进和自我纠错。
 

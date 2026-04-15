@@ -25,7 +25,12 @@ GPT-OSS 模型是基于 GPT-2 和 GPT-3 架构构建的自回归混合专家 (Mo
 我们利用量化来减少模型的内存占用。我们对模型进行了后训练，将 MoE 权重量化为 MXFP4 格式，其中每个参数的权重量化为 4.25 位。MoE 权重占总参数数量的 90% 以上，将这些权重量化为 MXFP4 格式可以使较大的模型适应单个 80GB 的 GPU，而较小的模型则可以在内存低至 16GB 的系统上运行。表 1 列出了模型的 checkpoint 大小。
 
 ## 2.2 Architecture
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d8612ef6b3414b4da61e0781b223e366.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/d8612ef6b3414b4da61e0781b223e366.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 两个模型的残差流维度均为 2880，对每个注意力模块和 MoE 模块之前的激活值应用均方根归一化。与 GPT-2 类似，我们使用了 Pre-LN 布局。
 
@@ -48,8 +53,18 @@ GPT-OSS 模型是基于 GPT-2 和 GPT-3 架构构建的自回归混合专家 (Mo
 预训练完成后，我们使用与 OpenAI o3 类似的 CoT 强化学习技术对模型进行后训练。此过程教会模型如何使用 CoT 进行推理和解决问题，并教会模型如何使用工具。由于采用了类似的强化学习技术，这些模型的“个性”与我们在 ChatGPT 等第一方产品中使用的模型类似。我们的训练数据集涵盖了编程、数学、科学等领域的广泛问题。
 
 ### 2.5.1 Harmony Chat Format
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b71b59e273fa41f5ab3f39eab536581b.png)
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/54321e1dc6de406e841f75c127160792.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/b71b59e273fa41f5ab3f39eab536581b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
+<img
+  src="https://i-blog.csdnimg.cn/direct/54321e1dc6de406e841f75c127160792.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在模型训练中，我们使用一种名为 **harmony chat format** 的自定义聊天格式。该格式提供特殊 token 来划分消息边界，并使用关键字参数（例如，user 和 assistant）来指示消息的创建者和接收者。我们使用与 OpenAI API 模型中相同的 system 和 developer 消息角色。使用这些角色，模型遵循基于角色的信息层次结构来解决指令冲突：System > Developer > User > Assistant > Tool。
 
@@ -69,4 +84,9 @@ GPT-OSS 模型是基于 GPT-2 和 GPT-3 架构构建的自回归混合专家 (Mo
 通过在系统提示中指定，模型已训练支持使用这些工具或不使用它们运行。对于每种工具，我们都提供了支持通用核心功能的基本参考框架。我们的开源实现提供了更多详细信息。
 
 ## 2.6 Evaluation
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/306ff796da2541a8abed3d9ec437a6d1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/306ff796da2541a8abed3d9ec437a6d1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3912c4a2e8aa4c25bf4cbfe8ffcde6de.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/3912c4a2e8aa4c25bf4cbfe8ffcde6de.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在网络规模数据集上预训练的大语言模型凭借其强大的零样本和小样本泛化能力，正在革新自然语言处理（NLP）领域。这些“基础模型” 能够泛化到训练过程中未曾遇到的任务和数据分布。这种能力通常通过提示工程来实现，即使用手工编写的文本来提示语言模型，使其为当前任务生成有效的文本响应。当使用来自网络的大量文本语料库进行扩展和训练时，这些模型的零样本和小样本性能与经过微调的模型相比，表现出奇地好（在某些情况下甚至不相上下）。经验趋势表明，这种性能会随着模型规模、数据集大小和总训练计算量的增加而提升。
 
@@ -37,11 +42,21 @@
 
 **Release**。我们发布 SA-1B 数据集用于研究目的，并以宽松的开源许可证（Apache 2.0）在 https://segment-anything.com 上提供 SAM。我们还通过在线演示展示了 SAM 的功能。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d2e2d905eae24dbdad00288c10a0e2e1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/d2e2d905eae24dbdad00288c10a0e2e1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 2.Segment Anything Task
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/10938005b5554143a557da5295147df1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/10938005b5554143a557da5295147df1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们从自然语言处理（NLP）中汲取灵感，在NLP中，下一个 token 预测任务用于基础模型的预训练，并通过提示工程解决各种下游任务。为了构建分割的基础模型，我们旨在定义一个具有类似能力的任务。
 
@@ -57,7 +72,12 @@
 
 # 3.Segment Anything Model
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3ffc76afd8c9478fba9368489a7ab81f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/3ffc76afd8c9478fba9368489a7ab81f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 接下来，我们将介绍用于提示式分割的 Segment Anything Model (SAM)。SAM 由三个组件构成，如图 4 所示：图像编码器、灵活的提示编码器和快速 mask 解码器。我们基于 Transformer 视觉模型构建，并针对（摊销后的）实时性能进行了特定的权衡。此处我们将概述这些组件，详细信息请参见 §A。
 

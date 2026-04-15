@@ -8,7 +8,12 @@
 
 # 1.Introduction
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/95b96ac01f8a4ec2829bb217aec6bf8e.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/95b96ac01f8a4ec2829bb217aec6bf8e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 大语言模型（LLM）已从单轮问答发展到链式推理、函数调用以及复杂的多轮智能体应用。这种演进反映了从被动生成响应到在开放环境中自主、目标导向的问题解决的转变。能够自主搜索开放网络并从数千个网页中收集和分析信息的深度研究智能体（OpenAI, 2025a; Google, 2025）代表了通用智能信息检索的下一个前沿领域。
 
@@ -40,13 +45,23 @@
 
 **Incomplete Branch Exploration**。为了找出当前高级深度研究智能体的瓶颈，我们收集并分析了它们未能输出正确答案的轨迹。**分析揭示了一个普遍现象：在大多数失败的轨迹中，存在一些模型计划探索但最终却遗漏的分支**。如表1所示，这种情况的比例高达93%。我们将这种普遍存在的探索不足归因于深度研究任务的长期特性与 ReAct 框架固有的线性特性之间存在的根本性结构不匹配。深度研究需要策略性的分支和回溯，而 ReAct 范式​​将智能体限制在顺序执行路径中，这种差异抑制了模型调整方向或重新评估先前决策的能力。深度研究任务通常需要较长的轨迹，这些轨迹往往跨越数十万个 token，并具有高度密集的相互依赖的工具调用。我们观察到，在线性 ReAct 框架的约束下，随着轨迹的延长，LLM 模型会表现出灾难性的遗忘现象。这主要是因为该模型难以维持长期规划的连贯性。早期阶段制定的关键任务级目标往往会被不断累积的中间工具调用和观测数据所掩盖。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/939463217fe74897ae1c9c94eef20d60.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/939463217fe74897ae1c9c94eef20d60.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **The Potential from Multiple Trials**。鼓励探索的一种直接方法是进行多次随机试验。为了量化广泛探索的未开发潜力，我们使用 Pass@K 指标评估了各种 LLM 模型。如图 2 所示，Pass@1 和 Pass@8 性能之间的显著差距表明，当前模型在单次轨迹中无法达到显著的性能上限。
 
 我们的实证观察表明，许多失败并非源于 LLM 固有的推理能力，而是源于缺乏有效的探索管理机制。**虽然现有的范式（例如多数投票和 Best-of-N）允许多次尝试，但这些尝试彼此独立。这种轨迹间缺乏通信导致了两个关键的效率低下问题：首先，它造成了重复且冗余的探索，浪费了计算资源；其次，它阻碍了跨轨迹经验共享的可能性，使得模型难以从孤立的经验中综合出全局最优解**。这促使我们提出了一种轨迹级递归智能体框架。该模型并非每次尝试都从零开始，而是将之前的轨迹显式地压缩成一个包含已验证信息的综合经验和一个未完成分支的详细枚举。通过将这些反馈融入到 K 次顺序执行中，它可以系统地解决我们在分析中发现的规划和上下文问题。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f6ef115c07604b55885fbb05307ba03c.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/f6ef115c07604b55885fbb05307ba03c.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 4.Method: Re-TRAC Framework
 
@@ -54,13 +69,20 @@
 
 ## 4.1 Trajectory Compression as a Structured State Representation
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5cc20aecf7b24208be704bc6fc585e90.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/5cc20aecf7b24208be704bc6fc585e90.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 图 3 对比了标准的 ReAct 范式（左）和我们的 Re-TRAC 框架（右）。在 ReAct 中，每次执行都是从原始 query 开始的线性链。较长的上下文会导致“不完整的分支探索”：随着 token 数量的增加，早期计划的可执行性降低，智能体经常会丢失早期观察中嵌入的关键线索。如左图所示，智能体可能会枚举出多个候选分支，但最终未能逐一执行，导致探索覆盖不完整。
 
 Re-TRAC 通过轨迹压缩解决这些问题（见图 4）。每次 rollout $t$ 后，轨迹 $τ_t$ 被提炼成结构化的状态表示 $S_t$。根据固定的压缩规范 $\mathcal C$，状态会迭代更新：
 
-$$S_t\leftarrow Compress(τ_t,S_{t-1};\mathcal C).\tag{1}$$
+```math
+S_t\leftarrow Compress(τ_t,S_{t-1};\mathcal C).\tag{1}
+```
 
 对于深度研究任务，我们通过三个互补的方面来定义 $S_t$，从而为智能体提供全面的状态表示：
 - **Answer & Analytical Conclusions**：此维度记录了最有力的部分答案，并存储了轨迹中的关键推论。中间结论被保留下来，作为后续推理的可重用锚点。
@@ -69,7 +91,12 @@ $$S_t\leftarrow Compress(τ_t,S_{t-1};\mathcal C).\tag{1}$$
 
 这种结构化状态被添加到后续 rollout 的输入中，确保 Agent 在每次新的尝试开始时都清楚地了解哪些内容已验证，哪些内容仍未解决，以及应该将探索重点放在哪里。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a04d1d85c06f4783a1f5a1f48d4a2637.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/a04d1d85c06f4783a1f5a1f48d4a2637.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 4.2 Recursive Execution with Structured State Representation
 
@@ -97,4 +124,9 @@ Re-TRAC 是一种无需训练的提示策略。它直接应用于推理过程中
 
 # 5.Experiments
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d52d64fa7e474258b623ce48393926cd.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/d52d64fa7e474258b623ce48393926cd.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

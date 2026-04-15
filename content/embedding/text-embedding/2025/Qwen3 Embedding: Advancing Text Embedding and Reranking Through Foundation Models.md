@@ -22,7 +22,12 @@
 
 ## 2.Model Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6ea541e4f60a4be0959ac298768181e5.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/6ea541e4f60a4be0959ac298768181e5.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 嵌入和重排序模型的核心思想是以**任务感知的方式**评估相关性。给定一个 qeury $q$ 和一个文档 $d$，嵌入和重排序模型基于指令 $I$ 定义的相似性准则来评估它们的相关性。为了使模型能够进行任务感知的相关性估计，训练数据通常组织成 $\{I_i, q_i, d^+_i, d^−_{i,1}, · · · , d^−_{i,n}\}$，其中 $d^+_i$ 表示 query $q_i$ 的正例（相关）文档，而 $d^−_{i,j}$ 表示负例（不相关）文档。在不同的文本对上训练模型可以扩展其在各种下游任务中的适用性，包括检索、语义文本相似性、分类和聚类。
 
@@ -36,13 +41,25 @@
 
 为了根据给定的输入计算相关性得分，我们评估下一个 token 为“yes”或“no”的可能性。这可以用数学公式表示如下：
 
-$$score(q,d)=\frac{e^{P(yes|I,q,d)}}{e^{P(yes|I,q,d)}+e^{P(no|I,q,d)}}$$
+```math
+score(q,d)=\frac{e^{P(yes|I,q,d)}}{e^{P(yes|I,q,d)}+e^{P(no|I,q,d)}}
+```
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9dd9cc35fbef421abda809588462ef10.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/9dd9cc35fbef421abda809588462ef10.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 3.Models Training
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d06fa08a2e664ed9a50b68efaeaf3875.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/d06fa08a2e664ed9a50b68efaeaf3875.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在本节中，我们将介绍所采用的多阶段训练流程，并介绍该训练方案的关键要素，包括训练目标、训练数据合成和高质量训练数据的筛选。
 
@@ -54,18 +71,24 @@ $$score(q,d)=\frac{e^{P(yes|I,q,d)}}{e^{P(yes|I,q,d)}+e^{P(no|I,q,d)}}$$
 
 对于嵌入模型，我们采用基于 **InfoNCE** 框架的改进对比损失。给定一批 $N$ 个训练样例，损失定义如下：
 
-$$L_{embedding}=-\frac{1}{N}\sum^N_{i}log\frac{e^{(q_i,d^+_i}/\tau)}{Z_i},\tag{1}$$
+```math
+L_{embedding}=-\frac{1}{N}\sum^N_{i}log\frac{e^{(q_i,d^+_i}/\tau)}{Z_i},\tag{1}
+```
 
 其中 $s(·, ·)$ 为相似度函数（我们使用余弦相似度），$τ$ 为温度参数，$Z_i$ 为归一化因子，用于聚合正样本对与各种负样本对的相似度得分：
 
-$$Z_i=e^{(s(q_i,d^+_i)/\tau)}+\sum^K_km_{ik}e^{(q_i,d^-_{i,k})/\tau}+\sum_{j\ne i}m_{ik}e^{(s(q_i,q_j)/\tau)}+\sum_{j\neq i}m_{ij}e^{(s(d^+_i,d_j)/\tau)}+\sum_{j\ne i}m_{ij}e^{(s(q_i,d_j)/\tau)}$$
+```math
+Z_i=e^{(s(q_i,d^+_i)/\tau)}+\sum^K_km_{ik}e^{(q_i,d^-_{i,k})/\tau}+\sum_{j\ne i}m_{ik}e^{(s(q_i,q_j)/\tau)}+\sum_{j\neq i}m_{ij}e^{(s(d^+_i,d_j)/\tau)}+\sum_{j\ne i}m_{ij}e^{(s(q_i,d_j)/\tau)}
+```
 
 其中，这些项表示与以下各项的相似度：（1）正例文档 $d^+_i$，（2）$K$ 个难负例文档 $d^−_{i,k}$，（3）batch 内其他查询 $q_j$，（4）batch 内其他文档 $d_j$ 与正例文档 $d^+_i$ 的比较，（5）批次内其他文档 $d_j$ 与查询 $q_i$ 的比较。掩码因子 $m_{ij}$ 旨在减轻假阴性的影响，其定义如下：
 
-$$m_{ij}=\begin{cases}
+```math
+m_{ij}=\begin{cases}
 0 & if~s_{ij}>s(q_i,d^+_i)+0.1~or~d_j==d^+_i,\\
 1 & otherwise,
-\end{cases}$$
+\end{cases}
+```
 
 其中 $s_{ij}$ 是 $q_i,d_j$ 或 $q_i,q_j$ 的对应分数。
 
@@ -73,7 +96,9 @@ $$m_{ij}=\begin{cases}
 
 对于重排序模型，我们优化有监督微调（SFT）损失，其定义如下：
 
-$$L_{reranking}=-log~p(l|\mathcal P(q,d))\tag{2}$$
+```math
+L_{reranking}=-log~p(l|\mathcal P(q,d))\tag{2}
+```
 
 其中 $p(·|∗)$ 表示 LLM 分配的概率。标签 $l$ 对于正例文档为“yes”，对于负例文档为“no”。该损失函数鼓励模型为正确标签分配更高的概率，从而提高排序性能。
 

@@ -8,15 +8,24 @@
 
 # The Mismatch Problem
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/45a18dd8cdfb4c69aa6a793615f54d67.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/45a18dd8cdfb4c69aa6a793615f54d67.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 为简单起见，我们以 REINFORCE 算法为例，该算法通过以下方式更新策略 $\pi$（一个由 $\theta$ 参数化的 LLM）：
 
-$$\theta \gets \theta + \mu \cdot  \mathbb{E}_{\underbrace{a \sim{\pi}(\theta)}_{rollout}} [R(a)\cdot \underbrace{\nabla_\theta \log {\pi}(a, \theta)}_{\tiny{training}}].$$
+```math
+\theta \gets \theta + \mu \cdot  \mathbb{E}_{\underbrace{a \sim{\pi}(\theta)}_{rollout}} [R(a)\cdot \underbrace{\nabla_\theta \log {\pi}(a, \theta)}_{\tiny{training}}].
+```
 
 实际上，生成 rollout 的成本很高，现代强化学习框架（例如 [VeRL](https://github.com/volcengine/verl)）通常采用高度优化的推理引擎（例如 vLLM、SGLang）来提高吞吐量，同时使用单独的后端（例如 FSDP、Megatron）进行模型训练。这种混合设计使得更新过程更加高效：
 
-$$\theta \gets \theta + \mu \cdot  \mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} [R(a)\cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)].$$
+```math
+\theta \gets \theta + \mu \cdot  \mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} [R(a)\cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)].
+```
 
 > 这里，我们使用 $\pi_{\rm sampler}$ 表示加载到推理引擎（例如 vLLM、SGLang）中的模型，使用 $\pi_{\rm learner}$ 表示使用训练后端（例如 FSDP、Megatron）实例化的同一模型。除非另有说明，我们的实验均使用 vLLM 和 FSDP 作为采样器和学习器后端。
 
@@ -38,15 +47,21 @@ $$\theta \gets \theta + \mu \cdot  \mathbb{E}_{a \sim \textcolor{red}{\pi_{\text
 
 我们不打算在系统层面缓解分布不匹配的问题，而是提出调整模型更新方式，使其能够感知这种不匹配。一种简单的方法是通过重要性采样校正。具体来说，我们通过在模型更新中加入重要性比率来处理 $\textcolor{blue}{\pi_{\text{learner}}}$ 和 $\textcolor{red}{\pi_{\text{sampler}}}$ 之间的不匹配，即改变当前的梯度计算方式。
 
-$$\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} [R(a)\cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)],$$
+```math
+\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} [R(a)\cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)],
+```
 
 为
 
-$$\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} \Bigl[\frac{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta)}{\textcolor{red}{\pi_{\text{sampler}}}(a, \theta)} \cdot R(a)\cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)\Bigr].$$
+```math
+\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} \Bigl[\frac{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta)}{\textcolor{red}{\pi_{\text{sampler}}}(a, \theta)} \cdot R(a)\cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)\Bigr].
+```
 
 虽然已经对如何设计稳定有效的重要性抽样进行了广泛的研究，但在实践中，我们发现通常使用经典技术[截断重要性抽样](https://ionides.github.io/pubs/ionides08-jcgs.pdf)就足够了：
 
-$$\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} \Bigl[\underbrace{\min\Bigl(\frac{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta)}{\textcolor{red}{\pi_{\text{sampler}}}(a, \theta)}, C\Bigr)}_{\text{truncated importance ratio}} \cdot R(a) \cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)\Bigr],$$
+```math
+\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} \Bigl[\underbrace{\min\Bigl(\frac{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta)}{\textcolor{red}{\pi_{\text{sampler}}}(a, \theta)}, C\Bigr)}_{\text{truncated importance ratio}} \cdot R(a) \cdot \nabla_\theta \log \textcolor{blue}{\pi_{\text{learner}}}(a, \theta)\Bigr],
+```
 
 其中 $C$ 为超参数。
 
@@ -56,17 +71,19 @@ $$\mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} \Bigl[\under
 
 PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
-$$\small{ \mathbb{E}_{a\sim\pi_{\theta_{\mathrm{old}}}}
+```math
+\small{ \mathbb{E}_{a\sim\pi_{\theta_{\mathrm{old}}}}
 \Bigl[
 \nabla_\theta \min\Bigl(
 \frac{\pi_\theta(a)}{\pi_{\theta_{\mathrm{old}}}(a)}\,\hat A,
 \;\mathrm{clip}\bigl(\frac{\pi_\theta(a)}{\pi_{\theta_{\mathrm{old}}}(a)},\,1-\epsilon,\,1+\epsilon\bigr)\,\hat A
 \Bigr)
-\Bigr]}.$$
+\Bigr]}.
+```
 
 为了提高吞吐量，混合强化学习系统采用 vLLM 引擎生成 rollout——从 $\pi_{\theta_{\text{old}}}$ 中采样 token $a$，同时使用 FSDP 后端从 $\pi_\theta$ 中采样，并重新计算 $\pi_{\theta_{\mathrm{old}}}$ 的 token 概率以进行梯度计算：
 
-$$
+```math
 \small{
 \mathbb{E}_{a\sim\textcolor{red}{\pi_{\text{sampler}}}(\theta_{\mathrm{old}})}
 \Bigl[
@@ -75,11 +92,14 @@ $$
 \;\mathrm{clip}\bigl(\frac{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta)}{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta_{\mathrm{old}})},\,1-\epsilon,\,1+\epsilon\bigr)\,\hat A
 \Bigr)
 \Bigr]
-}.$$
+}.
+```
 
 与上述分析类似，$\textcolor{blue}{\pi_{\text{learner}}}$ 和 $\textcolor{red}{\pi_{\text{sampler}}}$ 之间的差距再次出现，我们通过截断重要性采样来解决这个问题：
 
-$$\small{\mathbb{E}_{a\sim\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old}})}\Bigl[\underbrace{\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\theta_{\mathrm{old}})}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\theta_{\mathrm{old}})},  C\Bigr)}_{\text{truncated importance ratio}}\cdot\nabla_{\theta}\,\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})}\,\hat{A},  \mathrm{clip}\Bigl(    \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})},    1-\epsilon,\;1+\epsilon  \Bigr)\,\hat{A}\Bigr)\Bigr]}$$
+```math
+\small{\mathbb{E}_{a\sim\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old}})}\Bigl[\underbrace{\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\theta_{\mathrm{old}})}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\theta_{\mathrm{old}})},  C\Bigr)}_{\text{truncated importance ratio}}\cdot\nabla_{\theta}\,\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})}\,\hat{A},  \mathrm{clip}\Bigl(    \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})},    1-\epsilon,\;1+\epsilon  \Bigr)\,\hat{A}\Bigr)\Bigr]}
+```
 
 其中 $C$ 为超参数。
 
@@ -97,10 +117,12 @@ $$\small{\mathbb{E}_{a\sim\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathr
 
 **当直接使用蒙特卡罗方法估计目标分布下的期望值较为困难时，重要性抽样允许我们从另一个分布中进行抽样**。在本例中，目标分布为 $\textcolor{blue}{\pi_{\text{learner}}}$，但从中抽样速度极慢。使用单独的后端（例如 vLLM）进行部署生成意味着我们改用 $\textcolor{red}{\pi_{\text{sampler}}}$ 进行抽样。然后，通过为每个样本赋予一个重要性比率来校正这种差异：
 
-$$\mathbb{E}_{a \sim \textcolor{blue}{\pi_{\text{learner}}}(\theta)} [R(a)] 
+```math
+\mathbb{E}_{a \sim \textcolor{blue}{\pi_{\text{learner}}}(\theta)} [R(a)] 
 = \mathbb{E}_{a \sim \textcolor{red}{\pi_{\text{sampler}}}(\theta)} \left[ 
 \underbrace{\frac{\textcolor{blue}{\pi_{\text{learner}}}(a, \theta)}{\textcolor{red}{\pi_{\text{sampler}}}(a, \theta)}}_{\tiny\text{importance ratio}} \cdot R(a) 
-\right].$$
+\right].
+```
 
 ### Decoupled PPO
 
@@ -118,7 +140,12 @@ $$\mathbb{E}_{a \sim \textcolor{blue}{\pi_{\text{learner}}}(\theta)} [R(a)]
 
 ## How well can TIS fix it?
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4659e98a2aec4860a48f54f33db6632d.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/4659e98a2aec4860a48f54f33db6632d.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们设计了一个对照实验来衡量 TIS 解决该问题的效果。我们按照 [verl 教程中的 GSM8K 示例](https://verl.readthedocs.io/en/latest/start/quickstart.html) 进行 RL 训练，并使用了两种不同的设置：
 1. **常规强化学习训练**：最大 token 概率差异显著小于之前的设置（在 Qwen-2.5-32B 密集数据集上的 DAPO 为 1.0）（~0.4）。
@@ -132,7 +159,12 @@ $$\mathbb{E}_{a \sim \textcolor{blue}{\pi_{\text{learner}}}(\theta)} [R(a)]
 
 ## Does TIS always help? 
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e3fe712964d84bd89f194b1debb59c88.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/e3fe712964d84bd89f194b1debb59c88.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **我们还观察到，在概率差异相对较小的情况下，引入额外的截断重要性采样项并不能带来性能提升**。同时值得一提的是，在严格的基于策略的强化学习设置中，重要性采样比率项的值将为 1.0。
 
@@ -144,19 +176,28 @@ $$\mathbb{E}_{a \sim \textcolor{blue}{\pi_{\text{learner}}}(\theta)} [R(a)]
 
 1. **PPO重要性采样（PPO-IS）**
 
-$$\small{ \mathbb{E}_{a\sim\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old}})}\Bigl[\nabla_{\theta}\,\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\;\theta_{\mathrm{old}})}\,\hat{A},  \mathrm{clip}\Bigl(    \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\;\theta_{\mathrm{old}})},    1-\epsilon,\;1+\epsilon  \Bigr)\,\hat{A}\Bigr)\Bigr]}$$
+```math
+\small{ \mathbb{E}_{a\sim\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old}})}\Bigl[\nabla_{\theta}\,\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\;\theta_{\mathrm{old}})}\,\hat{A},  \mathrm{clip}\Bigl(    \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\;\theta_{\mathrm{old}})},    1-\epsilon,\;1+\epsilon  \Bigr)\,\hat{A}\Bigr)\Bigr]}
+```
 
 > *注：Colossal 框架使用了这种实现方式。
 
 2. **Vanilla 重要性抽样（vanilla-IS）**
 
-$$\small{\mathbb{E}_{\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old}})}\Bigl[\underbrace{\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\theta_{\mathrm{old}})}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\theta_{\mathrm{old}})} }_{\text{importance ratio}}\cdot\nabla_{\theta}\,\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})}\,\hat{A},  \mathrm{clip}\Bigl(    \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})},    1-\epsilon,\;1+\epsilon  \Bigr)\,\hat{A}\Bigr)\Bigr]}$$
+```math
+\small{\mathbb{E}_{\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old}})}\Bigl[\underbrace{\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\theta_{\mathrm{old}})}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\theta_{\mathrm{old}})} }_{\text{importance ratio}}\cdot\nabla_{\theta}\,\min\Bigl(  \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})}\,\hat{A},  \mathrm{clip}\Bigl(    \frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})},    1-\epsilon,\;1+\epsilon  \Bigr)\,\hat{A}\Bigr)\Bigr]}
+```
 
 > *Note: Nemo-RL 使用了这种实现方式。
 
 为了评估 TIS 的有效性并了解其设计选择的影响，我们进行了实验，将 TIS 与上述两种变体进行了比较。TIS的性能始终优于这两种变体，尤其是在差距较大的情况下（例如，FP8/INT8）。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9f74672855a9435eaf4dbd6175d2a754.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/9f74672855a9435eaf4dbd6175d2a754.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ### 为什么这里的两个变体（PPO-IS 和 vanilla-IS）会导致训练不稳定？
 
@@ -182,11 +223,21 @@ $$\small{\mathbb{E}_{\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old
 
 我们的 INT8 rollout 实验揭示了严重的熵崩溃现象。图 5 显示熵值降至 0.2 以下，并在整个训练过程中持续下降。我们还观察到异常长的响应生成时间——这是强化学习训练中的另一种故障模式。引入 TIS 项可以逆转这一趋势，使模型能够以稳定且良性的方式进行训练。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/49f3ee28ed0f435a90c3e4cbd7b21fc8.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/49f3ee28ed0f435a90c3e4cbd7b21fc8.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 相比之下，BF16 的 rollout 实验并未出现严重的熵崩溃。尽管如此，TIS 项仍然增加了熵值。与 INT8 的 rollout 相比，由于分布间隙较小，响应长度仍保持在合理范围内。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0f576a0df0574f2980d46d7f7a3cf5d2.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/0f576a0df0574f2980d46d7f7a3cf5d2.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## On the Impact of Distribution Gap: A Case Study on KL Estimation
 
@@ -224,11 +275,21 @@ $$\small{\mathbb{E}_{\textcolor{red}{\pi_{\mathrm{sampler}}}(\theta_{\mathrm{old
 
 **Visualization**。我们使用右侧所示的可视化格式呈现这两个指标。这是一个便于理解数据的示例。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7c10549771d643d683778a31bd6c2542.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7c10549771d643d683778a31bd6c2542.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## Larger Parallelism Difference, Larger Max Gap
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b1ab0e96aec94cc38c93eeffb8fa3b8e.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/b1ab0e96aec94cc38c93eeffb8fa3b8e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们观察到采样器和学习器之间的并行性差异对最大不匹配度量有显著影响。
 

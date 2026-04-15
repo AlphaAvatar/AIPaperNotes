@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ec5b88f6de0f4e16a32e92a9cc6fe755.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ec5b88f6de0f4e16a32e92a9cc6fe755.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 人类将其最精妙的探索、惊人的发现和精美的作品浓缩成文字。基于所有这些语料训练的大语言模型 (LLM) 能够通过执行一项简单却强大的无监督学习任务：**next-token prediction**，提取出令人印象深刻的海量世界知识以及基本的推理能力。尽管最近取得了一系列令人瞩目的成就，但下一个 token 预测仍然是获取语言、世界知识和推理能力的低效方式。更准确地说，下一个 token 预测的 teacher forcing 机制会锁定局部模式，而忽略“艰难”的决策。因此，最先进的下一个 token 预测器需要的数据量比人类儿童高出几个数量级才能达到相同的流利程度。
@@ -24,29 +29,42 @@
 
 # 2.Method
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7abfc3dae2b34694a6522c6512b6b4be.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7abfc3dae2b34694a6522c6512b6b4be.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 标准语言模型通过执行下一个 token 预测任务来学习大型文本语料 $x_1, ... x_T$。形式上，学习目标是最小化交叉熵损失：
 
-$$L_1=-\sum_t log~P_{\theta}(x_{t+1}|x_{t:1}),\tag{1}$$
+```math
+L_1=-\sum_t log~P_{\theta}(x_{t+1}|x_{t:1}),\tag{1}
+```
 
 其中 $P_θ$ 是我们正在训练的大语言模型，为了给定过去 token 的历史 $x_{t:1} = x_t, ..., x_1$，最大化 $x_{t+1}$ 作为下一个未来 token 的概率。
 
 在本研究中，我们通过实现一个多 token 预测任务来推广上述方法。在训练语料的每个位置，模型被指示同时预测 $n$ 个未来 token。这转化为交叉熵损失：
 
-$$L_n=-\sum_t log~P_{\theta}(x_{t+n:t+1}|x_{t:1}).\tag{2}$$
+```math
+L_n=-\sum_t log~P_{\theta}(x_{t+n:t+1}|x_{t:1}).\tag{2}
+```
 
 为了便于处理，我们假设我们的大语言模型 $P_θ$ 采用一个共享主干来生成观察到的上下文 $x_{t:1}$ 的潜在表征 $z_{t:1}$，然后将其输入到 n 个独立的 head 中，并行预测 n 个未来 token 中的每一个（参见图 1）。这导致了多 token 预测交叉熵损失的分解如下：
 
-$$\begin{array}{cc}
+```math
+\begin{array}{cc}
 L_n=-\sum_t log~P_{\theta}(x_{t+n:t+1}|z_{t:1})\cdot P_{\theta}(z_{t:1}|x_{t:1})\\
 =-\sum_t\sum^n_{i=1}log~P_{\theta}(x_{t+i}|z_{t:1})\cdot P_{\theta}(z_{t:1}|x_{t:1})
-\end{array}$$
+\end{array}
+```
 
 在实践中，我们的架构由一个共享的 Transformer 主干 $f_s$（它从观察到的上下文 $x_{t:1}$ 产生隐藏表示 $z_{t:1}$）、n 个独立的输出头（由 **Transformer 层** $f_{h_i}$ 实现）和一个共享的非嵌入矩阵 $f_u$ 组成。因此，为了预测 n 个未来的 token，我们计算：
 
-$$P_{\theta}(x_{t+i}|x_{t:1})=softmax(f_u(f_{h_i}(f_s(x_{t:1})))),$$
+```math
+P_{\theta}(x_{t+i}|x_{t:1})=softmax(f_u(f_{h_i}(f_s(x_{t:1})))),
+```
 
 对于 $i = 1, ... n$，其中 $P_θ(x_{t+1} | x_{t:1})$ 是我们的下一个 token 预测头。有关多 token 预测架构的其他变体，请参阅附录 B。
 
@@ -95,7 +113,12 @@ $$P_{\theta}(x_{t+i}|x_{t:1})=softmax(f_u(f_{h_i}(f_s(x_{t:1})))),$$
 # B. Alternative architectures
 
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0ef8d127f9fa4086b50ca2fd541a5b92.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/0ef8d127f9fa4086b50ca2fd541a5b92.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 # C. Training speeds

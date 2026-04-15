@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2f2e4ca8b71b423c8c4208e6d750a240.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/2f2e4ca8b71b423c8c4208e6d750a240.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语言模型 (LLM) 超越了静态提示，能够规划多步骤任务：发出搜索查询、阅读文档、浏览网页，并通过迭代推理优化答案。许多用于 Deep Research 的开源纯文本网页 Agent 已展现出超越人类的能力，能够与复杂的信息环境进行交互，并在 BrowseComp 和人类的最后考试 (HLE) 等高难度基准测试中取得了卓越的表现。然而，迄今为止的大多数进展仍然主要以文本为中心，忽略了现实世界场景中无处不在的丰富视觉信息。许多以研究为中心的日常任务，例如解读科学图表、分析图形或浏览视觉丰富的网页界面，都需要集成的视觉语言推理。虽然专有 Agent 已在该领域取得了长足进步，但多模态 Deep Research 仍未得到广泛探索，很少有 Agent 能够应对高难度的视觉语言 (VL) 任务。
 
@@ -24,7 +29,12 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 如图 1 所示，**WebWatcher** 在多个高难度基准测试（包括 HLE、LiveVQA、BrowseComp-VL 和 MMSearch）上均取得了优异的性能。它在四个推理基准测试中始终优于现有的开源多模态研究 Agent 和专有系统，并在感知基准测试 SimpleVQA 上表现出色。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d95894832a7040cb8c5c72f05403bfe2.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/d95894832a7040cb8c5c72f05403bfe2.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 2.Data Preparation
 
@@ -32,7 +42,12 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 ## 2.1 Dataset Overview and Structure
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ce38abf2d06e4643b2c646c9128cf94b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ce38abf2d06e4643b2c646c9128cf94b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 我们的数据集 BrowseComp-VL 专为在真实网络环境中运行的高级多模态推理 Agent 而设计。每个示例包含一张真实图像、一个需要跨模态推理的相关问题，以及关于底层实体和关系的辅助元数据。如图 3 所示，BrowseComp-VL 分为 5 个主要领域，包含 17 个细粒度的子领域，详见附录 B。主要领域包括娱乐、人文、科技、自然科学和其他。此外，我们定义了两个难度级别，以鼓励不同层次的推理能力：
@@ -88,7 +103,9 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 形式上，长度为 $L$ 的轨迹表示为：
 
-$$\tau=\{(t_0,0_o),(t_1,o_1),...,(t_L,o_L)\},\tag{1}$$
+```math
+\tau=\{(t_0,0_o),(t_1,o_1),...,(t_L,o_L)\},\tag{1}
+```
 
 其中每个动作 $t_i∈T$，每个观测 $o_i$ 反映了工具执行后的环境反馈。轨迹是基于内容的规划和工具选择的演示。
 
@@ -103,9 +120,9 @@ $$\tau=\{(t_0,0_o),(t_1,o_1),...,(t_L,o_L)\},\tag{1}$$
 
 过滤后，得到的数据集由 $K$ 条高质量工具使用轨迹组成。对于第 $i$ 条轨迹中的第 $l$ 步，WebWatcher 被训练来预测正确的工具使用动作 $t_l^{(i)}$，其条件是输入图像 $I^{(i)}$、问题 $q^{(i)}$，以及所有先前的动作和观察结果 $(t_{<l}^{(i)}, o_{<l}^{(i)})$。如公式 (2) 所示，SFT 最大化目标动作 $t_l^{(i)}$ 的对数似然：
 
-$$
+```math
 \max_\theta \sum_{i=1}^K \sum_{l=1}^{L_i} \log P_\theta \Big(t_l^{(i)} \,\big|\, I^{(i)}, q^{(i)}, t_{<l}^{(i)}, o_{<l}^{(i)}\Big),
-$$
+```
 
 其中 $\theta$ 表示模型参数。
 
@@ -115,15 +132,15 @@ $$
 
 在 SFT 提供冷启动初始化的基础上，我们采用 **Group-Relative Policy Optimization (GRPO)**，这是一种基于排序的 PPO 变体，用于进一步优化决策并适应复杂任务。具体而言，对于 VQA 查询 $q$，当前策略 $\pi_\theta$ 生成一个由 $K$ 条完整轨迹组成的集合 $G = \{\tau_1, \ldots, \tau_K\}$，每条轨迹分配一个标量回报 $R_i$。组相对优势在公式 (3) 中定义：
 
-$$
+```math
 A_{\text{rel}}(\tau^{(i)}) = R^{(i)} - \frac{1}{K} \sum_{j=1}^K R^{(j)},
-$$
+```
 
 该方法在组内对奖励进行归一化，并消除了对单独价值函数的依赖。GRPO 目标定义为裁剪代理损失：
 
-$$
+```math
 \mathcal{L}_{\text{GRPO}}(\theta) = \mathbb{E}_{\tau^{(i)} \in G} \Big[ \min \Big(\rho^{(i)} A_{\text{rel}}(\tau^{(i)}), \; \text{clip}(\rho^{(i)}, 1-\epsilon, 1+\epsilon) \; A_{\text{rel}}(\tau^{(i)}) \Big) \Big] - \beta D_{\text{KL}}(\pi_\theta \| \pi_{\theta_{\text{old}}}),
-$$
+```
 
 其中 $\rho^{(i)} = \frac{\pi_\theta(\tau^{(i)})}{\pi_{\theta_{\text{old}}}(\tau^{(i)})}$ 是当前策略与先前策略之间的重要性采样比率，$A_{\text{rel}}(\tau^{(i)})$ 是公式 (3) 定义的组相对优势，$\epsilon$ 是裁剪阈值，$D_{\text{KL}}$ 表示相邻策略之间的 KL 散度。系数 $\beta$ 控制 KL 惩罚的强度。该目标在促进稳定更新的同时，鼓励探索具有更高相对回报的轨迹。
 
@@ -131,9 +148,9 @@ $$
 
 总奖励 $R$ 定义为：
 
-$$
+```math
 R = w r_f + (1-w) r_a,
-$$
+```
 
 其中 $w = 0.2$ 表示在格式分数 $r_f$ 与准确性分数 $r_a$ 之间的权重平衡。该设计鼓励智能体生成结构良好的工具调用，同时最终仍聚焦于任务完成。由于 $R$ 只在每个 episode 结束时分配，因此公式 (3) 中的组相对归一化使得奖励分配更高效，避免了逐步塑形的依赖。
 

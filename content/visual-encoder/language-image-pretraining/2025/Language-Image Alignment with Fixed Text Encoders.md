@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/279761f6f1b9429d89c705db2d39c14b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/279761f6f1b9429d89c705db2d39c14b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 近年来，基于海量文本-图像对进行对比预训练已成为学习语言对齐视觉表征的有力范例，并在视觉语言模型 (VLM) 等应用中展现出卓越的性能。CLIP 和 SigLIP 等代表性工作通过在成对数据上训练单独的文本和图像编码器并使用对比损失，在共享空间中对齐文本和图像嵌入。这种方法已被证明非常有效——如今大多数 VLM 都采用此类预训练图像编码器，因为它们具有语言对齐的视觉表征。
 
@@ -50,19 +55,33 @@
 
 # 3.Method
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/15c1a32f1b534e259f358e891ea5da22.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/15c1a32f1b534e259f358e891ea5da22.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 如图 2 所示，LIFT 采用类似于 CLIP 的双编码器架构。设 $(T, I)$ 表示文本-图像对，其中 $T ∈ \mathcal V^L$ 是来自词表 $\mathcal V$ 的 $L$ 个 token 序列，$I ∈ \mathbb R^{C×H×W}$。我们使用一个基于 LLM 的预训练且冻结的文本编码器 $f^{text}$，其输出维度为 $D$，用于提取文本向量：
 
-$$z^T=f^{text}(T)\in\mathbb R^{1\times D}.$$
+```math
+z^T=f^{text}(T)\in\mathbb R^{1\times D}.
+```
 
 我们参数化一个图像编码器神经网络 $f^{img}_θ: \mathbb R^{C×H×W} → \mathbb R^{1×d}$ 和一个投影头 $f^{head}_ϕ: \mathbb R^{1×d} → \mathbb R^{1×D}$。$f^{img}_θ$ 由一个宽度为 $d$ 的 ViT 实现，$f^{head}_ϕ$ 是一个 2 层 MLP。令：
 
-$$z^I=f^{head}_{\phi}\odot f^{img}_{\phi}(I)\in\mathbb R^{1\times D}$$
+```math
+z^I=f^{head}_{\phi}\odot f^{img}_{\phi}(I)\in\mathbb R^{1\times D}
+```
 
 作为最终的图像嵌入。我们使用 CLIP 的对比损失作为目标函数，该损失是在一批标准化的 $z^T$ 和 $z^I$ 之间计算得出的：
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b53ff64da6964edcb5a2303113d8c691.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/b53ff64da6964edcb5a2303113d8c691.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Offline Text Embeddings Generation**。由于我们不优化 $f^{text}$，因此整个文本嵌入过程可以离线执行。具体来说，在训练 LIFT 之前，我们将所有字幕嵌入到数据集中一次，以便后续训练无需文本编码器即可重用预先计算的字幕嵌入。LIFT 使用 NV-Embed-V2 作为 $f^{text}$。作为参考，八块 H800 GPU 每天可以以 bfloat16 精度嵌入 1 亿条字幕。
 
@@ -70,4 +89,9 @@ $$z^I=f^{head}_{\phi}\odot f^{img}_{\phi}(I)\in\mathbb R^{1\times D}$$
 
 # 4.Experiments
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/874a57f88c68444489f58eece9e7483a.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/874a57f88c68444489f58eece9e7483a.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

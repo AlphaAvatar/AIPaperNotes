@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3c9d85e4a5094d33a62d1a543b7f37dc.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/3c9d85e4a5094d33a62d1a543b7f37dc.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 有监督微调 (SFT) 是将大语言模型 (LLM) 适配到特定领域（例如数学或智能工具使用）的标准方法。然而，这种范式通常会带来一个显著的代价，即灾难性遗忘。以往的研究已充分证明，在拟合特定目标分布时，模型的通用能力经常会下降。相比之下，基于策略的强化学习（RL）展现出了显著的能力，能够在有效保持基础模型鲁棒性的同时，显著提升特定领域的性能。这种鲜明的对比引出了一个根本性的问题：
 
@@ -33,7 +38,12 @@
 - 我们**提出**了一种基于熵自适应的微调（EAFT）算法，该算法利用 token 级熵来调节训练损失。这种机制能够自动降低来自冲突数据的破坏性更新的权重。
 - 我们通过在数学、智能体和医学领域进行的大量实验**验证**了我们的方法。结果表明，EAFT 是一种有效且通用的解决方案，能够成功缓解不同模型系列和规模（4B–32B）的灾难性遗忘。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/05b529dfdd884945b7892285e73fc7ae.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/05b529dfdd884945b7892285e73fc7ae.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 2.Related Work
 
@@ -59,7 +69,9 @@
 
 SFT 是将基础模型 $θ$（由其概率分布 $P_θ$ 表示）适配到目标数据集 $\mathcal D = \{(\textbf x, \textbf y)_i\}^N_{i=1}$ 的标准过程。对于每个样本，响应是一个 token 序列 $y = (y_1, . . . , y_T)$，其中 $T$ 表示序列长度。适配通常通过最小化交叉熵 (CE) 损失来实现，该损失最大化目标序列的似然性：
 
-$$\mathcal L_{CE}(\theta)=-\sum^T_{t=1}log~P_{\theta}(y_t|\textbf x,\textbf y_{\lt t})\tag{1}$$
+```math
+\mathcal L_{CE}(\theta)=-\sum^T_{t=1}log~P_{\theta}(y_t|\textbf x,\textbf y_{\lt t})\tag{1}
+```
 
 该目标的一个主要局限性在于它对所有 token 的处理方式相同。它会不考虑模型的先验知识或不确定性，而积极地更新模型参数以拟合每个token $y_t$。
 
@@ -85,11 +97,15 @@ $$\mathcal L_{CE}(\theta)=-\sum^T_{t=1}log~P_{\theta}(y_t|\textbf x,\textbf y_{\
 
 **The EAFT Objective**。我们通过将标准有监督信息与归一化熵相结合来构建 EAFT 损失函数。该机制优先学习模型正在探索的样本，同时有效抑制模型判断有把握但结果相互矛盾时的梯度。目标函数分解如下：
 
-$$\mathcal L_{EAFT}(\theta)=-\sum^T_{t=1}\underbrace{\tilde H_t}_{Adaptive~Gating~Signal}\cdot \underbrace{log~P_{\theta}(y_t|\textbf x,\textbf y_{\lt t})}_{Standard~Supervision}\tag{2}$$
+```math
+\mathcal L_{EAFT}(\theta)=-\sum^T_{t=1}\underbrace{\tilde H_t}_{Adaptive~Gating~Signal}\cdot \underbrace{log~P_{\theta}(y_t|\textbf x,\textbf y_{\lt t})}_{Standard~Supervision}\tag{2}
+```
 
 这里，门控项 $\tilde H_t$ 由 top-K 个 token 的熵导出。与使用完整词表相比，这种近似方法大大减少了计算量（详见 5.2 节的分析）。将熵归一化到 [0, 1] 范围内，并令 $K = 20$，我们计算如下：
 
-$$\tilde H_t=\frac{H^{top-K}_t}{ln(K)}\approx \frac{H^{top-20}_t}{3.0}\tag{3}$$
+```math
+\tilde H_t=\frac{H^{top-K}_t}{ln(K)}\approx \frac{H^{top-20}_t}{3.0}\tag{3}
+```
 
 其中 $H^{top-K}_t$ 表示基于 top-K 个概率分布计算的熵，$ln(K)$ 作为归一化因子（K 个结果的最大熵）。这种归一化创建了一种自调节机制：
 -  **Conflict Suppression** ($\tilde H_t → 0$)：当模型固执（低熵）时，权重会下降，从而有效地掩盖来自冲突标签的破坏性梯度。
@@ -97,4 +113,9 @@ $$\tilde H_t=\frac{H^{top-K}_t}{ln(K)}\approx \frac{H^{top-20}_t}{3.0}\tag{3}$$
 
 # 4.Experiments
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e8c2f6bb61bb453b98e7864cdb2107b9.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/e8c2f6bb61bb453b98e7864cdb2107b9.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

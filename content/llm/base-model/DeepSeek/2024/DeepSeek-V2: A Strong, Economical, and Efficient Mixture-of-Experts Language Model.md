@@ -9,7 +9,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/80fa064e7997a192bc2c86f8d336a7b9.png)
+<img
+  src="https://i-blog.csdnimg.cn/blog_migrate/80fa064e7997a192bc2c86f8d336a7b9.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 过去几年，大型语言模型 (LLM) 经历了快速发展，让我们看到了通用人工智能 (AGI) 的曙光。一般来说，LLM 的智能会随着参数数量的增加而提高，从而能够在各种任务中展现出新兴的能力。然而，这种改进是以更大的训练计算资源和潜在的推理吞吐量下降为代价的。这些限制带来了重大挑战，阻碍了 LLM 的广泛采用和使用。为了解决这个问题，我们推出了 DeepSeek-V2，这是一个强大的开源混合专家 (MoE) 语言模型，其特点是通过创新的 Transformer 架构实现经济的训练和高效的推理。它总共配备了 236B 个参数，其中每个 token 激活 21B，并支持 128K 个 token 的上下文长度。
 
@@ -25,7 +30,12 @@
 
 # 2.Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/f798406662e2997e75e0cc350e924e28.png)
+<img
+  src="https://i-blog.csdnimg.cn/blog_migrate/f798406662e2997e75e0cc350e924e28.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 总体来说，DeepSeek-V2 还是 Transformer 架构，每个 Transformer 模块由一个注意力模块和一个前馈网络（FFN）组成。不过，无论是注意力模块还是 FFN，我们都设计并采用了创新的架构。对于注意力模版，我们设计了 MLA，利用低秩key-value联合压缩以消除推理时key-value缓存的瓶颈，从而支持高效推理。对于 FFN，我们采用了 DeepSeekMoE 架构，这是一种高性能的 MoE 架构，能够以经济的成本训练出强大的模型。DeepSeek-V2 的架构如图 2 所示，本节我们将介绍 MLA 和 DeepSeekMoE 的细节。对于其他微小的细节（例如，FFN 中的层归一化和激活函数），除非特别说明，DeepSeek-V2 都遵循 DeepSeek 67B 的设置。
 
@@ -39,52 +49,100 @@
 
 我们首先介绍标准的 MHA 机制作为背景。令 $d$ 为 embedding 维度，$n_h$ 为注意力头的数量，$d_h$ 为每个注意力头的维度，$\textbf h_t ∈ \mathbb R^d$ 为注意力层上第 $t$ 个 token 的注意力输入。标准 MHA 首先通过三个矩阵 $W^Q, W^K, W^V ∈ \mathbb R^{d_hn_h×d}$ 分别产生 $\textbf q_t, \textbf k_t, \textbf v_t ∈ \mathbb R^{d_hn_h}$：
 
-$$\textbf q_t=W^Q\textbf h_t,\tag{1}$$
-$$\textbf k_t=W^K\textbf h_t,\tag{2}$$
-$$\textbf v_t=W^V\textbf h_t,\tag{3}$$
+```math
+\textbf q_t=W^Q\textbf h_t,\tag{1}
+```
+```math
+\textbf k_t=W^K\textbf h_t,\tag{2}
+```
+```math
+\textbf v_t=W^V\textbf h_t,\tag{3}
+```
 
 然后，$\textbf q_t, \textbf k_t, \textbf v_t$ 将被切成 $n_h$ 个头，以进行多头注意力计算：
 
-$$[\textbf q_{t,1};\textbf q_{t,2};...;\textbf q_{t,n_h}]=\textbf q_t,\tag{4}$$
-$$[\textbf k_{t,1};\textbf k_{t,2};...;\textbf k_{t,n_h}]=\textbf k_t,\tag{5}$$
-$$[\textbf v_{t,1};\textbf v_{t,2};...;\textbf v_{t,n_h}]=\textbf v_t,\tag{6}$$
-$$\textbf o_{t,i}=\sum^t_{j=1}Softmax_j(\frac{\textbf q^T_{t,i}\textbf k_{j,i}}{\sqrt{d_h}})\textbf v_{j,i},\tag{7}$$
-$$\textbf u_t=W^O[\textbf o_{t,1};\textbf o_{t,2};...;\textbf o_{o_{t,n_h}}],\tag{8}$$
+```math
+[\textbf q_{t,1};\textbf q_{t,2};...;\textbf q_{t,n_h}]=\textbf q_t,\tag{4}
+```
+```math
+[\textbf k_{t,1};\textbf k_{t,2};...;\textbf k_{t,n_h}]=\textbf k_t,\tag{5}
+```
+```math
+[\textbf v_{t,1};\textbf v_{t,2};...;\textbf v_{t,n_h}]=\textbf v_t,\tag{6}
+```
+```math
+\textbf o_{t,i}=\sum^t_{j=1}Softmax_j(\frac{\textbf q^T_{t,i}\textbf k_{j,i}}{\sqrt{d_h}})\textbf v_{j,i},\tag{7}
+```
+```math
+\textbf u_t=W^O[\textbf o_{t,1};\textbf o_{t,2};...;\textbf o_{o_{t,n_h}}],\tag{8}
+```
 
 其中 $\textbf q_{t,i}, \textbf k_{t,i},\textbf v_{t,i} ∈ \mathbb R^{d_h}$ 分别表示第 $i$ 个注意力头的 query、key 和 value；$W^O ∈ \mathbb R^{d\times d_hn_h}$ 表示输出投影矩阵。在推理过程中，需要缓存所有 key 和 value 以加速推理，因此 MHA 需要为每个 token 缓存 $2n_hd_hl$ 个元素。在模型部署中，这种繁重的 KV 缓存是限制最大batch大小和序列长度的一大瓶颈。
 
 ### 2.1.2 Low-Rank Key-Value Joint Compression
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/040bbb098a681777337dcfbd1d314e84.png)
+<img
+  src="https://i-blog.csdnimg.cn/blog_migrate/040bbb098a681777337dcfbd1d314e84.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 MLA的核心是对key和value进行低秩联合压缩，以减少KV缓存：
 
-$$\textbf c^{KV}_t=W^{DKV}\textbf h_t,\tag{9}$$
-$$\textbf k^C_t=W^{UK}\textbf c^{KV}_t,\tag{10}$$
-$$\textbf v^C_t=W^{UV}\textbf c^{KV}_t,\tag{11}$$
+```math
+\textbf c^{KV}_t=W^{DKV}\textbf h_t,\tag{9}
+```
+```math
+\textbf k^C_t=W^{UK}\textbf c^{KV}_t,\tag{10}
+```
+```math
+\textbf v^C_t=W^{UV}\textbf c^{KV}_t,\tag{11}
+```
 
 其中 $\textbf c^{KV}_t ∈\mathbb R^{d_c}$ 是key和value的压缩潜在向量；$d_c(≪d_hn_h)$ 表示 KV 压缩维度；$W^{DKV}∈\mathbb R^{d_c\times d}$ 是下投影矩阵；$W^{UK},W^{UV} ∈ \mathbb R^{d_hn_h×d_c}$ 分别是key和value的上投影矩阵。在推理过程中，MLA 只需要缓存 $c^{KV}_t$，因此其 KV 缓存只有 $d_cl$ 个元素，其中 $l$ 表示层数。此外，在推理过程中，由于$W^{UV}$可以被吸收到$W^O$中，我们甚至不需要计算出用于注意的key和value。图3直观地说明了MLA中的KV联合压缩如何减少KV缓存。
 
 下面是对query进行低秩压缩，即使它不能减少KV缓存：
-$$\textbf c^Q_t=W^{DQ}\textbf h_t,\tag{12}$$
-$$\textbf q^C_t=W^{UQ}\textbf c^Q_t,\tag{13}$$
+```math
+\textbf c^Q_t=W^{DQ}\textbf h_t,\tag{12}
+```
+```math
+\textbf q^C_t=W^{UQ}\textbf c^Q_t,\tag{13}
+```
 
 其中 $c^Q_t ∈ \mathbb R^{d'_c}$ 是query的压缩潜在向量；$d'_c (≪ d_hn_h)$ 表示query压缩维度；$W^{DQ} ∈ \mathbb R^{d'_c\times d},W^{UQ} ∈ \mathbb R^{d_hn_h×d'_c}$ 分别是query的下投影和上投影矩阵。
 
 ### 2.1.3 Decoupled Rotary Position Embedding
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/3ceee0c02d7f08fd03c942a536f1acdc.png)
+<img
+  src="https://i-blog.csdnimg.cn/blog_migrate/3ceee0c02d7f08fd03c942a536f1acdc.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 继 DeepSeek 67B 之后，我们打算在 DeepSeek-V2 中使用旋转位置嵌入 (RoPE)。然而，RoPE 与低秩 KV 压缩不兼容。具体来说，RoPE 对key和value都是位置敏感的。如果我们对key $\textbf k^C_t$ 应用 RoPE，则等式 10 中的 $W^{UK}$ 将与位置敏感的 RoPE 矩阵耦合。这样，$W^{UK}$ 在推理过程中就无法再被吸收到 $W^Q$ 中，因为与当前生成的 token 相关的 RoPE 矩阵将位于 $W^Q$ 和 $W^{UK}$ 之间，而矩阵乘法不遵循交换律。因此，我们必须在推理过程中重新计算所有前缀 token 的key，这将严重影响推理效率。
 
 作为解决方案，我们提出了解耦 RoPE 策略，该策略使用额外的多头query $\textbf q^R_{t,i}∈\mathbb R^{d^R_h}$ 和共享key $k^R_t ∈ \mathbb R^{d^R_h}$ 来引入 RoPE，其中 $d^R_h$ 表示解耦query和key的每个头维度。配备解耦 RoPE 策略后，MLA 可执行以下计算：
 
-$$[\textbf q^R_{t,1};\textbf q^R_{t,2};,...;\textbf q^R_{t,n_h}]=\textbf q^R_t=RoPE(W^{QR}\textbf c^Q_t),\tag{14}$$
-$$\textbf k^R_t=RoPE(W^{KR}\textbf h_t),\tag{15}$$
-$$\textbf q_{t,i}=[\textbf q^C_{t,i};\textbf q^R_{t,i}],\tag{16}$$
-$$\textbf k_{t,i}=[\textbf k^C_{t,i};\textbf k^R_t],\tag{17}$$
-$$\textbf o_{t,i}=\sum^t_{j=1}Softmax_j(\frac{\textbf q^T_{t,i}\textbf k_{j,i}}{\sqrt{d_h+d^R_h}})\textbf v^C_{j,i},\tag{18}$$
-$$\textbf u_t=W^O[\textbf o_{t,1};\textbf o_{t,2};...;\textbf o_{t,n_h}],\tag{19}$$
+```math
+[\textbf q^R_{t,1};\textbf q^R_{t,2};,...;\textbf q^R_{t,n_h}]=\textbf q^R_t=RoPE(W^{QR}\textbf c^Q_t),\tag{14}
+```
+```math
+\textbf k^R_t=RoPE(W^{KR}\textbf h_t),\tag{15}
+```
+```math
+\textbf q_{t,i}=[\textbf q^C_{t,i};\textbf q^R_{t,i}],\tag{16}
+```
+```math
+\textbf k_{t,i}=[\textbf k^C_{t,i};\textbf k^R_t],\tag{17}
+```
+```math
+\textbf o_{t,i}=\sum^t_{j=1}Softmax_j(\frac{\textbf q^T_{t,i}\textbf k_{j,i}}{\sqrt{d_h+d^R_h}})\textbf v^C_{j,i},\tag{18}
+```
+```math
+\textbf u_t=W^O[\textbf o_{t,1};\textbf o_{t,2};...;\textbf o_{t,n_h}],\tag{19}
+```
 
 其中 $W^{QR} ∈ \mathbb R^{d^R_hn_h×d'_c}$ 和 $W^{KR} ∈ \mathbb R^{d^R_h×d}$ 分别是用于生成解耦query和key的矩阵；RoPE(·) 表示应用 RoPE 矩阵的运算；[·; ·] 表示向量拼接运算。在推理过程中，解耦的key也应该被缓存。因此，DeepSeek-V2 需要包含 $(d_c + d^R_h)l$ 元素的总 KV 缓存。
 
@@ -92,7 +150,12 @@ $$\textbf u_t=W^O[\textbf o_{t,1};\textbf o_{t,2};...;\textbf o_{t,n_h}],\tag{19
 
 ### 2.1.4 Comparison of Key-Value Cache
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/1be8e5ba1d515975e39bcd5a8f93b33b.png)
+<img
+  src="https://i-blog.csdnimg.cn/blog_migrate/1be8e5ba1d515975e39bcd5a8f93b33b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们在表 1 中展示了不同注意力机制中每个 token 的 KV 缓存的比较。MLA 只需要少量的 KV 缓存，相当于只有 2.25 个组的 GQA，但可以获得比 MHA 更强的性能。
 
@@ -104,12 +167,18 @@ $$\textbf u_t=W^O[\textbf o_{t,1};\textbf o_{t,2};...;\textbf o_{t,n_h}],\tag{19
 
 令 $\textbf u_t$ 为第 $t$ 个 token 的 FFN 输入，我们计算 FFN 输出 $h'_t$ 如下：
 
-$$\textbf h'_t=\textbf u_t+\sum^{N_s}_{i=1}FFN^{(s)}_i(\textbf u_t)+\sum^{N_r}_{i=1}g_{i,t}FFN^{(r)}_i(\textbf u_t),\tag{20}$$
-$$g_{i,t}=\begin{cases}
+```math
+\textbf h'_t=\textbf u_t+\sum^{N_s}_{i=1}FFN^{(s)}_i(\textbf u_t)+\sum^{N_r}_{i=1}g_{i,t}FFN^{(r)}_i(\textbf u_t),\tag{20}
+```
+```math
+g_{i,t}=\begin{cases}
 s_{i,t}, & s_{i,t}\in TopK(\{s_{j,t}|1⩽j⩽N_r\},K_r),\\
 0, & otherwise,
-\end{cases}\tag{21}$$
-$$s_{i,t}=Softmax_i(\textbf u^T_t\textbf e_i),\tag{22}$$
+\end{cases}\tag{21}
+```
+```math
+s_{i,t}=Softmax_i(\textbf u^T_t\textbf e_i),\tag{22}
+```
 
 其中𝑁𝑠和𝑁𝑟分别表示共享专家和路由专家的数量； $FFN^{(s)}_i(·)$ 和 $FFN^{(r)}_i(·)$ 分别表示第 $i$ 个共享专家和第 $i$ 路由专家；$K_r$ 表示激活的路由专家数量；$g_{i,t}$ 是第 $i$ 个专家的门控值；$s_{i,t}$ 是token与专家的权重；$\textbf e_i$ 是该层中第 $i$ 个路由专家的质心；$TopK(·, K)$表示由为第 $t$ 个token和所有路由专家计算的权重分数中的 $K$ 个最高分数组成的集合。
 
@@ -125,25 +194,43 @@ $$s_{i,t}=Softmax_i(\textbf u^T_t\textbf e_i),\tag{22}$$
 
 **Expert-Level Balance Loss**。我们使用专家级的平衡损失来降低路由崩溃的风险：
 
-$$\mathcal L_{ExpBal}=\alpha_1\sum^{N_r}_{i=1}f_iP_i,\tag{23}$$
-$$f_i=\frac{N_r}{K_rT}\sum^T_{t=1}\mathbb I(Token~t~selects Expert~i),\tag{24}$$
-$$P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},\tag{25}$$
+```math
+\mathcal L_{ExpBal}=\alpha_1\sum^{N_r}_{i=1}f_iP_i,\tag{23}
+```
+```math
+f_i=\frac{N_r}{K_rT}\sum^T_{t=1}\mathbb I(Token~t~selects Expert~i),\tag{24}
+```
+```math
+P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},\tag{25}
+```
 
 其中$\alpha_1$是一个超参数，称为专家级平衡因子；$\mathbb I(·)$表示指示函数；$T$ 表示序列中token的数量。
 
 **Device-Level Balance Loss**。除了专家级的平衡损失之外，我们还设计了设备级的平衡损失，以确保不同设备之间的平衡计算。在 DeepSeek-V2 的训练过程中，我们将所有路由专家划分为$D$组$\{\mathcal E_1, \mathcal E_2,...,\mathcal E_D\}$，并将每个组部署在单个设备上。设备级平衡损失计算如下：
 
-$$\mathcal L_{Devval}=\alpha_2\sum^D_{i=1}f'_iP'_i,\tag{26}$$
-$$f'_i=\frac{1}{|\mathcal E_i|}\sum_{j\in\mathcal E_i}f_j,\tag{27}$$
-$$P'_i=\sum_{j=\mathcal E_i}P_j,\tag{28}$$
+```math
+\mathcal L_{Devval}=\alpha_2\sum^D_{i=1}f'_iP'_i,\tag{26}
+```
+```math
+f'_i=\frac{1}{|\mathcal E_i|}\sum_{j\in\mathcal E_i}f_j,\tag{27}
+```
+```math
+P'_i=\sum_{j=\mathcal E_i}P_j,\tag{28}
+```
 
 其中$\alpha_2$是一个称为设备级平衡因子的超参数。
 
 **Communication Balance Loss**。最后，我们引入一个通信平衡损失，以保证各个设备的通信是平衡的。虽然设备限制路由机制保证了每个设备的发送通信是有界的，但是如果某个设备比其他设备接收到更多的token，那么实际的通信效率也会受到影响。为了缓解这个问题，我们设计了如下的通信平衡损失：
 
-$$\mathcal L_{CommBal}=\alpha_3\sum^D_{i=1}f^{''}_iP^{''}_i,\tag{29}$$
-$$f^{''}_i=\frac{D}{MT}\sum^T_{t=1}\mathbb I(Token~i~is~sent~to~Device~i),\tag{30}$$
-$$P^{''}_i=\sum_{j\in\mathcal E_i}P_j,\tag{31}$$
+```math
+\mathcal L_{CommBal}=\alpha_3\sum^D_{i=1}f^{''}_iP^{''}_i,\tag{29}
+```
+```math
+f^{''}_i=\frac{D}{MT}\sum^T_{t=1}\mathbb I(Token~i~is~sent~to~Device~i),\tag{30}
+```
+```math
+P^{''}_i=\sum_{j\in\mathcal E_i}P_j,\tag{31}
+```
 
 其中$\alpha_3$是一个超参数，称为通信平衡因子。设备限制路由机制的运行原理是确保每个设备最多将 $MT$ 隐藏状态传输到其他设备。同时，利用通信平衡损失来鼓励每个设备从其他设备接收大约 $MT$ 隐藏状态。通信平衡损失保证了设备之间信息的平衡交换，促进高效通信。
 
@@ -157,4 +244,9 @@ $$P^{''}_i=\sum_{j\in\mathcal E_i}P_j,\tag{31}$$
 
 ### 3.1.2 Hyper-Parameters
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/0c783bf79fb6b08cc4f13abba78bc009.png)
+<img
+  src="https://i-blog.csdnimg.cn/blog_migrate/0c783bf79fb6b08cc4f13abba78bc009.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

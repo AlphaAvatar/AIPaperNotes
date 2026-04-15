@@ -40,7 +40,12 @@ Vaswani et al. (2017) 提出了 Transformer 模型用于机器翻译，此后 Tr
 
 ### 3.1 VISION TRANSFORMER (VIT)
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/940ab196d528439a9dc68eb24be53d8f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/940ab196d528439a9dc68eb24be53d8f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 图 1 展示了模型的概览。标准的 Transformer 接收一维 token 嵌入序列作为输入。为了处理二维图像，我们将图像 $\textbf x ∈ \mathbb R^{H×W×C}$ 重塑为一系列展平的二维图像块 $\textbf x_p ∈ \mathbb R^{N×(P^2·C)}$，其中 $(H, W)$ 是原始图像的分辨率，$C$ 是通道数，$(P, P)$ 是每个图像块的分辨率，$N = HW/P^2$ 是最终得到的图像块数量，同时也是 Transformer 的有效输入序列长度。Transformer 在所有层中都使用恒定的潜在向量大小 $D$，因此我们将图像块展平，并使用可训练的线性投影（公式 1）映射到 $D$ 维空间。我们将此投影的输出称为图像块嵌入。
 
@@ -50,13 +55,21 @@ Vaswani et al. (2017) 提出了 Transformer 模型用于机器翻译，此后 Tr
 
 Transformer 编码器由交替的多头自注意力（MSA，参见附录A）层和多层感知器（MLP）模块组成（公式2、3）。每个模块之前应用层归一化（LN），每个模块之后应用残差连接。MLP包含两层，并具有 GELU 非线性激活函数。
 
-$$\textbf z_0=[\textbf x_{class};\textbf x^1_pt\textbf E;\textbf x^2_p\textbf E;\cdots;\textbf x^N_p\textbf E]+\textbf E_{pos},\quad\textbf E\in\mathbb R^{(P^2\cdot C)\times D}\tag{1}$$
+```math
+\textbf z_0=[\textbf x_{class};\textbf x^1_pt\textbf E;\textbf x^2_p\textbf E;\cdots;\textbf x^N_p\textbf E]+\textbf E_{pos},\quad\textbf E\in\mathbb R^{(P^2\cdot C)\times D}\tag{1}
+```
 
-$$\textbf z'_l=MSA(LN(\textbf z_{l-1}))+\textbf z_{l-1},\quad l=1...L\tag{2}$$
+```math
+\textbf z'_l=MSA(LN(\textbf z_{l-1}))+\textbf z_{l-1},\quad l=1...L\tag{2}
+```
 
-$$\textbf z_l=MLP(LN(\textbf z'_l))+\textbf z'_l,\quad l=1...L\tag{3}$$
+```math
+\textbf z_l=MLP(LN(\textbf z'_l))+\textbf z'_l,\quad l=1...L\tag{3}
+```
 
-$$\textbf y=LN(\textbf z^0_L)\tag{4}$$
+```math
+\textbf y=LN(\textbf z^0_L)\tag{4}
+```
 
 **Inductive bias**。我们注意到，Vision Transformer 的图像特定归纳偏置远少于 CNN。**在 CNN 中，局部性、二维邻域结构和平移等变性被嵌入到整个模型的每一层中**。而在 ViT 中，只有 MLP 层是局部的和平移等变的，自注意力层是全局的。二维邻域结构的使用非常有限：仅在模型初始化时用于将图像切割成块，以及在微调阶段用于调整不同分辨率图像的位置嵌入（如下所述）。除此之外，初始化时的位置嵌入不包含任何关于图像块二维位置的信息，所有图像块之间的空间关系都需要从头开始学习。
 

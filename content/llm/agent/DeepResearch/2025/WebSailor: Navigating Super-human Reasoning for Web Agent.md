@@ -7,7 +7,12 @@
 超越人类认知局限是 LLM 训练的关键目标。像 DeepResearch 这样的专有 Agent 系统，在极其复杂的信息搜索基准测试（例如 BrowseComp）上展现出了超越人类的能力，这在以前是难以企及的。我们认为，**它们的成功取决于开源模型所缺乏的一种复杂推理模式：在探索浩瀚信息时，系统地降低极端不确定性的能力**。基于这一洞见，我们推出了 **WebSailor**，这是一种旨在培养这一关键能力的完整后训练方法。我们的方法包括通过结构化采样和信息混淆、RFT 冷启动以及高效的 Agent 强化学习训练算法——重复采样策略优化 (Duplicating Sampling Policy Optimizati, DUPO)，来生成新的高不确定性任务。凭借这一集成流程，WebSailor 在复杂的信息搜索任务中的表现显著优于所有开源 Agent，与专有  Agent 的性能相媲美，并缩小了能力差距。
 
 # 1.介绍
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1de75b0614f24194b6e2a5413e244994.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/1de75b0614f24194b6e2a5413e244994.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 信息搜索是人类解决不确定性的基本驱动力，而互联网已经彻底改变了这一驱动力。然而，人类驾驭这片广阔数字世界的能力却受到认知局限的制约：有限的记忆、脆弱的注意力，以及无法同时进行多条探索路径。领先的专有 Agent 系统，例如 Deep Research，表明大语言模型 (LLM) Agent 可以超越这些人类局限。它们在 BrowseComp-en/zh 等复杂的网络基准测试中表现出的超凡性能，源于其复杂的推理能力——无论是内部推理还是工具介导的推理——能够系统地降低不确定性。
 
@@ -27,7 +32,9 @@
 
 我们采用 ReAct 作为 Agent 的框架。收到问题后， Agent 会执行多次 **Thought-Action-Observation** 的迭代。具体来说，在每次迭代中，LLM 基于现有上下文生成一个 Thought 并执行一个可解析的 Action（工具调用），然后等待环境返回一个 Observation。在 WebTraverseX 中，行动空间包括**生成最终答案**以及两个工具——**搜索**和**访问**，这两个工具分别对应于使用多个查询调用搜索引擎以及通过 URL 访问多个网页以检索其内容。这两个工具的详细信息见附录 A.1。搜索操作返回的观察结果包含 10 个标题、摘要及其与每个搜索查询对应的 URL。相比之下，访问操作的观察结果则是网页的摘要，根据 LLM 操作中指定的“目标”进行定制。当 LLM 选择“最终答案”作为操作时，迭代终止。包含 $T$ 次迭代的完整轨迹可以定义为：
 
-$$\mathcal H_{T}=(\tau_0,a_0,o_0,...,\tau_i,a_i,o_i,...,\tau_T,a_T),\tag{1}$$
+```math
+\mathcal H_{T}=(\tau_0,a_0,o_0,...,\tau_i,a_i,o_i,...,\tau_T,a_T),\tag{1}
+```
 
 其中 $\tau_i, a_i, o_i$ 分别表示第 $i$ 轮的想法、动作和观察。在步骤 $t$，$\tau_t$ 和 $a_t$ 从一个基于所有先前上下文的策略中采样，即 $π(a, \tau|\mathcal H_{t−1})$。
 
@@ -38,7 +45,12 @@ $$\mathcal H_{T}=(\tau_0,a_0,o_0,...,\tau_i,a_i,o_i,...,\tau_T,a_T),\tag{1}$$
 在本节中，我们从两个角度介绍我们的训练数据构建：QA构建和推理轨迹生成。
 
 ## 3.1  SailorFog-QA: Scalable Graph-Synthesized QA
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ab63e75c75d54f6fb31c32de45424187.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ab63e75c75d54f6fb31c32de45424187.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 回答问题所需的推理模式取决于问题本身的**不确定性**以及降低不确定性的**复杂性**。如图2所示，我们基于这两个维度将信息搜索型问答系统分为三个级别。
 - **Level 1**：任务表现出较低的不确定性，并且很容易降低这种不确定性。这些问题可以通过模型的内部知识或通过单一、直接的网络搜索来回答。
@@ -54,7 +66,12 @@ $$\mathcal H_{T}=(\tau_0,a_0,o_0,...,\tau_i,a_i,o_i,...,\tau_T,a_T),\tag{1}$$
 
 为了说明我们生成的三级任务的特点，下面给出了两个示例。这些问题体现了我们的方法论：它们包含多个错综复杂的实体，以及刻意混淆的信息，例如模糊的时间指代（“大约5世纪中叶”、“21世纪初”）和不明确的描述（“著名的南美洲首都”、“受人尊敬的艺术机构”）。这种**结构复杂性**和**信息模糊性**的结合造成了高度的初始不确定性，而且这种不确定性极难消除。事实上，我们的人工评估证实，在典型的时间限制（例如两小时内）下，这些问题对于人类研究人员来说是难以解决的，因为它们缺乏明确的搜索起点，并且需要进行大量的非线性探索。有关我们问答生成流程的更多详细信息，请参阅附录A.2。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/48ca2f8ec92d4cec901d6adb7ecd36a6.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/48ca2f8ec92d4cec901d6adb7ecd36a6.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 ## 3.2 Reconstructing Reasoning from Expert LRM Trajectories
 
 合成复杂的 QA 对后，下一个挑战是为冷启动有监督生成相应的解决方案轨迹。虽然像 QwQ-32B 这样的强大的开源 LRM 可以提供一些正确的轨迹，但直接使用它们的全部输出进行微调会适得其反。我们发现了两个关键问题：
@@ -65,7 +82,9 @@ $$\mathcal H_{T}=(\tau_0,a_0,o_0,...,\tau_i,a_i,o_i,...,\tau_T,a_T),\tag{1}$$
 
 接下来，我们重构缺失的 “why”。对于行动轨迹中的每一步 $t$，我们具有上一步的历史记录 $\mathcal H_{t−1} = (\hat\tau_0, a_0, o_0, . . , \hat τ_{t−1}, a_{t−1}, o_{t−1})$，以及专家选择的动作 $a_t$ 和后续的观察结果 $o_t$。然后，我们启动一个独立且强大的指令遵循模型 $π^∗$，生成一个新的想法 $\hat\tau_t$，作为采取行动 $a_t$ 的简洁、合乎逻辑的理由：
 
-$$\hat\tau_t\sim\pi^*(\tau|\mathcal H_{t-1},a_t,o_t).\tag{2}$$
+```math
+\hat\tau_t\sim\pi^*(\tau|\mathcal H_{t-1},a_t,o_t).\tag{2}
+```
 
 通过在每个步骤中迭代应用此方法，我们合成了一条完整、高质量的推理轨迹 $\mathcal {\hat H}_T = (\hat\tau_0, a_0, o_0, . . . , \hat\tau_T, a_T, o_T)$，其中推理清晰且以目标为导向。为了进行重构，我们使用了另一个 LLM 并强制采用“**短 CoT**”风格。这是一个关键的设计选择，确保最终的推理链足够紧凑，能够胜任长期任务。这种方法使我们能够可扩展地生成有监督数据，从而灌输复杂的推理模式，而不会产生直接模仿的负面影响。
 
@@ -91,35 +110,37 @@ Agent 强化学习与传统推理任务的强化学习的主要区别在于，Ag
 
 J(θ) 的目标函数定义为：
 
-$$
+```math
 J(\theta) = \mathbb{E}_{(q,y)\sim \mathcal{D},\{o_i\}_{i=1}^G\sim \pi_{\theta_{\mathrm{old}}}(\cdot\mid \mathrm{context})}
 \left[
 \frac{1}{\sum_{i=1}^G |o_i|}\;\sum_{i=1}^G\sum_{t=1}^{|o_i|}
 \min\Bigl(r_{i,t}(\theta)\,\hat A_{i,t},\;\mathrm{clip}\bigl(r_{i,t}(\theta),\,1-\epsilon_{\mathrm{low}},\,1+\epsilon_{\mathrm{high}}\bigr)\,\hat A_{i,t}\Bigr)
 \right]
-\tag{3}$$
+\tag{3}
+```
 
 且需满足约束条件
 
-$$
+```math
 0 < \bigl|\{\,o_i \mid \mathrm{is\_equivalent}(y,o_i)\}\bigr| < G,
-$$
+```
 
 其中，$(q,y)$ 是问答对，$r_{i,t}(\theta)$ 是重要性采样比率，$\hat A_{i,t}$ 是第 $t$ 步的优势估计：
 
-$$
+```math
 r_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t}\mid \mathrm{context})}{\pi_{\theta_{\mathrm{old}}}(o_{i,t}\mid \mathrm{context})},
 \qquad
 \hat A_{i,t} = \frac{R_i - \mathrm{mean}(\{R_i\}_{i=1}^G)}{\mathrm{std}(\{R_i\}_{i=1}^G)}.
-\tag{4}$$
+\tag{4}
+```
 
 注意，在公式 (4) 中，$o_i$ 仅表示模型生成的 token 序列，而非完整轨迹；`context` 包括模型生成过程及工具响应。对于标准差为 0 的情况（即所有 rollout 回答要么完全正确、要么完全错误），会将该批次对应槽位移除，并用同批次中标准差不为 0 的其他样本随机复制填补。
 
 为避免奖励“投机”行为，我们采用结合格式验证和答案验证的规则化奖励：
 
-$$
+```math
 R_i = 0.1 \times R_i^{\mathrm{format}} \;+\; 0.9 \times R_i^{\mathrm{answer}}.\tag{5}
-$$
+```
 
 其中，格式得分用于检查 rollout 轨迹是否符合预定义格式（如不同内容片段是否正确包裹在 `<think>` 与 `<tool_call>` 标签中，序列是否遵循 ReAct 框架）；答案得分则由 LLM 作为裁判，判定最终预测是否正确。
 

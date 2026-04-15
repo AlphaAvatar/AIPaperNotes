@@ -10,7 +10,12 @@
 
 ## 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cbc82c581e30485e812132e7961c2c2a.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/cbc82c581e30485e812132e7961c2c2a.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 文本的嵌入或密集向量表示对其语义信息进行编码，可用于许多下游应用，包括检索、重排序、分类、聚类和语义文本相似性任务。基于嵌入的检索器也是检索增强生成 (RAG) 的关键组件，它允许 LLM 访问最新的外部或专有知识，而无需修改模型参数。
 
@@ -52,13 +57,20 @@ Neelakantan et al. (2022) 的早期工作使用预训练的、纯解码器的 GP
 
 ### 3.2 LATENT ATTENTION LAYER
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dbe4aa18ed2649f7ad1694d26efba58e.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/dbe4aa18ed2649f7ad1694d26efba58e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 有两种常用的方法可以获取序列 token 的嵌入：i）均值池化；ii）最后一个 $\text{<EOS>}$ token 嵌入。之前的双向嵌入模型通常使用均值池化，而最后一个 $\text{<EOS>}$ token 嵌入在基于解码器的 LLM 嵌入模型中更为流行。然而，这两种方法都存在一定的局限性。均值池化只是取 token 嵌入的平均值，可能会稀释关键短语中的重要信息；而最后一个 $\text{<EOS>}$ token 嵌入可能会受到近邻偏差的影响，严重依赖于最后一个 token 的输出嵌入。
 
 在本研究中，我们受 Jaegle et al. (2021) 的启发，提出了一个潜在注意力层，旨在为通用嵌入任务实现更具表现力的序列池化。具体来说，我们将解码器的最后一层表示为查询 $Q ∈ \mathbb R^{l×d}$，其中 $l$ 是序列长度，$d$ 是隐藏维度。它们与潜在数组 $K = V ∈ \mathbb R^{r×d}$ 一起进行注意力计算，$K = V ∈ \mathbb R^{r×d}$ 是一个可训练的“字典”，用于获得更好的表示，其中 $r$ 是字典中潜在元素的数量。该交叉注意力的输出为 $O ∈ \mathbb R^{l×d}$，
 
-$$O=softmax(QK^T)V\tag{1}$$
+```math
+O=softmax(QK^T)V\tag{1}
+```
 
 随后是一个常规的 MLP，它由两个线性变换组成，中间有一个 GELU 激活函数。我们的模型使用潜在注意力层，$r$ 为 512，头数为 8，用于多头注意力。最后，我们在 MLP 层之后应用均值池化以获得整个序列的嵌入。参见图 1 的说明。值得一提的是，我们的方法遵循字典学习的精髓来获得更好的表示，这与 Perceiver IO 架构不同。我们将提出的潜在注意力层与正常的自注意力进行比较，并在我们的消融研究中发现了一致的改进。
 
@@ -76,7 +88,9 @@ $$O=softmax(QK^T)V\tag{1}$$
 
 给定相关的查询-文档对，查询遵循如下指令模板：
 
-$$q^+_{inst}=Instruct: \{task\_definition\}~Query: q^+\tag{2}$$
+```math
+q^+_{inst}=Instruct: \{task\_definition\}~Query: q^+\tag{2}
+```
 
 表 12 和表 13 分别提供了训练阶段和评估阶段每个 {task_definition} 的指令模板。需要注意的是，我们在训练和评估阶段都屏蔽了输出嵌入中的指令 token，尽管由于自注意力机制的影响，它们仍然会影响输出。我**们没有在文档语料库中添加任何指令前缀**。
 

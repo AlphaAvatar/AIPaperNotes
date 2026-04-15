@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ab972d27b9a7439baed5470d854f6597.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ab972d27b9a7439baed5470d854f6597.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在信息爆炸的时代，从浩瀚的互联网中获取准确、实时、可靠的信息已成为现代决策的基石。因此，深度搜索能力已成为前沿大语言模型（LLM）智能体不可或缺的核心能力。过去一年，搜索智能体的发展突飞猛进。然而，截至2025年4月10日，即使是最先进的 LLM，例如OpenAI 的 o1，在具有代表性的 BrowseComp 基准测试中也难以突破 10 分。然而，到 2026 年 3 月，形势发生了巨大变化，超过 10 个智能 LLM 的得分超过了 50 分的阈值，这标志着自主网络智能的新时代。
 
@@ -45,7 +50,12 @@ OpenSeeker 背后的高保真数据由两项核心技术创新驱动：（1）**
 
 ## 3.2 Fact-Grounded Scalable Controllable QA Synthesis
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/15ab9009d7854a819641d3f7b883c524.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/15ab9009d7854a819641d3f7b883c524.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 如图 2 所示，我们设计了一个流程，可以直接从网络图 $\mathcal G$ 中构建问答对 $(q, y)$。通过利用网络图的内在连通性，我们将静态超链接转换为动态推理路径，从而确保事实依据和可控的复杂度。**这个可扩展的框架分两个阶段运行**：生成式构建阶段用于合成候选问答对，双重标准验证阶段用于严格筛选难度和可解性问题。
 
@@ -91,10 +101,10 @@ OpenSeeker 背后的高保真数据由两项核心技术创新驱动：（1）**
 
 在轨迹合成过程中，我们采用一种**回顾式总结（retrospective summarization）**机制。这确保了智能体在保持简洁长期记忆的同时，能够利用来自最近过去的完整信息。形式化地，在第 $t$ 步，智能体基于当前上下文 $\mathcal{H}_t$ 生成推理与动作对 $(r_t, a_t)$。我们的上下文构建遵循“**Summarized History + Raw Recent**”协议：
 
-$$
+```math
 \mathcal{H}_t = \{q, \underbrace{(r_1, a_1, s_1), \ldots, (r_{t-2}, a_{t-2}, s_{t-2})}_{\text{Summarized Long-Term History}}, \underbrace{(r_{t-1}, a_{t-1}, o_{t-1})}_{\text{Raw Short-Term Context}}\}
 \tag{1}
-$$
+```
 
 其中 $s_i = \text{Summarize}(o_i \mid \text{context})$ 表示对观测 $o_i$ 的压缩语义摘要。该机制以两阶段循环方式运行：
 
@@ -104,7 +114,12 @@ $$
 
 ### 3.3.3 Asymmetric Context Training for Robust Denoising
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9935296944e040c9a4a3dd9d6ec19c12.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/9935296944e040c9a4a3dd9d6ec19c12.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 为了提升最终智能体的鲁棒性，我们在用于合成的数据格式与用于训练的数据格式之间定义了一种策略性的非对称性，如图 3 所示。
 
@@ -112,13 +127,18 @@ $$
 
 2. **训练数据（学生）**：对于最终的训练数据集，我们去除摘要并恢复为完整的原始上下文：
 
-$$
+```math
 \mathcal{H}_t^{\text{train}} = \{q, (r_1, a_1, o_1), \ldots, (r_{t-1}, a_{t-1}, o_{t-1})\}
 \tag{2}
-$$
+```
 
 学生模型在有噪声的原始上下文 $\mathcal{H}_t^{\text{train}}$ 条件下，被监督去预测最优的 $r_t, a_t$（来源于教师）。这迫使学生模型隐式学习**去噪**与**信息提取**能力，从而将上下文去噪逻辑内化到其自身参数中，以应对现实世界中的非结构化数据。
 
 # 4.Experiments
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7d02468b07f94f74998f8fda0286a82f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7d02468b07f94f74998f8fda0286a82f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

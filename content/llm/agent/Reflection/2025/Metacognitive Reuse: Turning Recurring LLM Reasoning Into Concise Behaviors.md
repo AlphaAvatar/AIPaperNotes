@@ -40,7 +40,12 @@
 
 # 3.Behaviors from Reasoning traces
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4436a1fd64c74050bbb726893e61cf29.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/4436a1fd64c74050bbb726893e61cf29.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 推理型 LLM 会发出一条长的思维链（CoT），我们也将其称为推理轨迹。我们将行为定义为从 LLM 思维链中提炼出的可复用技能——一段简洁的知识。此类行为可以跨任务调用，从而使测试时推理更快、更准确。每个行为都表示为一个 (name, instruction) 对。例如：
 
@@ -52,7 +57,12 @@
 
 DeepSeek-R1-Distill-Llama-70B（R1-Llama-70B）被用作 *Metacognitive Strategist*。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7faa85eebacd4185a58110d7a378efe0.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7faa85eebacd4185a58110d7a378efe0.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 # 4.Behavior-Guided Reasoning
@@ -63,7 +73,9 @@ DeepSeek-R1-Distill-Llama-70B（R1-Llama-70B）被用作 *Metacognitive Strategi
 
 利用这些行为的一个直接方法是，让 Student LLM 在推理过程中访问这些行为的上下文，如图 1 所示。我们称之为行为条件推理 (BCI)。给定一个问题 $Q_i$，该方法首先从行为手册中检索相关行为 $B_i$。然后将这些行为、其对应的指令以及问题输入 LLM，以生成解决方案。
 
-$$(B_i,Q_i) -> S_i\tag{1}$$
+```math
+(B_i,Q_i) -> S_i\tag{1}
+```
 
 图 3 中列出了用于 BCI 的具体提示。检索函数的形式取决于具体的用例，该函数用于从行为手册中检索给定问题的相关行为。例如，在 MATH 数据集中，检索函数基于主题匹配——对于给定主题的问题，检索该主题的行为。这对于 MATH 数据集来说是可行的，因为所有
 训练集和测试集问题都用 7 个主题之一进行注释。因此，可以使用获取行为手册中行为的问题主题对其进行分类。其他数据集（例如 AIME–24, 25）无法进行此类检索。在这种情况下，基于嵌入的检索用于检索相关行为。对于给定问题，选择按嵌入空间中余弦相似度排序的前 K 个行为。有关此检索函数的更多详细信息，请参见第 5.1 节。有关每个实验所用检索函数的形式的更多信息，请参见第 5 节，并与相应的实验一起描述。

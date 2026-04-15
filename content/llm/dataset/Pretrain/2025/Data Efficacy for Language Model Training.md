@@ -8,7 +8,12 @@
 
 # 1.Introduction
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6e514f32f7844990b1ae2c66b341e750.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/6e514f32f7844990b1ae2c66b341e750.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 语言模型在现代计算应用中意义重大。从翻译和情感分析等自然语言处理任务，到自动推理和对话 Agent 等更复杂的应用，语言模型彻底改变了机器理解、生成以及使用自然语言与人类交互的方式。为了赋予语言模型这些能力，数据是其训练的核心，也是模型基于语言模式和结构学习知识的基础。因此，细致的数据管理对于确保模型在各种应用中始终保持高性能至关重要。
 
@@ -52,7 +57,12 @@
 
 ## 3.2 Paradigm Definition
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/25b39166353049ce80f2aec14cfd0327.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/25b39166353049ce80f2aec14cfd0327.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 图 2 提出了一种范式，旨在不改变数据内容 $\mathcal D$ 和模型参数 $\textbf θ$ 的情况下，提高语言模型训练中的数据有效性。该范式包含三个组成部分：
 - **Data Scoring**：它旨在根据质量、难度、多样性和可学习性等特定标准，为每个训练样本分配一个分数。这些分数随后将用于指导后续阶段的数据选择和数据排序。
@@ -63,20 +73,30 @@
 
 首先，数据评分（定义为 $f$）为原始数据 $\mathcal D$ 分配一个得分向量 $γ$，其中 $γ$ 位于一个 $|\mathcal D|$ 维单纯形内。根据评分标准，$γ$ 值较大的样本被认为是良好的。
 
-$$γ=f(\mathcal D)=[γ_1,γ_2,...,γ_{|\mathcal D|}]^T\tag{1}$$
+```math
+γ=f(\mathcal D)=[γ_1,γ_2,...,γ_{|\mathcal D|}]^T\tag{1}
+```
 
 然后，数据选择（记为 $f_s$）根据选择比率 $r$，基于得分 $γ$ 从数据集 $\mathcal D$ 中识别出一个子集 $\mathcal D^{sub}$。待选样本数 $K$ 由 $r$ 决定。函数 $rank$ 提供集合 $γ$ 中每个元素的升序排名索引。
 
-$$\mathcal D^{sub}=f_s(\mathcal D;γ,K)=\{x_k|rank(γ_k)>|\mathcal D|-K~and~1\le k\le|\mathcal D|\}\tag{2}$$
-$$K=⌊r · |\mathcal D|⌋\tag{3}$$
+```math
+\mathcal D^{sub}=f_s(\mathcal D;γ,K)=\{x_k|rank(γ_k)>|\mathcal D|-K~and~1\le k\le|\mathcal D|\}\tag{2}
+```
+```math
+K=⌊r · |\mathcal D|⌋\tag{3}
+```
 
 最后，数据排序（用 $f_o$ 表示）基于由 $γ$ 确定的排列 $π$，将 $\mathcal D$ 或 $\mathcal D_{sub}$ 重组为大小不变的新数据集 $\mathcal D′$。它可以是 $π_{sort}$，它返回排序后 $γ$ 中每个元素的索引，也可以是其他函数。
 
-$$\mathcal D'=f_o(\mathcal D;γ)=[x_{\pi(γ)_1},x_{\pi(γ)_2},...,x_{\pi(γ)_{|\mathcal D|}}]\tag{4}$$
+```math
+\mathcal D'=f_o(\mathcal D;γ)=[x_{\pi(γ)_1},x_{\pi(γ)_2},...,x_{\pi(γ)_{|\mathcal D|}}]\tag{4}
+```
 
 **Compatibility of data efficacy and data efficiency in DELT**。如图 2 所示，DELT 范式可以在数据评分和数据排序的基础上，通过引入数据选择来进一步提高数据效率。整个 DELT 过程可以定义为将原始数据集 $\mathcal D$ 转换为重新排序的数据集 $\mathcal D′$：
 
-$$\mathcal D'=f_o(γ_o)◦f_s(\mathcal D;γ_s,K),\tag{5}$$
+```math
+\mathcal D'=f_o(γ_o)◦f_s(\mathcal D;γ_s,K),\tag{5}
+```
 
 其中符号 $◦$ 表示函数组合。$γ_o$ 和 $γ_s$ 分别是数据排序和数据选择的评分向量。由于数据评分通常需要大量的计算时间，为了方便起见，DELT 中的数据选择和数据排序都使用同一个评分向量，即 $γ_o = γ_s = γ$。这一过程确保选择最合适的样本，并对其进行最优排序，从而显著提高模型在数据有效性和效率方面的性能。
 
@@ -102,30 +122,36 @@ DELT 范式可以采用多种具体的数据评分和数据排序方法。下文
 
 每个数据样本的**可学习性**代表了模型训练过程中难度的变化，如图 3a 所示。对于从 1 到 T 的训练步骤 $t$，样本 $x_n$ 的可学习性定义为其在训练过程中随时间推移降低损失的能力。可学习性表示为：
 
-$$\mathcal L(x_n)=\sum^{T-1}_{t=1}\frac{l_{n,t}}{l_{n,t+1}}=\sum^{T-1}_{t=1}\frac{||∇ℓ(x_n,\textbf θ_t)||}{∇ℓ(x_n,\textbf θ_{t+1})},\tag{6}$$
+```math
+\mathcal L(x_n)=\sum^{T-1}_{t=1}\frac{l_{n,t}}{l_{n,t+1}}=\sum^{T-1}_{t=1}\frac{||∇ℓ(x_n,\textbf θ_t)||}{∇ℓ(x_n,\textbf θ_{t+1})},\tag{6}
+```
 
 其中，$∇ℓ(x_n, \textbf θ_t)$ 表示训练步骤 t 时样本 $x_n$ 的损失函数梯度，$\textbf θ_t$ 为模型参数，$l_{n,t}$ 表示梯度的大小。较高的可学习性得分表明该样本能够显著降低训练损失，尤其是在梯度大小初始较高且随时间大幅下降的情况下。这类样本虽然具有挑战性，但对训练有益，因此更适合用于训练的后期阶段。相反，噪声较大的样本或梯度不稳定的样本具有较低的可学习性得分，这使得在数据选择过程中能够识别并有效过滤掉这些样本。
 
 如图 3b 所示，每个数据样本的**质量**都会影响模型训练过程中的数据有效性。它通过公式 8 中 $∇ℓ(x_n, \textbf θ_t)$ 与目标向量 $λ_{t+1}$ 的一致性来衡量，其中 $λ_{t+1}$ 表示训练步骤 t + 1 时所有数据损失函数的平均梯度。质量得分计算如下：
 
-$$Q(x_n)=\sum^{T-1}_{t=1}cos(\alpha_{n,t})=\sum^{T-1}_{t=1}\frac{\lambda_{t+1}^T∇ℓ(x_n,\textbf θ_t)}{||\lambda_{t+1}||\cdot||∇ℓ(x_n,\textbf θ_t)||},\tag{7}$$
+```math
+Q(x_n)=\sum^{T-1}_{t=1}cos(\alpha_{n,t})=\sum^{T-1}_{t=1}\frac{\lambda_{t+1}^T∇ℓ(x_n,\textbf θ_t)}{||\lambda_{t+1}||\cdot||∇ℓ(x_n,\textbf θ_t)||},\tag{7}
+```
 
 其中 $α_{n,t}$ 表示两个向量之间的夹角。余弦相似度 $cos(α_{n,t})$ 越高，表明 $x_n$ 上的梯度收敛方向与目标向量 $λ_{t+1}$ 越一致，这意味着对降低损失 $J(θ)$ 的贡献越大。如 [10] 中所定义，目标向量 $λ_t$ 为：
 
-$$
+```math
 \lambda_t =
 \begin{cases}
 \lambda_{t+1} + \nabla J(\theta_t) - \eta \cdot \nabla^2 L(\theta_t, \gamma) \cdot \lambda_{t+1}, & \text{if}~t < T \\
 \nabla J(\theta_t), & \text{if}~t = T
 \end{cases}
 \tag{8}
-$$
+```
 
 最后，我们将**可学习性**（learnability）与**质量**（quality）结合为一个统一的函数，用于对数据样本进行评分。关于公式的详细推导和说明，请参阅附录。评分向量 γ 定义如下：
 
-$$\gamma = \{ \gamma_n | \gamma_n = \sum_{t=1}^{T-1}
+```math
+\gamma = \{ \gamma_n | \gamma_n = \sum_{t=1}^{T-1}
 \frac{\lambda_{t+1}^\top \nabla \ell(x_n, \theta_t)}
-{|\nabla \ell(x_n, \theta_{t+1})|}, 1 \leq n \leq |\mathcal{D}|\}\tag{9}$$
+{|\nabla \ell(x_n, \theta_{t+1})|}, 1 \leq n \leq |\mathcal{D}|\}\tag{9}
+```
 
 较大的 ( $\gamma_n$ ) 值表示样本具有**更高的质量**，并对**降低下游损失函数 ( $J(\theta)$ )**有显著贡献，尤其是在训练后期阶段引入时。相反，较小的 ( $\gamma_n$ ) 值对应于那些**更容易**、**信息量较少**的样本，它们更适合用于**早期训练阶段**，或者可能是**含噪的样本**，这些样本在数据选择（data selection）场景中可以被过滤掉。有关 LQS（Learnability-Quality Scoring）算法的详细实现，请参阅附录。
 
@@ -143,10 +169,12 @@ $$\gamma = \{ \gamma_n | \gamma_n = \sum_{t=1}^{T-1}
 
 我们提出了**折叠学习（Folding method）**，旨在提升训练数据的有效性，并缓解排序方法所带来的负面影响。该新方法称为**折叠学习（folding learning）**，其核心思想是通过**多次重复课程学习过程**，但**不产生数据重复**，从而重新组织数据集。重复的次数定义为折叠层数 ( L )。如图 4 所示，折叠方法在固定的间隔 ( L ) 下，对排序后的数据进行 ( L ) 次无放回采样。置换函数 ( $\pi_{\text{fold}}$ ) 的定义如下（公式 10），而 ( $\pi_{\text{sort}}$ ) 的定义见公式 4。
 
-$$\pi_{\text{fold}}(\gamma; L) =
+```math
+\pi_{\text{fold}}(\gamma; L) =
 \bigcup_{\ell=0}^{L-1}
 \langle \pi_{\text{sort}}(\gamma)_i \mid i \in { j \mid j \equiv \ell \pmod{L} }, 1 \le j \le |\mathcal{D}| \rangle
-\tag{10}$$
+\tag{10}
+```
 
 折叠学习不仅继承了课程学习的优点，还能有效缓解模型遗忘、数据分布偏差及数据重复等问题。
 

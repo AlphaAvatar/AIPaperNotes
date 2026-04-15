@@ -28,7 +28,12 @@
 
 # 3.GPT-assisted Visual Instruction Data Generation
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0dc42605a35341848cbd7db55232fbdd.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/0dc42605a35341848cbd7db55232fbdd.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 社区见证了公开多模态数据（例如图文对）数量的激增，范围从 CC 到 LAION。然而，对于多模态指令遵循数据，可用的数据量却有限，部分原因是创建此类数据的过程耗时，而且考虑到人工众包搜索，其定义也较为模糊。受近期 GPT 模型在文本标注任务中成功的启发，我们建议利用 ChatGPT/GPT-4 进行多模态指令遵循数据收集，该数据基于广泛存在的图像对数据。
 
@@ -47,32 +52,48 @@
 
 ## 4.1 Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0b58b45d73a94b9a8e6a46a7e2e4ce9b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/0b58b45d73a94b9a8e6a46a7e2e4ce9b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 主要目标是有效利用预训练的LLM和视觉模型的功能。网络架构如图1所示。我们选择 Vicuna 作为我们的 LLM $f_ϕ(·)$，其参数为 $ϕ$，因为它在公开可用的 checkpoint 的中拥有最佳的指令遵循能力。
 
 对于输入图像 $\textbf X_v$，我们考虑使用预训练的 CLIP 视觉编码器 ViT-L/14，它提供视觉特征 $\textbf Z_v = g(\textbf X_v)$。实验中考虑了最后一个 Transformer 层之前和之后的网格特征。我们考虑使用一个简单的线性层将图像特征连接到词嵌入空间。具体来说，我们应用可训练的投影矩阵 $W$ 将 $\textbf Z_v$ 转换为语言嵌入 token $\textbf H_v$，其维度与语言模型中的词嵌入空间相同：
 
-$$\textbf H_v=\textbf W\cdot\textbf Z_v,~with~\textbf Z_v=g(\textbf X_v)\tag{1}$$
+```math
+\textbf H_v=\textbf W\cdot\textbf Z_v,~with~\textbf Z_v=g(\textbf X_v)\tag{1}
+```
 
 因此，我们得到了一个视觉 token 序列 Hv。需要注意的是，我们的简单投影方案是轻量级的，这使我们能够快速迭代以数据为中心的实验。我们还可以考虑更复杂的方案来连接图像和语言表征，例如 Flamingo 中的门控交叉注意力机制和 BLIP-2 中的 Q-former。我们将探索 LLaVA 更有效、更复杂的架构设计，并将其留待未来研究。
 
 ## 4.2 Training
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/55db87f19fc04e37bae6a330e2ee61d2.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/55db87f19fc04e37bae6a330e2ee61d2.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 对于每幅图像 $\textbf X_v$，我们生成多轮对话数据 $(\textbf X^1_q, \textbf X^1_a, · · · , \textbf X^T_q, \textbf X^T_a)$，其中 $T$ 是对话总轮数。我们将它们组织成一个序列，将所有答案视为 Assistant 的回复，并将 $X_t$ 在第 $t$ 轮发出的指令表示为：
 
-$$\textbf X^t_{instruct}=\begin{cases}
+```math
+\textbf X^t_{instruct}=\begin{cases}
 Randomly~choose~[\textbf X^1_q,\textbf X_v]~or~[\textbf X_v,\textbf X^1_q], & \text{the first turn }t=1\\
 \textbf X^t_q, & \text{the remaining turns }t>1
-\end{cases}\tag{2}$$
+\end{cases}\tag{2}
+```
 
 这导致了表 2 中所示的多模态指令遵循序列的统一格式。我们使用其原始的自回归训练目标对预测 token 上的 LLM 执行指令微调。
 
 具体来说，对于长度为 $L$ 的序列，我们通过以下方式计算目标答案 $\textbf X_a$ 的概率：
 
-$$p(\textbf X_q|\textbf X_v,\textbf X_{instruct})=\prod^L_{i=1}p_{\theta}(x_i|\textbf X_v,\textbf X_{instruct,<i},\textbf X_{a,<i}),\tag{3}$$
+```math
+p(\textbf X_q|\textbf X_v,\textbf X_{instruct})=\prod^L_{i=1}p_{\theta}(x_i|\textbf X_v,\textbf X_{instruct,<i},\textbf X_{a,<i}),\tag{3}
+```
 
 其中 $θ$ 是可训练参数，$X_{instruct,<i}$ 和 $X_{a,<i}$ 分别是当前预测 token $x_i$ 之前所有回合的指令和答案 token。预测 token 的说明请参见表 2。对于公示 (3) 中的条件语句，我们明确添加了 $\textbf X_v$ 以强调图像是所有答案的基础，并且为了提高可读性，我们省略了 $\textbf X_{system-message}$ 和所有之前的 $<STOP>$。对于 LLaVA 模型训练，我们考虑采用两阶段指令微调过程。
 

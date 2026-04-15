@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ef1faf0503f14ccb9f0f4b8ee66602ca.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ef1faf0503f14ccb9f0f4b8ee66602ca.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 音频（包括语音、声音和音乐）是人类感知和交互的核心。它使我们能够理解周围环境、参与对话、表达情感、解读视频以及欣赏音乐。人工智能系统要想达到通用人工智能 (AGI) 的水平，就必须具备理解和推理各种音频信号的能力。虽然大语言模型 (LLM) 擅长基于语言的推理，但它们的音频理解能力仍然有限——无论是在可访问性还是在功能方面都存在局限性。扩展 LLM 以处理和推理音频对于构建真正具有上下文感知能力的智能 Agent 至关重要。
 
@@ -21,7 +26,12 @@
 - 我们还推出了 AF3-Chat，这是 AF3 的微调版本，专为多轮、多音频聊天和语音交互而设计。
 - 我们在数据管理、音频编码器表示学习和训练策略方面提出了创新。我们完全开放代码、训练方案和 4 个新数据集，以促进该领域的研究。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5ccbc208fa214ae99d65b627468eab8c.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/5ccbc208fa214ae99d65b627468eab8c.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 2.Related Work
 
@@ -37,7 +47,12 @@
 
 ## 3.1 Audio Flamingo 3 Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cd0562158b844ce5b2c48f358396d526.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/cd0562158b844ce5b2c48f358396d526.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在本节中，我们将讨论我们提出的 Audio Flamingo 3 架构，如图 2 所示。AF3 包含：i) AF-Whisper：一个带有滑动窗口特征提取的音频编码器；ii) 音频投影器；iii) LLM；以及 iv) 流式 TTS。下文将详细介绍每个组件。
 
@@ -55,7 +70,12 @@
 
 # 4.Audio Flamingo 3 Training Data
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/482e309c24de418e8f25322d7bed1b65.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/482e309c24de418e8f25322d7bed1b65.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 表 11 展示了用于训练 AF3 的所有数据集的详细统计数据。AF3 共有 5 个训练阶段，每个阶段都采用独立的数据集组合，并赋予其独特的权重（即该阶段对该数据集的遍历次数）。对于第 1 阶段和第 2 阶段，我们使用已转换为 QA 格式的开源、专注于识别的基础数据集。在接下来的小节中，我们将介绍第 3、3.5 和 4 阶段中使用的四个新的且独立的数据集，每个数据集都配有定制的数据管理策略，这些数据集构成了本研究的核心贡献。
 
@@ -69,7 +89,12 @@
 
 ## 4.2 LongAudio-XL: Expanding LongAudio with Long Speech QA
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a64698936cf34ab78f19ab3b6e61dec0.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/a64698936cf34ab78f19ab3b6e61dec0.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 据我们所知，尽管长语音问答（即音频≥30秒）与长篇对话理解、会议摘要和叙事理解等实际应用息息相关，但此前的研究尚未对其进行探索。为了弥补这一不足，我们扩展了现有的 LongAudio 数据集（专注于声音和音乐），纳入了超过 **100** 万个以推理为重点的长篇语音问答样本（30秒至10分钟）。我们从各种来源收集音频，包括：单人语音：LibriSpeech（有声读物）、EuroParl、VoxPopuli（议会辩论）；多人对话：Spotify Podcasts、Switchboard、Fisher（二元通话）、MELD、DailyTalk、MMDialog（自然对话）。我们按时间顺序合并连续的短片段，以构建更长、更连贯的音频。我们构建了涵盖各种技能的 QA 数据，如图 3 所示：
 

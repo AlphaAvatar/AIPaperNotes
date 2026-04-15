@@ -10,8 +10,12 @@
 
 ## 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bdd915c7111040efa958703f44ec73f5.png)
-
+<img
+  src="https://i-blog.csdnimg.cn/direct/bdd915c7111040efa958703f44ec73f5.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 近期研究和实践已通过实证证明，在拥有充足训练数据的情况下，通过增加参数和计算资源来扩展语言模型，可以显著提升模型的性能。然而，必须承认，将模型扩展到极大规模也伴随着极高的计算成本。考虑到高昂的成本，混合专家（MoE）架构已成为一种流行的解决方案。它能够在保持计算成本适中的同时，实现参数扩展。MoE 架构在 Transformer 模型中的应用已成功实现了将语言模型扩展到相当规模的尝试，并取得了显著的性能提升。这些成果凸显了 MoE 语言模型的巨大潜力和前景。
 
@@ -34,28 +38,43 @@
 
 我们首先介绍一种常用于 Transformer 语言模型的通用 MoE 架构。标准的 Transformer 语言模型由 $L$ 层标准 Transformer 模块堆叠而成，其中每个模块可以表示如下：
 
-$$\textbf u^l_{1:T}=\text{Self-Att}(\textbf h^{l-1}_{1:T})+\textbf h^{l-1}_{1:T}\tag{1}$$
+```math
+\textbf u^l_{1:T}=\text{Self-Att}(\textbf h^{l-1}_{1:T})+\textbf h^{l-1}_{1:T}\tag{1}
+```
 
-$$\textbf h^l_{t}=FFN(\textbf u^l_t)+\textbf u^l_t,\tag{2}$$
+```math
+\textbf h^l_{t}=FFN(\textbf u^l_t)+\textbf u^l_t,\tag{2}
+```
 
 其中，$T$ 表示序列长度，$\text{Self-Att}(·)$ 表示自注意力模块，$FFN(·)$ 表示前馈网络 (FFN)，$\textbf u^l_{1:T}∈ \mathbb R^{T×d}$ 表示经过第 𝑙 个注意力模块后所有 token 的隐藏状态，$\textbf h^l_t ∈ \mathbb R^d$ 表示经过第 $l$ 个 Transformer 模块后第 $t$ 个 token 的输出隐藏状态。为简洁起见，上述公式中省略了层归一化。
 
 构建 MoE 语言模型的典型做法通常是在 Transformer 模型中，以指定的间隔用多专家层替换前馈神经网络（FFN）。一个多专家层由多个专家组成，每个专家在结构上与一个标准 FFN 相同。然后，​​每个 token 将被分配给一个或多个专家。如果第 $l$ 个 FFN 被替换为一个多专家层，则其输出隐藏状态 $\textbf h^l_t$ 的计算可以表示为：
 
-$$\textbf h^l_t=\sum^N_{i=1}\left(g_{i,t}FFN_i(\textbf u^l_t)\right)+\textbf u^l_t,\tag{3}$$
+```math
+\textbf h^l_t=\sum^N_{i=1}\left(g_{i,t}FFN_i(\textbf u^l_t)\right)+\textbf u^l_t,\tag{3}
+```
 
-$$g_{i,t}=\begin{cases}
+```math
+g_{i,t}=\begin{cases}
 s_{i,t}, & s_{i,t}\in Topk(\{s_{j,t}|1\le j\le N\},K),\\
 0, & otherwise
-\end{cases}\tag{4}$$
+\end{cases}\tag{4}
+```
 
-$$s_{i,t}=Softmax({\textbf u^l_t}^T\textbf e^l_i),\tag{5}$$
+```math
+s_{i,t}=Softmax({\textbf u^l_t}^T\textbf e^l_i),\tag{5}
+```
 
 其中，$N$ 表示专家总数，$FFN_i(·)$ 表示第 $i$ 位专家的 FFN，$g_{i,t}$ 表示第 $i$ 位专家的门控值，$s_{i,t}$ 表示 token 到专家的亲和度，$Topk(·, K)$ 表示包含第 $t$ 个 token 与所有 $N$ 位专家之间亲和度得分最高的 $K$ 个元素的集合，$\textbf e^l_i$ 表示第 $i$ 位专家在第 $l$ 层中的质心。注意，$g_{i,t}$ 是稀疏的，表明在 $N$ 个门控值中只有 $K$ 个非零。这种稀疏性确保了 MoE 层内的计算效率，即每个 token 仅由 K 个专家进行分配和计算。此外，为了简洁起见，上述公式中省略了层归一化操作。
 
 ## 3.DeepSeekMoE Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ced63c391ddb4016a0be5877292fe741.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ced63c391ddb4016a0be5877292fe741.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在第 2 节概述的通用 MoE 架构之上，我们引入了 DeepSeekMoE，它专门用于发挥专家专业化的潜力。如图 2 所示，我们的架构融合了两种主要策略：细粒度的专家分割和共享专家隔离。这两种策略旨在提升专家的专业化水平。
 
@@ -65,14 +84,20 @@ $$s_{i,t}=Softmax({\textbf u^l_t}^T\textbf e^l_i),\tag{5}$$
 
 为了实现目标，在保持专家总参数数量和计算成本不变的情况下，我们对专家进行更精细的分割。更精细的专家分割使得激活的专家组合更加灵活和适应性更强。具体来说，在图 2(a) 所示的典型 MoE 架构之上，我们将每个专家 FFN 分割成 $m$ 个更小的专家，方法是将 FFN 的中间隐藏维度减小到其原始大小的 $\frac{1}{m}$ 倍。由于每个专家都变小了，因此，为了保持相同的计算成本，我们也相应地将激活的专家数量增加到 $m$ 倍，如图 2(b) 所示。通过这种精细的专家分割，MoE 层的输出可以表示为：
 
-$$\textbf h^l_t=\sum^{mN}_{i=1}\left(g_{i,t}FFN_i(\textbf u^l_t)\right)+\textbf u^l_t,\tag{6}$$
+```math
+\textbf h^l_t=\sum^{mN}_{i=1}\left(g_{i,t}FFN_i(\textbf u^l_t)\right)+\textbf u^l_t,\tag{6}
+```
 
-$$g_{i,t}=\begin{cases}
+```math
+g_{i,t}=\begin{cases}
 s_{i,t}, & s_{i,t}\in Topk(\{s_{j,t}|1\le j\le mN\},mK),\\
 0, & otherwise,
-\end{cases}\tag{7}$$
+\end{cases}\tag{7}
+```
 
-$$s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_t),\tag{8}$$
+```math
+s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_t),\tag{8}
+```
 
 其中，专家总参数等于标准前馈神经网络（FFN）中参数数量的 $N$ 倍，而 $mN$ 表示细粒度专家的总数。采用细粒度专家分割策略后，非零门的数量也将增加到 $mK$。
 
@@ -84,14 +109,20 @@ $$s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_t),\tag{8}$$
 
 为了实现这一目标，除了细粒度的专家分割策略外，我们还进一步隔离了 $K_s$ 位专家作为共享专家。无论路由模块如何，每个 token 都将被确定性地分配给这些共享专家。为了保持计算成本恒定，其他路由专家中激活的专家数量将减少 $K_s$ 位，如图 2(c) 所示。集成共享专家隔离策略后，完整的 DeepSeekMoE 架构中的 MoE 层结构如下：
 
-$$\textbf h^l_t=\sum^{K_s}_{i=1}FFN_i(\textbf u^l_t)+\sum^{mN}_{i=K_s+1}(g_{i,t}FFN_i(\textbf u^l_t))+\textbf u^l_t,\tag{9}$$
+```math
+\textbf h^l_t=\sum^{K_s}_{i=1}FFN_i(\textbf u^l_t)+\sum^{mN}_{i=K_s+1}(g_{i,t}FFN_i(\textbf u^l_t))+\textbf u^l_t,\tag{9}
+```
 
-$$g_{i,t}=\begin{cases}
+```math
+g_{i,t}=\begin{cases}
 s_{i,t}, & s_{i,t}\in Topk(\{s_{j,t}|K_s+1\le j\le mN\},mK-K_s),\\
 0, & otherwise
-\end{cases}\tag{10}$$
+\end{cases}\tag{10}
+```
 
-$$s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_i).\tag{11}$$
+```math
+s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_i).\tag{11}
+```
 
 最后，在 DeepSeekMoE 中，共享专家的数量为 $K_s$，路由专家的总数为 $mN − K_s$，非零门的数量为 $mK − K_s$。
 
@@ -101,21 +132,33 @@ $$s_{i,t}=Softmax_i({\textbf u^l_t}^T\textbf e^l_i).\tag{11}$$
 
 **Expert-Level Balance Loss**。为了降低路由崩溃的风险，我们还采用了专家级平衡损失机制。平衡损失的计算方法如下：
 
-$$\mathcal L_{ExpBal}=\alpha_1\sum^{N'}_{i=1}f_iP_i,\tag{12}$$
+```math
+\mathcal L_{ExpBal}=\alpha_1\sum^{N'}_{i=1}f_iP_i,\tag{12}
+```
 
-$$f_i=\frac{N'}{K'T}\sum^T_{t=1}\mathbb I(\text{Token t selects Expert i}),\tag{13}$$
+```math
+f_i=\frac{N'}{K'T}\sum^T_{t=1}\mathbb I(\text{Token t selects Expert i}),\tag{13}
+```
 
-$$P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},\tag{14}$$
+```math
+P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},\tag{14}
+```
 
 其中，$\alpha_1$ 是一个称为专家级平衡因子的超参数，为简便起见，$N'$ 等于 $(mN − K_s)$，$K'$ 等于 $(mK − K_s)$。$\mathcal I(·)$ 表示指示函数。
 
 **Device-Level Balance Loss**。除了专家级平衡损失之外，我们引入了设备级平衡损失。当目标是缓解计算瓶颈时，在专家级别施加严格的平衡约束变得没有必要，因为对负载均衡的过度约束会损害模型性能。相反，我们的主要目标是确保设备之间的计算是均衡的。若将所有被路由的专家划分为 $D$ 个组 $\{\mathcal{E}_1, \mathcal{E}_2, \ldots, \mathcal{E}_D\}$，并将每个组部署在单个设备上，则设备级平衡损失定义如下：
 
-$$\mathcal{L}_{\text{DevBal}} = \alpha_2 \sum_{i=1}^{D} f'_i P'_i,\tag{15}$$
+```math
+\mathcal{L}_{\text{DevBal}} = \alpha_2 \sum_{i=1}^{D} f'_i P'_i,\tag{15}
+```
 
-$$f'_i = \frac{1}{|\mathcal{E}_i|} \sum_{j \in \mathcal{E}_i} f_j,\tag{16}$$
+```math
+f'_i = \frac{1}{|\mathcal{E}_i|} \sum_{j \in \mathcal{E}_i} f_j,\tag{16}
+```
 
-$$P'_i = \sum_{j \in \mathcal{E}_i} P_j,\tag{17}$$
+```math
+P'_i = \sum_{j \in \mathcal{E}_i} P_j,\tag{17}
+```
 
 其中，$\alpha_2$ 是一个称为设备级平衡因子的超参数。在实际中，我们设置一个较小的专家级平衡因子以降低路由坍塌（routing collapse）的风险，同时设置一个较大的设备级平衡因子以促进设备之间的计算均衡。
 

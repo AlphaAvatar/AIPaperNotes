@@ -22,7 +22,12 @@
 
 # 2.Model Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/56fb0ee809a54622a7abdaaa84d35d7e.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/56fb0ee809a54622a7abdaaa84d35d7e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 Qwen3-VL沿用了 Qwen2.5-VL 的架构，采用三模块结构，包括视觉编码器、基于多层感知器（MLP）的视觉-语言融合器和大语言模型（LLM）。图 1 展示了详细的模型结构。

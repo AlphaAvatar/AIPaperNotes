@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/299398d7531440bb98354f41f6ab24ce.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/299398d7531440bb98354f41f6ab24ce.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 近年来，大语言模型（LLM）取得了巨大的进步。其成功很大程度上归功于**高效的 LLM 开发流程**。该流程可以概括如下：首先，在预训练阶段，模型在大规模无监督文本语料库上进行训练，以学习通用知识和语言理解能力。其次，在后训练阶段，模型在下游监督数据集上进行微调，以应对特定格式的各种任务，并通过多种技术防止模型出现危险行为。这些技术包括指令微调、基于人类反馈的强化学习（RLHF）等等。这种训练范式极大地推动了语言模型在人工智能研究和商业应用领域的增长。
 
@@ -34,7 +39,9 @@
 
 传统上，语言模型使用自回归方法在大型文本语料库上进行训练，训练任务为下一个 token 预测，如图 1a 所示。给定输入 $x_1,...x_t$，模型的任务是预测 $x_{t+1}$，目标是最小化以下交叉熵损失：
 
-$$\mathcal L_1=log~p_t(y_{t+1})\tag{1}$$
+```math
+\mathcal L_1=log~p_t(y_{t+1})\tag{1}
+```
 
 其中 $y_{t+1}$ 是位置 $t + 1$ 处的真实 token。这一核心目标在预训练和微调中都占据主导地位。在这项工作中，我们重新调整了这一普遍存在的训练目标，使其预测接下来的 n 个 token，如图 1b 所示。
 
@@ -48,11 +55,15 @@ $$\mathcal L_1=log~p_t(y_{t+1})\tag{1}$$
 
 添加 $n − 1$ 个辅助头来预测接下来的 n 个 token。**该架构包含**：(i) 一个独立的隐藏层 $F_{h_k}$，其权重初始化与原始模型的最后一个隐藏层 $F_{h_1}$ 的权重相同；(ii) 一个与原始模型共享的非嵌入层 $F_u$。在图 1c 中，$F_{h_k}$ 层以蓝色显示，$F_u$ 层位于其下方。由于现有 LLM 的词表过大，因此共享 $F_u$ 层。给定 token 上下文 $x_{1:t} = x_1, ..., x_t$，每个头的输入是来自原始模型共享的 Transformer 层 $F_s$（不包括 $F_{h_1}$）的隐藏表示 $z_{1:t}$。形式上，为了输出 $p_{t+k}$，第 $k$ 个头定义为：
 
-$$p_{t+k}=softmax(F_u(F_{h_k}(z_{1:t})))\tag{2}$$
+```math
+p_{t+k}=softmax(F_u(F_{h_k}(z_{1:t})))\tag{2}
+```
 
 对于 $k > 1$ 的情况，使用完全微调来训练层 $F_{h_k}$，而所有其他层（包括非嵌入层 $F_u$）均被冻结。这既可以防止层 $F_{h_1}$ 的性能下降，又能同时降低计算成本。接下来 n 个未来 token 的交叉熵损失为：
 
-$$\mathcal L_n=\sum^n_{k=2}-\alpha^{k-2}log~p_{t+k}(y_{t+k})\tag{3}$$
+```math
+\mathcal L_n=\sum^n_{k=2}-\alpha^{k-2}log~p_{t+k}(y_{t+k})\tag{3}
+```
 
 其中 $y_{t+k}$ 是位置 $t + k$ 处的真实 token，$α_{k−1}$ 是一个几何衰减因子，用于降低辅助头在后续 token 位置的损失。由于未来 token 位置的固有不确定性，位置越远，损失也越大。$α_{k−1}$ 调整相应的损失，以促进更稳定的训练。
 
@@ -64,7 +75,9 @@ $$\mathcal L_n=\sum^n_{k=2}-\alpha^{k-2}log~p_{t+k}(y_{t+k})\tag{3}$$
 
 最终，主要目标是最小化第一个头的 $\mathcal L_1$ 损失，因为只有第一个头用于推理；所有后续头的损失都只是​​辅助性的。基于此，CAFT 的交叉熵损失计算如下：
 
-$$\mathcal L_n=\sum^n_{k=1}-\alpha^{k-1}\beta\gamma log~p_{t+k}(y_{t+k})\tag{4}$$
+```math
+\mathcal L_n=\sum^n_{k=1}-\alpha^{k-1}\beta\gamma log~p_{t+k}(y_{t+k})\tag{4}
+```
 
 其中，$β$ 调整所有辅助头损失的权重，$γ$ 调整它们在训练迭代过程中的权重变化。实践中，我们发现模型往往会优先优化辅助损失，而牺牲第一个头的损失 ($L_1$)，因为前者通常较大。设定 ($β = 0.01$) 可以确保训练仍然主要关注 ($L_1$)，而采用衰减的正弦调度用于 $γ$ 可以让模型在初期更加关注辅助损失，但最终仍然优化 ($L_1$)。
 
@@ -74,7 +87,12 @@ $$\mathcal L_n=\sum^n_{k=1}-\alpha^{k-1}\beta\gamma log~p_{t+k}(y_{t+k})\tag{4}$
 
 ## 2.4 Practical Implementation
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6a9200fb439e4c24b64804950858fb0a.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/6a9200fb439e4c24b64804950858fb0a.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 概念感知微调（Concept-aware fine-tuning）几乎可在所有语言模型上轻松实现。实际中，流行模型的辅助头将由各研究实验室和模型提供方训练并开源。基于行业标准的 Transformers 库，实践者只需在自己的微调脚本中增加几行代码，并使用我们开源的库 **caft**。图 2a 展示了一个示例实现。
 

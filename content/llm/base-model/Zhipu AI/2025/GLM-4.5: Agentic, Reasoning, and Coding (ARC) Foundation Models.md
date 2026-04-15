@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/da97dbf13c704afcb727e736d4370fe3.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/da97dbf13c704afcb727e736d4370fe3.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 大语言模型 (LLM) 正在迅速从通用知识库演变为通用问题解决工具。其终极目标，通常与通用人工智能 (AGI) 相关，是创建跨领域、拥有人类水平认知能力的模型。这需要模型具备统一的复杂问题解决能力、泛化能力和自我提升能力，超越特定任务的卓越表现。
 
@@ -25,12 +30,22 @@ GLM-4.5-Air 是一个较小的 MoE 模型，拥有 106B 个参数。它在 100B 
 
 GLM-4.5 和 GLM-4.5-Air 均可在 Z.ai 和 BigModel.cn 获取，也可在 https://huggingface.co/zai-org/GLM-4.5 上找到开源模型。我们还在 https://github.com/zai-org/glm-simple-evals 上开源了一个评估工具包，以确保基准测试结果的可重复性。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/581b815696814f17931f3e02ab0dbe1a.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/581b815696814f17931f3e02ab0dbe1a.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 2. Pre-Training
 ## 2.1 Architecture
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/79b65132e43f41e5bc342a99fdc72585.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/79b65132e43f41e5bc342a99fdc72585.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在 GLM-4.5 系列中，我们采用了 MoE 架构，从而提升了训练和推理的计算效率。我们采用无损平衡路由和 Sigmoid 门控作为 MoE 层。与 DeepSeek-V3 和 Kimi K2 不同，我们降低了模型的宽度（隐藏层维度和路由专家数量），并增加了模型的高度（层数），因为我们发现更深的模型展现出更佳的推理能力。在自注意力组件中，我们采用了带有部分 RoPE 的分组查询注意力机制 (Grouped-Query Attention)。此外，我们使用了 2.5 倍的注意力头（5120 个隐藏层维度对应 96 个注意力头）。与直觉相反的是，虽然与注意力头较少的模型相比，增加注意力头数量并没有改善训练损失，但它在 MMLU 和 BBH 等推理基准测试中持续提升了性能。我们还加入了 QK-Norm 来稳定注意力的范围。对于 GLM-4.5 和 GLM-4.5-Air，我们都添加了一个 MoE 层作为 MTP（多 token 预测）层，以支持推理过程中的推测解码。
 
@@ -50,7 +65,12 @@ GLM-4.5 的预训练过程分为两个阶段。第一阶段，模型主要在网
 
 ## 2.3 Mid-Training: Boost Reasoning & Agentic Capacity
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8fd31265cf62486aa5aa25df87c5e1e4.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/8fd31265cf62486aa5aa25df87c5e1e4.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 预训练完成后，我们添加了多个阶段，以进一步提升模型在重要应用领域的性能。**与传统的基于大规模通用文档的预训练不同，这些训练阶段使用中等规模的特定领域数据集，包括指令数据**。因此，我们将这些训练阶段称为“中期训练”，其内容如下。
 
@@ -72,8 +92,18 @@ GLM-4.5 的预训练过程分为两个阶段。第一阶段，模型主要在网
 
 ## 3.1 Supervised Fine-Tuning
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b9bb4549dceb42c9915c40c69c706d2e.png)
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/efc59cb1fa2d4c08b014cfd5a2a9936a.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/b9bb4549dceb42c9915c40c69c706d2e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
+<img
+  src="https://i-blog.csdnimg.cn/direct/efc59cb1fa2d4c08b014cfd5a2a9936a.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们在第一阶段（专家训练）和第二阶段（统一训练）的开始阶段都进行了有监督微调 (SFT)。在专家训练阶段，SFT 的主要作用是提供冷启动，赋予模型基本的聊天、推理和工具使用能力，这些能力可以在后续的专家强化学习训练中得到进一步增强，从而提升性能。在统一训练阶段，SFT 的目的是将不同专家模型的功能蒸馏成一个能够处理不同类型任务的混合推理通才模型。
 
@@ -91,7 +121,12 @@ GLM-4.5 的预训练过程分为两个阶段。第一阶段，模型主要在网
 
 ## 3.2 Reasoning RL
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/51dff7aa13ff4f5e9c89772c0bef1bf7.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/51dff7aa13ff4f5e9c89772c0bef1bf7.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 推理强化学习 (Reasoning RL) 专注于增强模型在需要逻辑推理、结构化问题解决和**可验证准确性**领域的能力。这包括数学、代码生成和科学推理等关键领域。这些任务的一个显著特征是其奖赏信号的高精度，因为正确性通常可以通过编程或客观清晰的方式确定。掌握这些领域不仅对于提升模型的原始智能至关重要，而且也是构建更复杂、多步骤 Agent 行为的基础。认识到推理强化学习中独特的挑战和机遇，我们开发了一套专门的技术来有效地训练我们的模型。这些方法（详见下文）旨在解决训练效率、样本多样性和数据质量等问题。我们的整体强化学习算法基于 GRPO 框架，但不包括 KL 损失项。本节中显示的比较曲线基于我们规模较小的实验模型，而非 GLM-4.5。
 
@@ -103,7 +138,12 @@ GLM-4.5 的预训练过程分为两个阶段。第一阶段，模型主要在网
 
 **Code and Science RL**。与数学相比，编码和科学领域的强化学习在文献中受到的关注较少。我们在这些领域进行了大量的受控强化学习实验，并得出以下经验结论。对于编码强化学习，我们发现损失函数的选择对训练效率至关重要。如图 7（左）所示，与传统的序列均值损失相比，采用 token 加权均值损失非常有益。token 加权方法提供了更细粒度、更稳定的梯度信号，从而显著加快了收敛速度。该方法还有助于缓解序列级奖赏固有的长度偏差，并有效抑制训练过程中过于简单或重复的“基准”样本的生成。对于科学强化学习，我们在 GPQA-Diamond 基准测试中的发现强调了数据质量和类型是至关重要的因素。如图 7（右）所示，仅使用专家验证的多项选择题进行强化学习，与使用质量参差不齐或未经验证的数据进行训练相比，其性能显著提升。这一结果强调，即使对于像多项选择题这样格式简单的任务，严格过滤 RL 数据池以仅包含高质量、具有挑战性的实例对于有效改进模型也至关重要。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1e0dbcd36bf34ae5872b225d7af81b34.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/1e0dbcd36bf34ae5872b225d7af81b34.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 3.3 Agentic RL
 
@@ -119,7 +159,9 @@ GLM-4.5 的预训练过程分为两个阶段。第一阶段，模型主要在网
 
 我们采用分组策略优化算法进行强化学习训练。对于每个问题 $x$，我们从先前的策略 $π_{old}$ 中采样 $K$ 个 Agent 轨迹 $\{y_1, ..., y_k\}$，并针对以下目标优化模型 $π_θ$：
 
-$$L_{RL}(\theta)=\mathbb E_{x\sim\mathcal D}[\frac{1}{K}\sum^K_{i=1}(r(x,y_i)-\bar r(x))],$$
+```math
+L_{RL}(\theta)=\mathbb E_{x\sim\mathcal D}[\frac{1}{K}\sum^K_{i=1}(r(x,y_i)-\bar r(x))],
+```
 
 其中 $\bar r(x) = \frac{1}{k}\sum^k_{i=1}r(x,y_i)$ 是采样响应的平均奖赏。需要注意的是，优化过程中仅使用模型生成的 token，在损失计算中忽略环境反馈。
 
@@ -139,23 +181,32 @@ $$L_{RL}(\theta)=\mathbb E_{x\sim\mathcal D}[\frac{1}{K}\sum^K_{i=1}(r(x,y_i)-\b
 
 **Function Calling RL**。函数调用强化学习分为基于规则的逐步强化学习和端到端多轮强化学习。由于基于规则的逐步强化学习与端到端多轮强化学习的输出长度和收敛速度相似，我们将它们直接纳入我们的通用强化学习框架。对于端到端多轮强化学习，我们首先训练专门的专家模型，然后将这些专家模型提炼到主模型中。
 - **Step-wise Rule-based RL**：对于工具调用流程清晰的任务，我们会在训练数据中标注每个步骤/轮次的真实函数调用。给定任务以及之前步骤/轮次的函数调用，训练模型生成下一个 assistant 响应，该响应可以是函数调用，也可以是对用户的响应。我们使用基于规则的奖励机制，引导模型在连续的回合中正确调用函数。因此，我们设计了以下严格的奖赏函数：
-$$Reward=\begin{cases}
+```math
+Reward=\begin{cases}
 1, & if~FormatCorrect(a_t)~and~Match(a_t,a^*_t)\\
 0, & otherwise
-\end{cases}$$
+\end{cases}
+```
 其中，$a_t$ 表示模型生成的第 $t$ 个函数调用，$a^∗_t$ 表示对应的真实值函数调用。只有当 $a_t$ 格式正确且与真实值完全匹配（包括名称、参数和所有字段）时，才会给予奖励 1。否则，奖励为 0。如此严格的奖励规则不仅可以引导模型生成正确的函数调用，还能有效强制输出格式，从而提升模型在实际交互中的可用性和鲁棒性。
 - **End-to-end Multi-turn RL**：基于规则的分步强化学习将任务分解为静态的、预先确定的决策流。在此过程中，**模型缺乏与环境的动态交互，无法自主探索、规划或处理复杂情况，从而限制了其在现实世界中解决问题的能力**。为了解决这些问题，我们引入了端到端多轮函数调用强化学习，模型首先生成完整的轨迹，然后根据任务完成情况获得奖励。通过这种方式，模型可以通过工具反馈的不断试错来优化其行动策略，从而显著提升其自主规划和决策能力。具体而言，端到端多轮函数调用强化学习考虑两种类型的复杂任务：1. *单轮多步骤任务*：模型需要进行多步骤函数调用并与环境交互才能完成此类任务。我们使用基于多轮函数调用服务器自动合成的复杂任务，以及一些具有可运行环境的开源 Agent 数据集，例如 Agentgym。 2. *多轮多步骤任务*：除了与工具执行环境交互之外，模型还需要与 LLM 模拟的用户 Agent 交互，以获取完整的任务信息并完成整体任务。端到端多轮函数调用强化学习的奖赏计算如下：
-$$Reward=\begin{cases}
+```math
+Reward=\begin{cases}
 1, & if~FormatCorrect(a_1,...,a_T)~and~TaskCompleted(I,o_0,a_1,o_1,...,a_T,o_T)\\
 0, & otherwise
-\end{cases}$$
+\end{cases}
+```
 其中，$I$ 表示原始复杂任务，$a_t$ 表示第 $t$ 次函数调用，$o_t$ 表示工具反馈或用户信息。$TaskCompleted(I, o_0, a_1, o_1, . . ., a_T, o_T)$ 表示任务是否完成，由环境根据预定义规则判断，或由 LLM Agent 判断。
 
 **Pathology RL**。作为后训练的最后阶段，通用强化学习需要纠正潜在的问题，例如语言混合、过度重复和格式错误。虽然在上述通用强化学习任务中惩罚此类行为是有效的，但这些病态行为的发生率较低（通常不到输出的 1%），因此这是一种样本效率低下的优化策略。**因此，我们通过识别极有可能触发这些病态行为的提示，为病态强化学习精心策划了一个目标数据集**。基于该数据集进行训练使我们能够施加有效的惩罚，从而进一步降低这些问题行为的残差错误率。
 
 ## 3.5 RL Infrastructure
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dff3363e2f784a5fafb34cc732a3d002.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/dff3363e2f784a5fafb34cc732a3d002.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们的强化学习基础设施基于我们开发的开源框架 Slime 构建。该框架经过多项关键优化，以增强灵活性、效率和可扩展性。
 

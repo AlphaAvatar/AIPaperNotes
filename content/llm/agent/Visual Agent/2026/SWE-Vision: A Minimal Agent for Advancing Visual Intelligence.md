@@ -4,13 +4,23 @@
 
 # 摘要
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dd963cff49ab41a08acb9f7d4cbb0dec.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/dd963cff49ab41a08acb9f7d4cbb0dec.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 视觉理解和编码是前沿多模态大语言模型的两大核心能力——然而，它们与人类能力相比，表现却截然不同。在编码方面，模型已经远远超越了专家级水平，能够生成、调试和优化复杂的项目。但在视觉方面，差距依然巨大：正如我们之前的项目 BabyVision 所展示的那样，模型仍然难以完成人类能够轻松解决的任务。这种不对称性引出了一个自然的问题：编码能否用于提升视觉能力？
 
 许多后续研究都遵循了 OpenAI 提出的 “thinking with images” 范式，并整合工具链来增强视觉理解能力。然而，在实践中，这些努力收效甚微。这些系统通常依赖于人工设计的工具，并且针对特定基准（例如高分辨率图像理解）进行了狭义的优化，从而导致两个主要局限性：（1）人工设计的工具对于基础模型而言并不熟悉，这阻碍了有效的学习和探索，尤其是在强化学习（RL）中；（2）评估范围有限，难以评估真正的泛化能力。因此，目前社区仍然缺乏一个简洁的开源框架，能够使模型以广泛可泛化的方式提升视觉能力。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/96e3adedbce94d6e8ca984b2bc389332.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/96e3adedbce94d6e8ca984b2bc389332.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 这就是 SWE-Vision 的核心理念——一个智能体循环，**它为视觉语言模型配备了一个简单且有状态的环境，使其能够编写和执行 Python 代码来推理视觉输入**。SWE-Vision 并非仅仅依赖内部视觉表征或临时工具，而是允许模型通过编程来找到答案：使用 PIL 加载图像，使用 NumPy 进行像素级分析，使用 matplotlib 和其他库生成可视化图表，并将这些计算工具与基础模型的原生视觉理解能力和多轮编码能力无缝集成。
 
@@ -34,7 +44,12 @@ SWE-Vision 的设计理念很简单：让模型自行决定何时以及如何使
 
 SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code` 和 `finish`。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/89682dc56068456f9da3d5906713180c.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/89682dc56068456f9da3d5906713180c.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 工作流程如下：
 1. **User Input**。用户提供查询语句以及一张或多张图片。这些图片会 (a) 作为对话中的视觉内容传递给 LLM，以及 (b) 复制到 Jupyter 内核可访问的共享文件系统中。
@@ -70,7 +85,12 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
 
 我们使用五项不同的视觉基准测试来评估 SWE-Vision，这些基准测试旨在涵盖广泛的视觉推理能力：
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b22eb81a656a4b36bfa4c5aa1fb1dd34.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/b22eb81a656a4b36bfa4c5aa1fb1dd34.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## Setup
 
@@ -80,9 +100,19 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
 
 ## Results
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c9cd1b151ed44d5f9ccc310d04c3e610.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/c9cd1b151ed44d5f9ccc310d04c3e610.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c94f1c43f3bc49b1ba18e87faafebba1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/c94f1c43f3bc49b1ba18e87faafebba1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## Analysis
 

@@ -7,7 +7,12 @@
 DeepSeek-R1-Zero 已证明，大规模强化学习 (RL) 无需有监督微调即可直接提升 LLM 的推理能力。本研究通过分析其两个核心组件：基础模型和强化学习 (RL)，对类似 R1-Zero 的训练进行了批判性研究。我们研究了包括 DeepSeek-V3-Base 在内的多种基础模型，以**了解预训练特性如何影响 RL 性能**。分析表明，DeepSeek-V3-Base 已展现出“顿悟时刻”，而 Qwen2.5 基础模型即使在没有提示模板的情况下也展现出强大的推理能力，这表明预训练可能存在偏差。此外，我们还发现组相对策略优化 (GRPO) 中存在优化偏差，它会在训练过程中人为地增加响应长度（尤其是对于错误输出）。为了解决这个问题，我们引入了 Dr.GRPO，这是一种无偏差的优化方法，可以在保持推理性能的同时提高 token 效率。利用这些见解，我们提出了一种极简的 R1-Zero 方案，使用 7B 基础模型在 AIME 2024 上实现了 43.3% 的准确率，建立了新的最佳水平。
 
 # 1.Introduction
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2f0b784d988146c4a748275078356d94.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/2f0b784d988146c4a748275078356d94.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 DeepSeek-R1-Zero 引入了类似 R1-Zero 的训练范式，彻底革新了大语言模型 (LLM) 的后训练流程：直接将强化学习 (RL) 应用于基础 LLM，而无需依赖有监督微调 (SFT) 作为初始步骤。这种新范式因其简单易用性和已证实的强化学习扩展现象而备受青睐：随着模型响应长度的不断增加，模型推理能力也随之提升。这种现象还伴随着“顿悟时刻”，即模型学习到诸如自我反思等新兴技能。
 
@@ -23,7 +28,12 @@ DeepSeek-R1-Zero 引入了类似 R1-Zero 的训练范式，彻底革新了大语
 - （第 3.3 节）模型模板不匹配会在 RL 重建之前破坏推理能力。
 - （第 3.4 节）对 Llama-3.2-3B 进行数学预训练可提高其 RL 上限。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1c63cfb2285548d48d168f46f694c69e.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/1c63cfb2285548d48d168f46f694c69e.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 2.Analysis on Base Models
 
@@ -45,17 +55,32 @@ DeepSeek-R1-Zero 引入了类似 R1-Zero 的训练范式，彻底革新了大语
 
 ## 2.2  Qwen-2.5 Models Unlock the Best Performance When Discarding Template
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/849de231f87449deabb68cfacc323674.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/849de231f87449deabb68cfacc323674.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 接下来，我们深入探讨一个有趣的观察结果（参见图 3（左））：所有 Qwen2.5 基础模型即使无需任何模板，也能轻松用作聊天模型。我们进一步评估了 Qwen2.5-Math 模型在五个标准基准测试（AIME 2024、AMC、MATH500、Minerva Math 和 OlympiadBench）上的推理能力。按照惯例，我们使用贪婪解码，并将采样预算限制为 3000 个 token。
 
 如表 1 所示，不使用任何模板可以显著提升平均性能，与传统的 4-shot 提示相比，性能提升约 60%。由于 Qwen2.5-Math 在预训练阶段使用了聊天模型的数据（问答对），我们假设它们可能在拼接文本上进行预训练，以直接最大化 $log~p_θ (\textbf q;\textbf o)$。如果我们的假设成立，我们将更加谨慎地使用 Qwen2.5 模型来复现 DeepSeek-R1-Zero，因为基础模型在没有模板的情况下就已经类似于 SFT。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ef0557a755394ffaa90d7cffd2785328.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ef0557a755394ffaa90d7cffd2785328.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 2.3 Aha Moment Already Appears in Base Models Including DeepSeek-V3-Base
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b20b30b87c2e458385ae8c10551afbed.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/b20b30b87c2e458385ae8c10551afbed.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 DeepSeek-R1-Zero 最鼓舞人心的成果之一是，通过纯强化学习训练，**它能够激发自我反思行为**，也就是“顿悟时刻”。此前一些研究表明，开源 R1 复现模型中可能不存在“顿悟时刻”，因为它们使用的基础模型已经展现了自我反思关键词。然而，他们尚未测试 DeepSeek-V3-Base，而真正的 R1-Zero 模型正是在其上进行强化学习调优的。我们自行托管了 DeepSeek-V3-Base-685B，并使用 R1 模板测试了 500 道数学题，从而弥补了这一缺失。从图 3 右侧的图中，我们可以看到 DeepSeek-V3-Base 也产生了相当数量的自我反思，这进一步验证了 Liu et al. (2025b) 的论断。我们还在图 4 中展示了 DeepSeek-V3-Base 生成“顿悟”、“等待”和“验证问题”等关键词的示例。
 
@@ -67,29 +92,42 @@ DeepSeek-R1-Zero 最鼓舞人心的成果之一是，通过纯强化学习训练
 
 通常，我们最大化熵正则化目标：
 
-$$\mathcal J(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q}}[\mathbb E_{\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}[R(\textbf q,\textbf o)]-\beta\mathbb D_{KL}[\pi_{\theta}(\cdot|\textbf q)||\pi_{ref}(\cdot|\textbf q)]],\tag{1}$$
+```math
+\mathcal J(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q}}[\mathbb E_{\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}[R(\textbf q,\textbf o)]-\beta\mathbb D_{KL}[\pi_{\theta}(\cdot|\textbf q)||\pi_{ref}(\cdot|\textbf q)]],\tag{1}
+```
 
 其中 $R(\textbf q, \textbf o) = \sum^{|o|}_{t=1}r(s_t, o_t)$ 是轨迹 $\textbf q;\textbf o$ 的回报，$π_{ref}$ 是参考策略。对于从人类反馈中进行强化学习，通常采用 KL 正则化项（$β > 0$），其中 $r$ 是从 $π_{ref}$ 收集的数据中学习到的**奖赏模型**。在这种情况下，正则化有助于防止 $π_θ$ 偏离奖赏模型准确的分布太远。然而，强化学习调优推理模型通常使用基于规则的**验证器**作为 $r$，从而消除了分布偏移的担忧。这使我们能够删除 KL 项，这不仅节省了 $π_{ref}$ 在训练期间所需的内存和计算量，而且还可能为类似 R1-Zero 的训练带来更好的性能。我们将在本文中通篇假设 $β = 0$。
 
 **Policy optimization algorithms**。为了根据上述目标（等式 (1)，$β = 0$）优化 $π_θ$，近端策略优化 (PPO) 会最大化以下替代目标：
 
-$$\mathcal J_{PPO}(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q},\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}\\
-\sum^{|\textbf o|}_{t=1}\{min[\frac{\pi_{\theta}(o_t|\textbf q,\textbf o_{<t})}{\pi_{\theta_{old}}(o_t|\textbf q,\textbf o_{<t})}\hat A_t,clip(\frac{\pi_{\theta}(o_t|\textbf q,\textbf o_{<t})}{\pi_{\theta_{old}}(o_t|\textbf q,\textbf o_{<t})},1-ϵ, 1+ϵ)\hat A_t]\},\tag{2}$$
+```math
+\mathcal J_{PPO}(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q},\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}\\
+\sum^{|\textbf o|}_{t=1}\{min[\frac{\pi_{\theta}(o_t|\textbf q,\textbf o_{<t})}{\pi_{\theta_{old}}(o_t|\textbf q,\textbf o_{<t})}\hat A_t,clip(\frac{\pi_{\theta}(o_t|\textbf q,\textbf o_{<t})}{\pi_{\theta_{old}}(o_t|\textbf q,\textbf o_{<t})},1-ϵ, 1+ϵ)\hat A_t]\},\tag{2}
+```
 
 其中 $π_{θ_old}$ 是更新前的策略，$ϵ$ 是裁剪超参数，$\hat A_t$ 是第 t 个 token 的优势函数估计器。估计 $\hat A_t$ 的标准方法是使用学习到的价值模型 $V_ϕ$ 来计算广义优势估计 (GAE)。然而，在 LLM RL 调优的背景下，学习价值模型的计算成本很高，因此不使用 $V_ϕ$ 来估计 $\hat A_t$ 的方法实际上更受欢迎。例如，Shao et al. (2024) 提出了 GRPO，它首先对每个问题采样一组响应 $\{\textbf o_1, ...,\textbf o_G\}$ 并计算它们的回报 $\textbf R = \{R_1, ..., R_G\}$，然后将 $o_i$ 中所有 token 的优势设为 $\hat A_t =\frac{R_i−mean(\textbf R)}{std(\textbf R)}$。
 
 ## 3.1 GRPO Leads to Biased Optimization
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2ed44701332f4c46806cdd803769747b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/2ed44701332f4c46806cdd803769747b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在 Deepseek-R1-Zero 中，一个显著的趋势是响应长度在整个训练过程中持续增加。这通常被解读为高级推理能力（例如自我反思）发展的标志。近期研究使用各种算法和实现方式复制了这一现象。然而，我们认为，观察到的响应长度增加也可能归因于 GRPO 目标函数中固
 有的偏差：
-$$\mathcal J_{GRPO}(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q},\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}\\
-\frac{1}{G}\sum^{|\textbf G|}_{i=1}\frac{1}{|o_i|}\sum^{|\textbf o_i|}_{t=1}\{min[\frac{\pi_{\theta}(o_{i,t}|\textbf q,\textbf o_{i,<t})}{\pi_{\theta_{old}}(o_{i,t}|\textbf q,\textbf o_{i,<t})}\hat A_{i,t},clip(\frac{\pi_{\theta}(o_{i,t}|\textbf q,\textbf o_{i,<t})}{\pi_{\theta_{old}}(o_{i,t}|\textbf q,\textbf o_{i,<t})},1-ϵ, 1+ϵ)\hat A_{i,t}]\},\tag{3}$$
+```math
+\mathcal J_{GRPO}(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q},\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}\\
+\frac{1}{G}\sum^{|\textbf G|}_{i=1}\frac{1}{|o_i|}\sum^{|\textbf o_i|}_{t=1}\{min[\frac{\pi_{\theta}(o_{i,t}|\textbf q,\textbf o_{i,<t})}{\pi_{\theta_{old}}(o_{i,t}|\textbf q,\textbf o_{i,<t})}\hat A_{i,t},clip(\frac{\pi_{\theta}(o_{i,t}|\textbf q,\textbf o_{i,<t})}{\pi_{\theta_{old}}(o_{i,t}|\textbf q,\textbf o_{i,<t})},1-ϵ, 1+ϵ)\hat A_{i,t}]\},\tag{3}
+```
 
 其中，
 
-$$\hat A_{i,t}=\frac{R(\textbf q,\textbf o_i)-mean(\{R(\textbf q,\textbf o_1), ..., R(\textbf q,\textbf o_G)\})}{std(\{R(\textbf q,\textbf o_1), ..., R(\textbf q,\textbf o_G)\})},$$
+```math
+\hat A_{i,t}=\frac{R(\textbf q,\textbf o_i)-mean(\{R(\textbf q,\textbf o_1), ..., R(\textbf q,\textbf o_G)\})}{std(\{R(\textbf q,\textbf o_1), ..., R(\textbf q,\textbf o_G)\})},
+```
 
 其中回报 $R(\textbf q, \textbf o_i)$ 通常仅包括 LLM 推理中可验证的结果奖赏（该分析也适用于过程奖赏案例）。
 

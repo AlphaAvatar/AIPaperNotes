@@ -7,7 +7,12 @@
 我们介绍了第一代推理模型 DeepSeek-R1-Zero 和 DeepSeek-R1。DeepSeek-R1-Zero 是一个通过大规模强化学习 (RL) 训练的模型，无需预先进行有监督微调 (SFT)，展现出卓越的推理能力。通过强化学习，DeepSeek-R1-Zero 自然而然地展现出许多强大而有趣的推理行为。然而，它面临着诸如可读性差、语言混合等挑战。为了解决这些问题并进一步提升推理性能，我们推出了 DeepSeek-R1，它在强化学习之前结合了多阶段训练和冷启动数据。DeepSeek-R1 在推理任务上取得了与 OpenAI-o1-1217 相当的性能。为了支持研究社区，我们开源了 DeepSeek-R1-Zero、DeepSeek-R1 以及基于 Qwen 和 Llama 从 DeepSeek-R1 中提炼出的六个密集模型（1.5B、7B、8B、14B、32B、70B）。
 
 # 1.Introduction
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c6d4c5a8f6b542638e99cff5ffa07b36.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/c6d4c5a8f6b542638e99cff5ffa07b36.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 近年来，大语言模型（LLM）不断快速迭代和发展，与通用人工智能（AGI）的差距正在逐渐缩小。
 
@@ -49,14 +54,20 @@
 
 **Group Relative Policy Optimization**。为了节省强化学习的训练成本，我们采用了 Group Relative Policy Optimization (GRPO)，它放弃了通常与策略模型大小相同的 critic 模型，而是根据组得分来估计基线。具体来说，对于每个问题 $q$，GRPO 从旧策略 $\pi_{\theta_{old}}$ 中采样一组输出 $\{o_1, o_2, · · · , o_G\}$，然后通过最大化以下目标来优化策略模型 $\pi_{\theta}$：
 
-$$\mathcal J_{GRPO}(\theta)=\mathbb E[q\sim P(Q),\{o_i\}^G_{i=1}\sim\pi_{\theta_{old}}(O|q)]\\
-\frac{1}{G}\sum^G_{i=1}(min(\frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}(o_i|q)}}A_i,clip(\frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}(o_i|q)}},1-\epsilon,1+\epsilon)A_i)-\beta\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})),\tag{1}$$
+```math
+\mathcal J_{GRPO}(\theta)=\mathbb E[q\sim P(Q),\{o_i\}^G_{i=1}\sim\pi_{\theta_{old}}(O|q)]\\
+\frac{1}{G}\sum^G_{i=1}(min(\frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}(o_i|q)}}A_i,clip(\frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}(o_i|q)}},1-\epsilon,1+\epsilon)A_i)-\beta\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})),\tag{1}
+```
 
-$$\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})=\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-log\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-1,\tag{2}$$
+```math
+\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})=\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-log\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-1,\tag{2}
+```
 
 其中 $\epsilon$ 和 $\beta$ 是超参数，$A_i$ 是优势函数，使用对应于每组内输出的一组奖赏 $\{r_1,r_2, . . . ,r_G\}$ 计算得出：
 
-$$A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}$$
+```math
+A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
+```
 
 ### 2.2.2 Reward Modeling
 
@@ -67,19 +78,34 @@ $$A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}$$
 在开发 DeepSeek-R1-Zero 时，我们没有应用结果或过程神经奖赏模型，因为我们发现神经奖赏模型在大规模强化学习过程中可能会受到奖赏黑客攻击，并且重新训练奖赏模型需要额外的训练资源，并且会使整个训练流程变得复杂。
 
 ### 2.2.3 Training Template
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1c1a6dd6b62744a3a804618cda1d2b90.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/1c1a6dd6b62744a3a804618cda1d2b90.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 为了训练 DeepSeek-R1-Zero，我们首先设计一个简单的模板，用于指导基础模型遵循我们指定的指令。如表 1 所示，该模板要求 DeepSeek-R1-Zero 首先生成一个推理过程，然后给出最终答案。我们特意将约束限制在这种结构格式上，避免任何针对特定内容的偏见（例如强制进行反思性推理或推广特定的问题解决策略），以确保我们能够准确观察模型在强化学习过程中的自然进展。
 
 ### 2.2.4 Performance, Self-evolution Process and Aha Moment of DeepSeek-R1-Zero
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dd29bd423116475e8217f7d4f02a10c8.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/dd29bd423116475e8217f7d4f02a10c8.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Performance of DeepSeek-R1-Zero**。图 2 描绘了 DeepSeekR1-Zero 在 AIME 2024 基准测试中在整个强化学习训练过程中的性能轨迹。如图所示，随着强化学习训练的推进，DeepSeek-R1-Zero 的性能表现稳步提升。值得注意的是，AIME 2024 的平均 pass@1 分数显著提升，从最初的 15.6% 跃升至令人印象深刻的 71.0%，达到了与 OpenAI-o1-0912 相当的性能水平。这一显著提升凸显了我们的强化学习算法在持续优化模型性能方面的卓越功效。
 
 表 2 提供了 DeepSeek-R1-Zero 与 OpenAI 的 o1-0912 模型在一系列推理相关基准测试中的比较分析。结果表明，强化学习使 DeepSeek-R1-Zero 无需任何有监督微调数据即可获得强大的推理能力。这是一项值得关注的成就，因为它凸显了该模型仅通过强化学习即可有效学习和泛化的能力。此外，通过应用多数投票机制，DeepSeek-R1-Zero 的性能可以进一步提升。例如，在 AIME 基准测试中使用多数投票机制时，DeepSeek-R1-Zero 的性能提升率从 71.0% 提升至 86.7%，从而超越了 OpenAI-o1-0912 的性能。DeepSeek-R1-Zero 无论是否采用多数投票机制都能取得如此优异的性能，这凸显了其强大的基础能力以及在推理任务中进一步提升的潜力。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7cddd79c216f4cd8b108fb282d9fcfaa.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/7cddd79c216f4cd8b108fb282d9fcfaa.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Self-evolution Process of DeepSeek-R1-Zero**。DeepSeek-R1-Zero 的自我进化过程精彩地展现了强化学习如何驱动模型自主提升其推理能力。通过直接从基础模型启动强化学习，我们可以密切监控模型的进展，而无需受到有监督式微调阶段的影响。这种方法可以清晰地展现模型随时间推移的演进过程，尤其是在其处理复杂推理任务的能力方面。
 
@@ -87,7 +113,12 @@ $$A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}$$
 
 这种自我进化最显著的方面之一是，随着测试时间计算量的增加，复杂的行为不断涌现。诸如反思（模型重新审视并重新评估之前的步骤）以及探索其他解决问题方法等行为会自发出现。这些行为并非明确编程，而是模型与强化学习环境交互的结果。这种自发发展显著增强了 DeepSeek-R1-Zero 的推理能力，使其能够以更高的效率和准确性应对更具挑战性的任务。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/201f8bb304ba463e939d5776f5d20e53.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/201f8bb304ba463e939d5776f5d20e53.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Aha Moment of DeepSeek-R1-Zero**。在 DeepSeek-R1-Zero 的训练过程中，我们观察到一个特别有趣的现象，那就是“aha moment”的出现。如表 3 所示，这一时刻发生在模型的中间版本中。在此阶段，DeepSeek-R1-Zero 学会了通过重新评估其初始方法，为问题分配更多思考时间。这种行为不仅证明了模型不断增强的推理能力，也展现了强化学习如何带来意想不到的复杂结果。
 

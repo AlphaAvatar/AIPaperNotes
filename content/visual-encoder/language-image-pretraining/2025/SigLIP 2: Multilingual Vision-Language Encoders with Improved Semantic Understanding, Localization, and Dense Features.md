@@ -23,7 +23,12 @@
 
 # 2.Training recipe
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/df9fa34aeb08443585a6bfd40b2a0991.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/df9fa34aeb08443585a6bfd40b2a0991.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们结合了原始的 SigLIP 训练方法和基于解码器的预训练，以及类似于 DINO 工作中的自蒸馏和掩码预测（参见图 1 的概述）。研究表明，使用语言解码器预训练图像编码器以进行图像描述和指称表达理解可以提高 OCR 能力和定位精度，而自蒸馏和掩码预测则可以为密集预测任务、零样本分类和检索任务提供更好的特征。为了控制与 SigLIP 训练相比的计算和内存开销，我们并没有将所有这些技术一次性全部组合在一起，而是采用如下所述的分阶段方法。
 

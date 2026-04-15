@@ -18,7 +18,12 @@
 
 我们的方法的关键（如第 3 节所述）是对数据集的一小部分进行转换，我们将文档随机分成三部分，并将中间部分移动到末尾：
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ea37183f032b41989a4a81a329f20497.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ea37183f032b41989a4a81a329f20497.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 然后，我们使用特殊 token 将这三个部分连接起来。这与 [Donahue et al., 2020, Aghajanyan et al., 2022, Fried et al., 2022] 中使用的过程类似。
 
@@ -30,8 +35,18 @@
 
 ## 1.1  Our contributions
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4f3df049594844e7968bcc9c9fe04268.png)
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9799c6cb5a864cb59773d475d49951d1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/4f3df049594844e7968bcc9c9fe04268.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
+<img
+  src="https://i-blog.csdnimg.cn/direct/9799c6cb5a864cb59773d475d49951d1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 本文的主要贡献如下：
 - **FIM-for-free property**。我们通过训练一组包含 8 个模型（分别包含和不包含 FIM）进行了一项广泛的扩展研究，结果表明，FIM 可以在不损害预训练中从左到右能力的情况下进行学习。我们利用困惑度和基于采样的基准，从代码和语言两个角度验证了这一结论。
@@ -64,7 +79,12 @@
 
 我们使用的所有基于采样的填充基准测试都是通过从 HumanEval 的规范解中移除中间跨度而创建的部分函数补全任务。具体而言，我们使用 [Fried et al., 2022] 提出的单行和多行填充基准测试，其中 HumanEval 规范解中不同跨度的非空行被转换为 FIM 任务。此外，我们还创建了一个名为随机跨度填充的新基准测试，对于每个 HumanEval 问题，我们通过从规范解中均匀随机地选择中间跨度来创建填充任务。下面展示了一个此类任务的示例，其中模型必须预测突出显示的部分（或实现相同目标的替代补全）。更多详细信息，请参阅附录 E。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/30d605cb11604a9a921136ad9bfba595.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/30d605cb11604a9a921136ad9bfba595.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 单行、多行和随机跨度填充共同构成了我们的填充基准测试套件。这些基准测试分别包含 1033、5815 和 1640 个任务。我们注意到，这比原始 HumanEval 数据集中的任务数量（164 个任务）要多得多，这降低了评估中的方差。尽管如此，我们仍然在每个任务中至少采集 100 到 200 个样本，以便在模型最终快照上评估这些基准测试时进一步降低方差。我们还使用了随机跨度填充轻量版（random span infilling light），它是随机跨度填充的较小版本，每个 HumanEval 问题只有一个随机 FIM 任务，总共只有 164 个任务，用于跟踪训练期间的填充能力趋势。
 
@@ -78,20 +98,35 @@
 
 然后，我们分别对这三个部分进行编码，并将特殊 token 添加到每个部分的开头。我们用 $\texttt{<PRE>}$、$\texttt{<MID>}$ 和 $\texttt{<SUF>}$ 表示这些特殊 token。最后，我们将所有这些部分按前缀、后缀、中间的顺序与其特殊 token 连接起来，形成 FIM 文档的 tokenizer 版本。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/82fa53992f3b4ae9bc833e81236d50b1.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/82fa53992f3b4ae9bc833e81236d50b1.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 其中 $◦$ 表示连接。不同的文档（无论是 FIM 还是 AR）随后会通过 $\texttt{<EOT>}$ 连接起来，并在训练期间输入到模型中。我们重申，我们保留了前缀、中间和后缀三个部分的损失，因此 FIM 训练不会导致自回归学习信号的下降。初步实验（虽然本文未报告）表明，这种选择对于 FIM-for-free 属性的保持至关重要。无论 token 是否被屏蔽，此属性都不会改变；但是，始终在 $\texttt{<EOT>}$ token 上进行训练非常重要，因为它表示已成功连接到后缀。
 
 为了进行推理，我们对给定的前缀和后缀进行编码，并使用
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2c947e4894c24fb182e63d18f25191e5.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/2c947e4894c24fb182e63d18f25191e5.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 我们继续从模型中采样，直到它生成 $\texttt{<EOT>}$ token，这是模型传达它已连接前缀和后缀的方式。
 
 如果模型未能在合理分配的推理 token 预算内生成 $\texttt{<EOT>}$ token，这通常表明模型在连接前缀和后缀时遇到了困难，并且生成的样本通常质量较差，这促使我们采用 EOT 感知的 best-of-n 采样方法。更多讨论请参阅附录 H。
 
 ## 3.1 SPM mode
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8183423ed5014c7b9a47f41af164f16b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/8183423ed5014c7b9a47f41af164f16b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们还引入了上述过程的变体，其中我们交换前缀和后缀的顺序，称为 SPM，以强调顺序变为后缀、前缀和中间。引入 SPM 的主要动机是改进推理过程中的 key-value 缓存。这一优势的原因是，使用 SPM，将 token 附加到前缀不再会使后缀部分中计算的 key 和 value 失效。请注意，SPM 缓存的优势并非普遍适用，可能取决于应用程序。特别是在 SPM 模式下，对后缀的微小更改会导致前缀的缓存失效，但我们预计在实际工作负载中对后缀的更改比对前缀的更改要少。有趣的是，我们在第 4.3 节中发现，除了缓存优势之外，SPM 在填充基准测试中实际上也略胜 PSM。
 

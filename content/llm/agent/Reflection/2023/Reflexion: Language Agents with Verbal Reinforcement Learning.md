@@ -8,7 +8,12 @@
 
 # 1.Introduction
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/278ba9c4c9e24dd19499018547679767.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/278ba9c4c9e24dd19499018547679767.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 近期，ReAct、SayCan、Toolformer、HuggingGPT、生成式智能体和 WebGPT 等研究成果已证明，基于大语言模型 (LLM) 核心构建的自主决策智能体是可行的。这些方法利用 LLM 生成文本和“动作”，这些文本和动作可用于 API 调用并在环境中执行。由于这些方法依赖于参数数量庞大的大型模型，因此目前只能使用上下文示例来训练智能体，因为像梯度下降强化学习这样的传统优化方案需要大量的计算资源和时间。
 
@@ -34,7 +39,12 @@
 
 # 3.Reflexion: reinforcement via verbal reflection
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/576c6ddbd75f44dfa0cf0ce6afec4ffd.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/576c6ddbd75f44dfa0cf0ce6afec4ffd.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们为 Reflexion 开发了一种模块化模型，该模型利用了三个不同的模型：**Actor**，记为 $M_a$，负责生成文本和行动；**Evaluator**，记为 $M_e$，负责对 Actor 生成的输出进行评分；以及 **Self-Reflection**，记为 $M_{sr}$，负责生成语言强化线索以帮助 Actor 进行自我改进。我们详细描述了每个模型，并进一步阐明了它们在 Reflexion 框架内的协作功能。
 

@@ -8,7 +8,12 @@
 
 # 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ffa3e0bfb4bb472d99a69de33a84f601.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ffa3e0bfb4bb472d99a69de33a84f601.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 大语言模型 (LLM) 取得了长足的进步，逐步缩小了与通用人工智能 (AGI) 的差距。近期，以 OpenAI o1 和 DeepSeek R1 为代表的 LLM 采用了在生成最终答案之前生成中间推理步骤的策略。这种方法显著提升了它们在数学推理等特定领域任务中的效率。这项技术的显著成功主要归功于强化微调 (RFT) 方法。通过应用 RFT，模型在生成答案之前分配了额外的时间进行“深思熟虑”，从而构建了复杂的推理链，并最终提升了模型的整体性能。
 
@@ -36,21 +41,29 @@
 
 强化学习是一种通过交互进行学习的计算方法，其中 Agent 通过在环境中选择最优动作来寻求最大化累积奖赏。强化学习问题通常由策略 $π_θ$ 定义，该策略将状态映射到动作，旨在优化期望回报。策略梯度方法的核心思想是利用梯度上升来迭代调整策略参数。学习目标是最大化回报 $\mathcal J(θ)$，
 
-$$\mathcal J(\theta)=\mathop{max}\limits_{\theta}\mathbb E_{\pi_{\theta}}[\sum^T_{t=0}r_t].\tag{1}$$
+```math
+\mathcal J(\theta)=\mathop{max}\limits_{\theta}\mathbb E_{\pi_{\theta}}[\sum^T_{t=0}r_t].\tag{1}
+```
 
 策略梯度定理证明上述问题可以转化为估计梯度，
 
-$$∇_{\theta}\mathcal J(\theta)=\mathbb E_{\pi_{\theta}}[∇_{\theta}log\pi_{\theta}(a_t|s_t)Q^{\pi_{\theta}}(s_t,a_t)].\tag{2},$$
+```math
+∇_{\theta}\mathcal J(\theta)=\mathbb E_{\pi_{\theta}}[∇_{\theta}log\pi_{\theta}(a_t|s_t)Q^{\pi_{\theta}}(s_t,a_t)].\tag{2},
+```
 
 其中 $Q^{π_θ}(s_t, a_t)$ 是动作价值函数，表示在状态 $s_t$ 下采取行动 $a_t$ 并随后遵循策略 $π_θ$ 时的期望回报。
 
 **为了减少方差**，通常使用优势函数 $A^{π_θ}(s_t,a_t)$，从而得到策略梯度更新规则：
 
-$$∇_{\theta}\mathcal J(\theta)=\mathbb E_{\pi_{\theta}}[∇_{\theta}log\pi_{\theta}(a_t|s_t)A^{\pi_{\theta}}(s_t,a_t)].\tag{3},$$
+```math
+∇_{\theta}\mathcal J(\theta)=\mathbb E_{\pi_{\theta}}[∇_{\theta}log\pi_{\theta}(a_t|s_t)A^{\pi_{\theta}}(s_t,a_t)].\tag{3},
+```
 
 *One-step advantage estimation* 可以用数学公式表示为：
 
-$$A^{\pi_{\theta}}(s_t,a_t)=Q^{\pi_{\theta}}(s_t,a_t)-V^{\pi_{\theta}}(s_t),\tag{4}$$
+```math
+A^{\pi_{\theta}}(s_t,a_t)=Q^{\pi_{\theta}}(s_t,a_t)-V^{\pi_{\theta}}(s_t),\tag{4}
+```
 
 其中 $V^{π_θ}(s_t)$ 是 $s_t$ 的函数。**原则上，$V^{π_θ}(s_t)$ 可以采用任何函数形式**。一个常用的函数是价值函数，它表示从状态 $s_t$ 开始并遵循策略 $π_θ$ 时的期望回报。虽然 GAE 提供了一种更复杂的方法来平衡优势估计中的偏差和方差，但我们发现，在模型推理的背景下，One-step advantage estimation 足以获得良好的性能。这种简单性在计算效率至关重要的场景中尤其有利。
 
@@ -60,17 +73,26 @@ $$A^{\pi_{\theta}}(s_t,a_t)=Q^{\pi_{\theta}}(s_t,a_t)-V^{\pi_{\theta}}(s_t),\tag
 
 ## 2.2 Group Policy Gradient
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cefd8cf106e44147b7b109a5c0b53e8d.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/cefd8cf106e44147b7b109a5c0b53e8d.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们提出的方法 —— **G**roup **P**olicy **G**radient (**GPG**)，旨在**解决在缺乏 value 模型的情况下策略梯度估计方差过大的问题**。通过利用组级奖赏，GPG 可以稳定学习并增强强化学习训练的鲁棒性。具体而言，GPG 利用每个组内的平均奖赏来归一化奖赏，从而有效地降低方差。这种方法无需传统的价值模型，从而简化了训练过程并提高了计算效率。“组策略梯度”这一名称反映了我们方法的核心机制，即利用组级平均奖赏来稳定和优化学习。
 
 GPG的核心目标定义为：
 
-$$\mathcal J_{GPG}(\theta)=\mathbb E_{(q,a)\sim\mathcal D,{o_i}^G_{i=1}}[\frac{1}{\sum^G_{i=1}|o_i|}\sum^G_{i=1}\sum^{o_i}_{t=1}(-log\pi_{\theta}(o_{i,t}|q,o_{i,<t})\hat A_{i,t})],\tag{5}$$
+```math
+\mathcal J_{GPG}(\theta)=\mathbb E_{(q,a)\sim\mathcal D,{o_i}^G_{i=1}}[\frac{1}{\sum^G_{i=1}|o_i|}\sum^G_{i=1}\sum^{o_i}_{t=1}(-log\pi_{\theta}(o_{i,t}|q,o_{i,<t})\hat A_{i,t})],\tag{5}
+```
 
 其中 $o_i$ 表示组 G 中的单个响应，第 $i$ 个响应的优势通过对组级奖赏 $\{R_i\}^G_{i=1}$ 进行归一化来计算：
 
-$$\hat A_{i,t}=\frac{r_i-mean(\{R_i\}^G_{i=1})}{F_{norm}}.\tag{6}$$
+```math
+\hat A_{i,t}=\frac{r_i-mean(\{R_i\}^G_{i=1})}{F_{norm}}.\tag{6}
+```
 
 $F_{norm}$ 是一种可选的归一化技术，通常与奖赏裁剪结合使用，以减轻意外异常值的影响。一种广泛采用的做法是在训练 batch 内采用标准方差归一化。这种方法通过降低奖赏信号的方差来帮助稳定训练过程，这在处理奖励幅度可能存在显著差异的环境（例如不同的 Atari 游戏）时尤为重要。**通过对奖赏信号进行归一化，模型对极值的敏感度会降低，从而提高训练算法的鲁棒性和收敛性**。然而，在涉及大型模型的推理任务中，奖赏通常定义明确，不会受到其他环境中观察到的方差问题的影响。对于数学推理问题，通常的做法是给正确答案 1.0 分，给错误答案 0.0 分。
 
@@ -82,11 +104,15 @@ $F_{norm}$ 是一种可选的归一化技术，通常与奖赏裁剪结合使用
 
 **同一组中全部正确或全部错误响应的样例会为梯度估计引入偏差**。给定一个 batch size 为 $B$ 的训练样例，令第 $i$ 个样本的梯度表示为 $\textbf g_i$。不失一般性，假设该 batch 中的前 $M$ 个样例均为同一组中的正确或错误响应。标准反向传播 (BP) 算法将梯度估计为：$\textbf g=\frac{\sum^B_{i=1}\textbf g_i}{B} = \frac{\sum^B_{t=M+1}\textbf g_i}{B}$。然而，前 $M$ 个示例对于梯度估计无效，贡献的梯度为零。因此，更准确的梯度估计 (AGE) 可以写成：
 
-$$\hat{\textbf g}=\frac{\sum^B_{i=M+1}\textbf g_i}{B-M}=\textbf g\frac{B}{B-M}=\alpha\textbf g,\alpha=\frac{B}{B-M}.\tag{7}$$
+```math
+\hat{\textbf g}=\frac{\sum^B_{i=M+1}\textbf g_i}{B-M}=\textbf g\frac{B}{B-M}=\alpha\textbf g,\alpha=\frac{B}{B-M}.\tag{7}
+```
 
 需要注意的是，$α$ 值不是常数，它会随着不同的 batch 而变化。我们还在图 2 中用不同的步长说明了 $α$，这表明了梯度校正的必要性。对于多 GPU 训练，为了实现更精确的梯度计算，建议收集所有 GPU 上的所有非零梯度样本，并统一计算平均梯度。这种方法可以通过自定义梯度聚合函数来实现，但这会增加通信开销。为此，我们推导出另一种等效格式，它不需要额外的开销，并在 A 部分提供证明。因此，给定一个batch样本，目标可以写成：
 
-$$\hat{\mathcal J}_{GPG}(\theta)=\alpha\mathcal J_{GPG}(\theta).\tag{8}$$
+```math
+\hat{\mathcal J}_{GPG}(\theta)=\alpha\mathcal J_{GPG}(\theta).\tag{8}
+```
 
 在一个场景中，我们舍弃 M 个样本，并以类似于近期研究中所提出的方法对响应进行重新采样，直到 M 等于 0，此时 α 被设置为 1。然而，这种特定的设置训练效率不高。原因是训练时间受限于花费最长时间收集所需样本的人工。相比之下，我们提出的方法表现出了更高的效率。此外，它能够根据样本批次的表现自动调整损失。
 
@@ -96,9 +122,19 @@ $$\hat{\mathcal J}_{GPG}(\theta)=\alpha\mathcal J_{GPG}(\theta).\tag{8}$$
 
 强化学习算法在处理方差和优化策略的方法上差异很大。许多强化学习算法的两个关键组成部分是替代损失和策略约束。我们在表 2 中总结了各种框架的主要比较结果。我们的方法因保留了最简单的形式而脱颖而出，这不仅确保了易于实现，而且还保持了较高的效率和有效性。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3e295a41ee3447ffa64697e0f3b3196b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/3e295a41ee3447ffa64697e0f3b3196b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a69d08daec5a4593874c3fcf36d2d63b.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/a69d08daec5a4593874c3fcf36d2d63b.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 3.Experiments
 

@@ -26,16 +26,22 @@ GRPO 是我们采用的强化学习算法，用于训练 DeepSeekR1-Zero 和 Dee
 
 对于每个问题 $q$，GRPO 从旧策略 $\pi_{\theta_{old}}$ 中抽取一组输出 $\{o_1, o_2, · · · , o_G\}$，然后通过最大化以下目标来优化策略模型 $\pi_{\theta}$：
 
-$$\begin{array}{cc}
+```math
+\begin{array}{cc}
 \mathcal J_{GRPO}(\theta)=\mathbb E[q\sim P(Q),\{o_i\}^G_{i=1}\sim\pi_{\theta_{old}}(O|q)]\\
 \frac{1}{G}\sum^G_{i=1}(min(\frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}}(o_i|q)}A_i, \frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}}(o_i|q)},1-𝜀, 1+𝜀)A_i)-\beta\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})),
-\end{array}\tag{1}$$
+\end{array}\tag{1}
+```
 
-$$\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})=\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-log\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-1,\tag{2}$$
+```math
+\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})=\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-log\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-1,\tag{2}
+```
 
 其中 $\pi_{ref}$ 是参考策略，$𝜀$ 和 $𝛽$ 是超参数，$A_i$ 是优势函数，使用一组奖赏 $\{r_1,r_2, . . . ,r_G\}$ 计算得出，这些奖赏对应于每个组内的输出：
 
-$$A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std(\{r_1,r_2,...,r_G\})}.\tag{3}$$
+```math
+A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std(\{r_1,r_2,...,r_G\})}.\tag{3}
+```
 
 我们在补充材料 A.3 中对 GRPO 和 PPO 进行了比较。为了训练 DeepSeek-R1-Zero 模型，我们将学习率设置为 3e-6，KL 系数设置为 0.001，并将 rollout 的采样 temperature 设置为 1。对于每个问题，我们在 8.2k 步之前采样 16 个输出，最大长度为 32,768 个 token，之后采样 65,536 个 token。因此，DeepSeek-R1-Zero 模型的性能和响应长度在 8.2k 步均出现了显著提升，训练总共持续了 10,400 步，相当于 1.6 个训练 epoch。每个训练步长包含 32 个不同的问题，因此训练 batch size 为 512。每 400 步，我们将 ref 模型替换为最新的策略模型。为了加速训练，每次 rollout 生成 8,192 个输出，这些输出被随机分成 16 个小 batch，并且只训练一个 inner epoch。
 
@@ -49,13 +55,20 @@ $$A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std(\{r_1,r_2,...,r_G\})}.\tag{3}$$
 
 **Format rewards** 机制通过强制执行特定的格式要求，对准确性奖赏模型进行了补充。具体而言，该机制鼓励模型将其推理过程封装在指定的标签内，即“$\texttt{<think>}$”和“$\texttt{</think>}$”。这确保了模型的思维过程得到清晰的描述，从而增强了模型的可解释性，并有助于后续的分析。
 
-$$Reward_{rule}=Reward_{acc}+Reward_{format}\tag{4}$$
+```math
+Reward_{rule}=Reward_{acc}+Reward_{format}\tag{4}
+```
 
 准确率奖励和格式奖赏以相同的权重组合。值得注意的是，我们不将神经奖赏模型（无论是基于结果的还是基于过程的）应用于推理任务。这一决定基于我们的观察：**神经奖赏模型在大规模强化学习过程中容易受到奖赏操纵**。此外，重新训练此类模型需要大量的计算资源，并会增加训练流程的复杂性，从而使整体优化过程更加复杂。
 
 ## 2.3 Incentivize Reasoning Capability in LLMs
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9f36245f3b2b4832870580b4d8e6dd4d.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/9f36245f3b2b4832870580b4d8e6dd4d.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 具体来说，我们基于 DeepSeek-V3 模型应用强化学习 (RL) 技术来训练 DeepSeek-R1-Zero。在训练过程中，我们设计了一个简单的模板，要求 DeepSeek-R1-Zero 首先生成推理过程，然后再给出最终答案。我们特意将约束条件限制在这种结构化格式内，避免任何内容相关的偏差，以确保能够准确观察模型在强化学习过程中的自然演进。
@@ -70,11 +83,21 @@ DeepSeek-R1-Zero 的自我进化体现了强化学习如何自主增强模型的
 
 DeepSeek-R1-Zero 的自我演化凸显了强化学习的强大之处和精妙之处：我们无需显式地教会模型如何解决问题，只需提供合适的激励，它就能自主地发展出更高级的问题解决策略。这提醒我们，强化学习拥有巨大的潜力，能够释放低层次模型（LLM）的更高能力，并为未来构建更自主、更具适应性的模型铺平道路。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4cdb6f1b639f4a30b22727e8c3c3d7a9.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/4cdb6f1b639f4a30b22727e8c3c3d7a9.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 # 3.DeepSeek-R1
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8e4958464699473699efc4d80f650884.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/8e4958464699473699efc4d80f650884.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 
 尽管 DeepSeek-R1-Zero 展现出强大的推理能力，但它也面临一些问题。例如，由于 DeepSeek-V3-Base 是在多种语言（尤其是英语和中文）上训练的，因此 DeepSeek-R1-Zero 在可读性差和语言混合等问题上表现不佳。为了解决这些问题，我们开发了 DeepSeek-R1，其流程如图 2 所示。
@@ -89,13 +112,17 @@ DeepSeek-R1-Zero 的自我演化凸显了强化学习的强大之处和精妙之
 
 **Helpful Reward Model**。为了训练有效的奖赏模型，我们首先使用补充材料 B.2 中列出的 arena-hard 提示格式向 DeepSeek-V3 生成偏好对。其中，每个偏好对包含一个用户 query 和两个候选答案。对于每个偏好对，我们调用 DeepSeek-V3 四次，并将答案随机分配为答案 A 或答案 B，​​以减少位置偏差。最终偏好得分由四次独立判断的平均值确定，仅保留得分差 (Δ) 大于 1 的偏好对，以确保区分的有效性。此外，为了最大限度地减少长度相关的偏差，我们确保整个数据集中被选择和被拒绝的答案长度相当。我们总共整理了 66,000 个数据对用于训练奖赏模型。该数据集中使用的提示均为非推理性问题，来源要么是公开的开源数据集，要么是用户明确同意分享其数据以改进模型。我们的奖赏模型架构与 DeepSeek-R1 的架构一致，增加了一个奖赏头，旨在预测标量偏好分数。
 
-$$Reward_{helpful}=RM_{helpful}(Response_A,Response_B)\tag{5}$$
+```math
+Reward_{helpful}=RM_{helpful}(Response_A,Response_B)\tag{5}
+```
 
 我们使用 256 的 batch、6e-6 的学习率，在训练数据集上进行单 epoch 训练，来训练这些有用的奖赏模型。训练期间的最大序列长度设置为 8192 个 token，而奖赏模型推理期间则没有设置明确的长度限制。
 
 **Safety Reward Model**。为了评估和改进模型安全性，我们整理了一个包含 106,000 个提示的数据集，这些提示均由模型生成，并根据预定义的安全准则标注为“安全”或“不安全”。与 helpful 奖赏模型中使用的成对损失不同，安全奖励模型采用逐点方法进行训练，以区分安全和不安全的响应。其训练超参数与 helpful 奖励模型相同。
 
-$$Reward_{safety}=RM_{safety}(Response)\tag{6}$$
+```math
+Reward_{safety}=RM_{safety}(Response)\tag{6}
+```
 
 对于通用问题，每个实例都会被归类为属于安全数据集或有用性数据集。分配给每个 query 的一般奖赏 $Reward_{General}$ 对应于关联数据集中定义的相应奖赏。
 
@@ -105,7 +132,9 @@ $$Reward_{safety}=RM_{safety}(Response)\tag{6}$$
 
 在强化学习的第一阶段，我们将学习率设置为 3e-6，KL 系数设置为 0.001，GRPO 裁剪率 ε 设置为 10，采样 temperature 设置为 1（针对 rollout）。对于每个问题，我们采样 16 个输出，最大长度为 32,768。每个训练步骤包含 32 个不同的问题，因此每个步骤的训练 batch size 为 512。每 400 步，我们将 ref 模型替换为最新的策略模型。为了加速训练，每次 rollout 生成 8,192 个输出，这些输出被随机分成 16 个小 batch，并仅训练一个内部 epoch。然而，为了缓解语言混合问题，我们在强化学习训练中引入了语言一致性奖赏，该奖赏计算为目标语言词汇在词库 (CoT) 中的比例。
 
-$$Reward_{language}=\frac{Num(Words_{target})}{Num(Words)}\tag{7}$$
+```math
+Reward_{language}=\frac{Num(Words_{target})}{Num(Words)}\tag{7}
+```
 
 尽管补充材料 B.6 中的消融实验表明，这种语言一致性会导致模型性能略微下降，但这种奖励机制符合人类偏好，使其更易于理解。我们将语言一致性奖赏直接添加到最终奖赏中，从而将其应用于推理数据和非推理数据。
 
@@ -115,11 +144,17 @@ $$Reward_{language}=\frac{Num(Words_{target})}{Num(Words)}\tag{7}$$
 
 具体来说，我们结合奖赏信号和多样化的提示分布来训练模型。对于推理数据，我们遵循DeepSeek-R1-Zero中概述的方法，该方法采用基于规则的奖赏来指导数学、编码和逻辑推理领域的学习。在训练过程中，我们观察到 CoT 经常出现语言混合现象，尤其是在强化学习提示涉及多种语言时。对于通用数据，我们利用奖赏模型来指导训练。最终，奖赏信号与多样化数据分布的结合使我们能够开发出一个不仅在推理方面表现出色，而且还优先考虑有用性和无害性的模型。给定一批数据，奖励可以表示为：
 
-$$Reward=Reward_{reasoning}+Reward_{general}+Reward_{language}\tag{8}$$
+```math
+Reward=Reward_{reasoning}+Reward_{general}+Reward_{language}\tag{8}
+```
 
-$$where,~Reward_{reasoning}=Reward_{rule}\tag{9}$$
+```math
+where,~Reward_{reasoning}=Reward_{rule}\tag{9}
+```
 
-$$Reward_{general}=Reward_{reward\_model}+Reward_{format}\tag{10}$$
+```math
+Reward_{general}=Reward_{reward\_model}+Reward_{format}\tag{10}
+```
 
 强化学习的第二阶段保留了第一阶段的大部分参数，主要区别在于 temperature 降低至 0.7，因为我们发现该阶段较高的温度会导致生成不一致的指令。该阶段共包含 1700 个训练步骤，其中通用指令数据和基于偏好的奖赏仅在最后 400 个步骤中引入。我们发现，使用基于模型的偏好奖赏信号进行更多训练步骤可能会导致reward hacking ，这在补充材料 B.5 中有详细记录。总训练成本列于补充材料 B.4.4。
 
@@ -135,22 +170,33 @@ $$Reward_{general}=Reward_{reward\_model}+Reward_{format}\tag{10}$$
 
 ### A.3 A Comparison of GRPO and PPO
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/30cf102674ac45efa9d981a7bc92317c.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/30cf102674ac45efa9d981a7bc92317c.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 我们采用组相对策略优化（GRPO）来训练 DeepSeek-R1-Zero 和 DeepSeek-R1。GRPO 最初是为了简化训练过程并降低近端策略优化（PPO）的资源消耗而提出的，PPO 广泛应用于 LLM 的强化学习阶段。GRPO和PPO的总体比较见图3。
 
 对于每个问题 $q$，GRPO 从旧策略 $\pi_{\theta_{old}}$ 中抽取一组输出 $\{o_1, o_2, · · · , o_G\}$，然后通过最大化以下目标来优化策略模型 $\pi_{\theta}$：
 
-$$\begin{array}{cc}
+```math
+\begin{array}{cc}
 \mathcal J_{GRPO}(\theta)=\mathbb E[q\sim P(Q),\{o_i\}^G_{i=1}\sim\pi_{\theta_{old}}(O|q)]\\
 \frac{1}{G}\sum^G_{i=1}(min(\frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}}(o_i|q)}A_i, \frac{\pi_{\theta}(o_i|q)}{\pi_{\theta_{old}}(o_i|q)},1-𝜀, 1+𝜀)A_i)-\beta\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})),
-\end{array}\tag{11}$$
+\end{array}\tag{11}
+```
 
-$$\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})=\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-log\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-1,\tag{12}$$
+```math
+\mathbb D_{KL}(\pi_{\theta}||\pi_{ref})=\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-log\frac{\pi_{ref}(o_i|q)}{\pi_{\theta}(o_i|q)}-1,\tag{12}
+```
 
 其中 $\pi_{ref}$ 是参考策略，$𝜀$ 和 $𝛽$ 是超参数，$A_i$ 是优势函数，使用一组奖赏 $\{r_1,r_2, . . . ,r_G\}$ 计算得出，这些奖赏对应于每个组内的输出：
 
-$$A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std(\{r_1,r_2,...,r_G\})}.\tag{13}$$
+```math
+A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std(\{r_1,r_2,...,r_G\})}.\tag{13}
+```
 
 相比之下，在近端策略优化算法（PPO）中，优势函数通常是通过应用广义优势估计（GAE）来计算的，该估计不仅基于奖赏，还基于一个学习到的 value 模型。由于 value 模型通常与策略模型规模相近，因此会引入显著的内存和计算开销。此外，value 模型的训练目标是基于从初始状态到当前状态生成的 token，预测从当前状态开始的期望累积奖赏。这本身就非常困难，尤其是在只有最终结果奖赏可用的情况下。当训练长链推理模型时，挑战会更加突出。**随着输出长度的增加，模型在生成过程中更有可能进行反思和修正等行为，这意味着最初生成的内容之后可能会被修正或推翻，这使得基于部分响应预测最终奖赏变得更加困难。**
 
@@ -160,4 +206,9 @@ GRPO 和 PPO 的另一个关键区别在于训练过程中 Kullback-Leibler (KL)
 
 虽然 PPO 在适当调优后可以达到类似的性能，但它需要额外的计算成本来进行超参数优化。此外，考虑到训练额外 value 模型所带来的内存和计算开销，GRPO 提供了一种更实用的替代方案，尤其是在资源受限的情况下训练大规模模型时。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a0bcf0c47cba406784336caee829e574.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/a0bcf0c47cba406784336caee829e574.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>

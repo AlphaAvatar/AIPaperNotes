@@ -10,7 +10,12 @@
 
 ## 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1f439ae7f8d243b7b0c48767f03db741.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/1f439ae7f8d243b7b0c48767f03db741.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 混合专家（MoE）架构已成为大语言模型（LLM）参数扩展时管理计算成本的一种很有前景的解决方案。最近，MoE 在基于 Transformer 的模型中的应用已成功实现了将语言模型扩展到相当大规模的尝试，并取得了显著的性能提升。然而，训练 MoE 模型始终面临负载不均衡的问题，这可能导致路由崩溃或计算开销增加。为了避免路由不均衡，现有方法通常使用辅助损失来促进专家负载的均衡分配。**虽然辅助损失可以缓解训练过程中的负载不均衡，但它也会引入与语言建模目标相冲突的不良梯度**。这些干扰梯度会降低模型性能，因此现有的多目标估计方法始终需要在负载均衡和模型性能之间权衡取舍。
 
@@ -24,28 +29,37 @@
 
 目前主流的 MoE 架构用 MoE 层替换了标准 Transformer 中的 MLP 层。在 MoE 层中，采用 Top-K 路由为每个 token 选择专家。令 $\textbf u_t$ 表示第 $t$ 个token到具有 $N$ 个专家的 MoE 层的输入，则输出 $\textbf h_t$ 计算如下：
 
-$$\begin{array}{cc}
+```math
+\begin{array}{cc}
 \textbf h_t=\textbf u_t+\sum^N_{i=1}g_{i,t}FFN_i(\textbf u_t),\\
 g_{i,t}=\begin{cases}
 s_{i,t}, & s_{i,t}\in TopK(\{s_{j,t}|1\le j\le N\},K),\\
 0, & otherwise,
 \end{cases}\\
 s_{i,t}=G(\textbf u^T_t\textbf e_i),
-\end{array}\tag{1}$$
+\end{array}\tag{1}
+```
 
 其中 $G$ 为非线性门控函数，$e_i$ 为第 $i$ 个专家的质心。
 
 ### 2.2 AUXILIARY LOSS FOR LOAD BALANCE
 
- ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/539ca1b9ec7b4aa4ac6e096a2918200f.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/539ca1b9ec7b4aa4ac6e096a2918200f.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 **Auxiliary Loss**。不受控制的路由策略容易出现负载不均衡，这会带来两个显著的​​缺点。首先，存在路由崩溃的风险，即模型始终只选择少数专家，从而阻碍其他专家的充分训练。其次，当专家分布在多个设备上时，负载不均衡会加剧计算瓶颈。为了解决这些问题，通常采用辅助损失来控制负载均衡。对于长度为 $T$ 的序列，辅助损失定义如下：
 
-$$\begin{array}{cc}
+```math
+\begin{array}{cc}
 \mathcal L_{Balance}=\alpha\sum^N_{i=1}f_iP_i,\\
 f_i=\frac{N}{KT}\sum^T_{t=1}\mathbb I(Token~t~selects~Expert~i),\\
 P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},
-\end{array}\tag{2}$$
+\end{array}\tag{2}
+```
 
 其中 $N$ 为专家总数，$K$ 为每个 token 选择的专家数量，$s_{i,t}$ 为专家 $i$ 对 token $t$ 的路由得分，$f_i$ 表示路由到专家 $i$ 的 token 比例，$P_i$ 表示专家 $i$ 的平均门控得分，$α$ 是控制辅助损失强度的超参数。
 
@@ -53,14 +67,21 @@ P_i=\frac{1}{T}\sum^T_{t=1}s_{i,t},
 
 ## 3. AUXILIARY-LOSS-FREE LOAD BALANCING STRATEGY
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/31ac064a39f942a88edfd2b47d20a970.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/31ac064a39f942a88edfd2b47d20a970.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 为了提供一种更好的负载均衡方案，避免直接干扰训练目标的主要梯度，我们提出了 **Loss-Free Balancing** 方法。该方法根据每个专家的平衡状态直接调整其门控分数。如图 1 所示，我们向每个专家的门控分数 $s_{i,t}$ 添加一个专家级偏差项 $\{\textbf b_i\}^N_{i=1}$，并使用这些偏差分数来确定 top-K 个选择：
 
-$$g_{i,t}=\begin{cases}
+```math
+g_{i,t}=\begin{cases}
 s_{i,t}, & s_{i,t}+b_i\in Topk(\{s_{j,t}+b_j|1\le j\le N\},k),\\
 0, & otherwise.
-\end{cases}\tag{3}$$
+\end{cases}\tag{3}
+```
 
 需要注意的是，专家偏差项 $b_i$ 仅用于通过影响 top-K 个专家的选择来调整路由策略。它不会添加到用于在计算 MoE 层最终输出时对所选专家的输出进行加权的 $g_{i,t}$ 中。
 
@@ -68,6 +89,11 @@ s_{i,t}, & s_{i,t}+b_i\in Topk(\{s_{j,t}+b_j|1\le j\le N\},k),\\
 
 **Comparison with Other Load Balancing Methods**。为了展示 Loss-Free Balancing 的理论优势，我们将其与另外两种主流负载均衡方法进行比较，即辅助损失控制方法和专家选择（EC）方法。如第2.2节所述，辅助损失控制方法面临着负载均衡和模型性能之间的两难困境，可能难以找到完美的平衡点。而专家选择方法会破坏语言建模的因果约束，因为每个 token 的目标专家都基于同一序列或 batch 中的后续 token。这将导致未来 token 信息的泄露，从而破坏模型的泛化能力。表 1 总结了不同负载均衡方法的特性。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/98d7746940c241268abd39ed4fcd02e3.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/98d7746940c241268abd39ed4fcd02e3.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 4.EXPERIMENTS
