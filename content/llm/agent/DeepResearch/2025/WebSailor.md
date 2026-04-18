@@ -1,12 +1,15 @@
+# WebSailor: Navigating Super-human Reasoning for Web Agent
+
 论文链接：https://arxiv.org/pdf/2507.02592
 
 代码链接：https://github.com/Alibaba-NLP/WebAgent
 
-# 摘要
+## 摘要
 
 超越人类认知局限是 LLM 训练的关键目标。像 DeepResearch 这样的专有 Agent 系统，在极其复杂的信息搜索基准测试（例如 BrowseComp）上展现出了超越人类的能力，这在以前是难以企及的。我们认为，**它们的成功取决于开源模型所缺乏的一种复杂推理模式：在探索浩瀚信息时，系统地降低极端不确定性的能力**。基于这一洞见，我们推出了 **WebSailor**，这是一种旨在培养这一关键能力的完整后训练方法。我们的方法包括通过结构化采样和信息混淆、RFT 冷启动以及高效的 Agent 强化学习训练算法——重复采样策略优化 (Duplicating Sampling Policy Optimizati, DUPO)，来生成新的高不确定性任务。凭借这一集成流程，WebSailor 在复杂的信息搜索任务中的表现显著优于所有开源 Agent，与专有  Agent 的性能相媲美，并缩小了能力差距。
 
-# 1.介绍
+## 1.介绍
+
 <img
   src="https://i-blog.csdnimg.cn/direct/1de75b0614f24194b6e2a5413e244994.png"
   alt=""
@@ -28,7 +31,7 @@
 
 我们的 WebSailor 模型系列（3B、7B、32B 和 72B）在 BrowseComp-en/zh 上的表现优于所有开源模型和 Agent 方法，并且当与浏览功能结合使用时，也超越了 Grok-3 和 DouBao 等专有 LRM，如图 1 所示。此外，我们发现基于复杂的、不确定性驱动的推理模式的后训练表现出向下兼容性，在 GAIA、XBench-DeepSearch 和 SimpleQA 等更简单的任务上取得了良好的性能。
 
-# 2.Problem Definition
+## 2.Problem Definition
 
 我们采用 ReAct 作为 Agent 的框架。收到问题后， Agent 会执行多次 **Thought-Action-Observation** 的迭代。具体来说，在每次迭代中，LLM 基于现有上下文生成一个 Thought 并执行一个可解析的 Action（工具调用），然后等待环境返回一个 Observation。在 WebTraverseX 中，行动空间包括**生成最终答案**以及两个工具——**搜索**和**访问**，这两个工具分别对应于使用多个查询调用搜索引擎以及通过 URL 访问多个网页以检索其内容。这两个工具的详细信息见附录 A.1。搜索操作返回的观察结果包含 10 个标题、摘要及其与每个搜索查询对应的 URL。相比之下，访问操作的观察结果则是网页的摘要，根据 LLM 操作中指定的“目标”进行定制。当 LLM 选择“最终答案”作为操作时，迭代终止。包含 $T$ 次迭代的完整轨迹可以定义为：
 
@@ -40,11 +43,12 @@
 
 完成多跳问答通常只需要一两轮ReAct，因为每一步的操作都非常清晰，无需太多的战略规划。与之形成鲜明对比的是，BrowseComp 将智 Agent 放置在一个庞大的非结构化信息空间中，其中的解决方案路径并未预先定义。单纯的暴力搜索在计算上是不可行的，可能需要数千次工具调用，这将使任何现代LLM的上下文窗口不堪重负。因此，成功的关键不在于遵循简单的脚本，而在于执行高度自适应的搜索策略。Agent 必须动态地合成部分信息，修剪没有希望的探索路径，并整合不同的事实以最终找到解决方案。将这个组合庞大的搜索空间压缩成几十步的可处理轨迹，需要复杂的思维链。正是这种战略导航和综合的过程，体现了这项工作试图引出和模拟的复杂、超人的推理模式。
 
-# 3.Large-scale Training Data Synthesis for Complex Reasoning
+## 3.Large-scale Training Data Synthesis for Complex Reasoning
 
 在本节中，我们从两个角度介绍我们的训练数据构建：QA构建和推理轨迹生成。
 
-## 3.1  SailorFog-QA: Scalable Graph-Synthesized QA
+### 3.1  SailorFog-QA: Scalable Graph-Synthesized QA
+
 <img
   src="https://i-blog.csdnimg.cn/direct/ab63e75c75d54f6fb31c32de45424187.png"
   alt=""
@@ -72,7 +76,8 @@
   referrerpolicy="no-referrer"
   style="max-width: 100%; height: auto;"
 />
-## 3.2 Reconstructing Reasoning from Expert LRM Trajectories
+
+### 3.2 Reconstructing Reasoning from Expert LRM Trajectories
 
 合成复杂的 QA 对后，下一个挑战是为冷启动有监督生成相应的解决方案轨迹。虽然像 QwQ-32B 这样的强大的开源 LRM 可以提供一些正确的轨迹，但直接使用它们的全部输出进行微调会适得其反。我们发现了两个关键问题：
 - **Stylistic Contamination**：这些 LRM 的推理过程往往冗长，且风格化程度较高。直接对这些输出进行微调可能会过于规范，从而抑制Agent 开发自主探索策略和泛化至未知问题的能力。
@@ -144,4 +149,4 @@ R_i = 0.1 \times R_i^{\mathrm{format}} \;+\; 0.9 \times R_i^{\mathrm{answer}}.\t
 
 其中，格式得分用于检查 rollout 轨迹是否符合预定义格式（如不同内容片段是否正确包裹在 `<think>` 与 `<tool_call>` 标签中，序列是否遵循 ReAct 框架）；答案得分则由 LLM 作为裁判，判定最终预测是否正确。
 
-# 5.Experiments
+## 5.Experiments

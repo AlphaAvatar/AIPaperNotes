@@ -1,12 +1,14 @@
+# EgoMem: Lifelong Memory Agent for Full-duplex Omnimodal Models
+
 论文链接：https://arxiv.org/pdf/2509.11914
 
 代码链接：
 
-# 摘要
+## 摘要
 
 我们推出了 EgoMem，这是首个专为处理实时全模态流的全双工模型量身定制的终身记忆 Agent。EgoMem 使实时模型能够直接从原始视听流中识别多个用户，提供个性化响应，并长期保存从视听历史中提取的用户信息、偏好和社交关系。**EgoMem 通过三个异步进程运行**：（i）检索进程，通过面部和语音动态识别用户，并从长期记忆中收集相关上下文；（ii）全模态对话进程，基于检索到的上下文生成个性化音频响应；以及（iii）记忆管理进程，自动从全模态流中检测对话边界，并提取必要信息以更新长期记忆。与现有的终身学习模型（LLM）记忆 Agent 不同，EgoMem 完全依赖于原始视听流，使其特别适用于终身、实时和具身化的场景。实验结果表明，EgoMem的检索和记忆管理模块在测试集上的准确率超过95%。当与经过微调的 **RoboEgo** 全模态聊天机器人集成时，该系统在实时个性化对话中实现了87%以上的事实一致性得分，为未来的研究奠定了坚实的基础。
 
-# 1.Introduction
+## 1.Introduction
 
 <img
   src="https://i-blog.csdnimg.cn/direct/552fe516a0d24573915f8924ca82ea6f.png"
@@ -30,9 +32,9 @@
 - **实现**——我们提供了基于 RoboEgo 主干网的 EgoMem 的具体实现，包括详细的模块设计、数据构建管道和训练配置。
 - **评估**——我们证明 EgoMem 在终身全模态场景的个性化任务中取得了稳健的性能，为未来的研究建立了一个坚实的基准。
 
-# 2.Task Definition and Preliminaries
+## 2.Task Definition and Preliminaries
 
-## 2.1 Task Description
+### 2.1 Task Description
 
 EgoMem 旨在为长期部署的全模态模型提供全双工、个性化的聊天功能。**作为第一步，我们首先关注每次只有一个活跃发言者的情况，将更复杂的鸡尾酒会问题留待未来研究**。在此设置下，在每个时刻 $t$，主对话模型 $F$ 接收音频 $a_t$、视频 $v_t$ 以及可选的文本输入 $l_t$ 作为输入（监听），同时接收用户个人资料 $p_t$ 和参考信息 $c_t$。它生成个性化回复$r_t$：
 
@@ -70,7 +72,7 @@ M\leftarrow EgoMem.write(M,Episode).\tag{4}
 M\leftarrow EgoMem.update(M).\tag{5}
 ```
 
-##  2.2 Preliminaries
+###  2.2 Preliminaries
 
 本节介绍本文所用 EgoMem 实现的预备知识。尽管如此，EgoMem 的框架和方法论可以应用于任意全双工全模态对话模型 $F$，以及超出我们实现范围的 $a_t$、$v_t$ 和 $l_t$ 的不同流组织形式。
 
@@ -78,15 +80,15 @@ M\leftarrow EgoMem.update(M).\tag{5}
 
 **Omnimodal Stream Processing**。对于音频信号，我们使用 Mimi tokenizer 以每秒12.5帧的速度提取特征。每个音频帧由一个语义 token 和七个声学 token 表示。音频输入和输出被分为两个通道：听音通道和说话通道，而文本独白 token 则放置在一个额外的文本通道中。因此，模型在每次前向传播中消耗17个 token，其中包括来自前一个时刻的1个文本 token 和16个音频 token。它们被加性地合并到输入嵌入中。然后，模型使用7B LLM骨干网络处理所有历史输入嵌入，以生成当前时刻的隐藏状态。遵循 RQ-Transformer 架构，一个轻量级深度Transformer（具有 100M 参数）首先基于顶层的当前隐藏状态生成一个文本独白 token，然后自回归地生成八个说话 token。在终身部署场景中，该过程实时持续运行，形成主对话流；同时，视觉信号 $v_t$ 通过视觉 Transformer 进行编码，并以 2-4 秒的固定间隔，以时分复用 (TDM) 的方式添加到上下文中。有关详细的结构配置，请参阅相关文献。
 
-# 3.EgoMem
+## 3.EgoMem
 
 EgoMem 的设计可分为两个层次：第一层级支持基于用户个人资料的多用户个性化设置，第二层级则支持基于社交网络及其他参考信息的个性化对话。与第一层级相比，第二层级尤其适用于用户间联系更为紧密的应用场景，例如家用机器人。对于每一层级，我们首先描述整体记忆系统设计，然后基于2.2节概述的主要对话流程，详细介绍各个子模块的实现细节。
 
-## 3.1 Level-1: Profile-only
+### 3.1 Level-1: Profile-only
 
 在 EgoMem Level-1 中，记忆系统会为每个已识别的用户维护详细的个人资料信息，但不会记录用户之间的社会关系图或其他参考资料。形式上，Level-1 EgoMem 在公式 1 和 2 中将 $c_t$ 设置为 None。
 
-### 3.1.1 System Design
+#### 3.1.1 System Design
 
 <img
   src="https://i-blog.csdnimg.cn/direct/04cea742179349b19b4569a86f4bfee4.png"
@@ -117,7 +119,7 @@ $v^q_f$ 和 $v^q_s$ 分别用于基于距离和阈值（3.1.2 节）对每个用
 
 **Memory Management Process**。这是一个独立进程，它实例化了 EgoMem 的提取、写入和更新功能（公式 3-5），模拟人形机器人的记忆活动。在固定的时间间隔（例如 10 分钟）内，从主对话进程的 17 路 token 流中提取信息：记忆管理进程以一个 8192 步的流块作为输入，使用序列标记模型（即情景触发器）标记每个时间步，以确定 RoboEgo 与每个用户之间现有对话会话的边界​​，并收集每个对话会话对应的原始流。接下来，我们利用外部 LLM 作为记忆提取器，从剪辑后的原始流中提取事件、用户信息和用户偏好。之后，记忆管理进程调用人脸和说话人检索功能来识别此会话片段的用户。如果系统识别出用户为新用户，EgoMem 会创建一个新的用户配置文件，将人脸/语音嵌入向量存储为键，并根据提取的记忆内容初始化该用户配置文件。否则，系统会将用户身份和提取的记忆内容提供给记忆更新 Agent（Memory Update Agent），该 Agent 是一个外部 LLM（逻辑层级模型），用于检测提取的记忆内容与用户现有配置文件之间是否存在潜在冲突。用户的配置文件将据此进行更新。
 
-### 3.1.2 Sub-modules
+#### 3.1.2 Sub-modules
 
 图 2 显示了 Level-1 EgoMem Agent 中使用的所有子模块的实现。
 
@@ -149,11 +151,11 @@ Tag_{0\sim t} = episodic\_trigger(a_{0\sim t}, r_{0\sim t}).\tag{9}
 
 **Main Dialog Model**。我们进一步微调 RoboEgo 模型，使其能够关注 Level-1 MemChunk 区域，并据此生成个性化的对话响应。微调配置详见第 4 节。与 Level-2 MemChunk（第 3.2 节）不同，该模型不会向 EgoMem 生成任何额外的控制信号或查询。
 
-## 3.2 Level-2: Content-driven
+### 3.2 Level-2: Content-driven
 
 在 Level-2 EgoMem 中，记忆不仅像 Level-1 那样存储每个已识别用户的个人资料，还维护用户之间的社交关系图以及其他可能有用的信息。形式上，Level-2 EgoMem 同时提供了公式 1 和公式 2 中的 $p_t$ 和 $c_t$。与 Level-1 的主要区别在于，我们设置了一个额外的 Level-2 MemChunk，其内容会根据主 RoboEgo 模型基于当前对话内容生成的查询动态刷新，而不是像 Level-1 MemChunk 那样由外部轮询过程驱动。在实时对话过程中，当前用户的个人资料缓存在 Level-1 MemChunk 中，而 Level-2 MemChunk 则缓存主模型主动检索数据库的结果，该数据库包含所有用户的完整社交关系图和事实信息，以及其他外部知识库。
 
-### 3.2.1 System Design
+#### 3.2.1 System Design
 
 <img
   src="https://i-blog.csdnimg.cn/direct/afa2bee404fb4fa28c5a5dac1c042a8d.png"
@@ -174,7 +176,7 @@ Tag_{0\sim t} = episodic\_trigger(a_{0\sim t}, r_{0\sim t}).\tag{9}
 
 **Memory Management Process**。记忆管理过程与 Level-1 基本相同，唯一的区别在于，记忆提取器会被提示从原始对话内容中提取新的关系事实（例如，用户 A 说他现在是用户 B 的男朋友），并且记忆更新 Agent 会被提示将用户与现有的已知用户进行相应的链接，从而更新现有社交图的边。
 
-### 3.2.2 Sub-modules
+#### 3.2.2 Sub-modules
 
 在 Level-2 EgoMem 中，人脸验证、说话人验证和情景触发器与 Level-1 EgoMem 保持一致。记忆提取器和记忆更新 Agent 与 Level-1 自我记忆的区别仅在于 prompt。关键区别在于以下子模块：
 
@@ -182,10 +184,10 @@ Tag_{0\sim t} = episodic\_trigger(a_{0\sim t}, r_{0\sim t}).\tag{9}
 
 **Textual Retrieval**。文本检索系统根据 RoboEgo 生成的查询词收集前 K 个相关的文本信息，并更新 Level-2 MemChunk 的内容。具体来说，对于社交图中与当前用户 A 相连的每个用户 U，将 U 的名称及其与 A 的关系，与 U 的每个记忆项（事实、对话历史等）连接起来，形成一个待检索的候选文档。如果“关系查询”组不为空，我们首先仅使用关系查询，通过 BM25 算法匹配所有相关用户的文档；接下来，如果“关键词查询”组不为空，我们将所有关键词连接成一个字符串，并根据检索到的文档与该关键词字符串的向量距离重新排序。我们使用 BGE-small 模型作为文本编码器。前 K 个结果返回到 Level-2 MemChunk 的文本通道。
 
-# 4.Training Details
+## 4.Training Details
 
 接下来，我们将详细介绍如何微调 RoboEgo，使其能够利用 Level-1 和 Level-2 自我记忆生成个性化响应。我们还训练了情景触发器，用于标记对话边界，以便提取记忆。值得注意的是，这三个训练任务的数据收集可以通过监督掩码统一到一个框架中。
 
-## 4.1 Data Collection
+### 4.1 Data Collection
 
-## 4.2 Training Configurations
+### 4.2 Training Configurations

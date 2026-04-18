@@ -1,12 +1,14 @@
+# WebWatcher: Breaking New Frontiers of Vision-Language Deep Research Agent
+
 论文链接：https://arxiv.org/pdf/2508.05748
 
 代码链接：https://github.com/Alibaba-NLP/WebAgent
 
-# 摘要
+## 摘要
 
 诸如 Deep Research 之类的网络 Agent 已展现出超越人类的认知能力，能够解决极具挑战性的信息搜索问题。然而，大多数研究仍然主要以文本为中心，忽视了现实世界中的视觉信息。这使得多模态 Deep Research 极具挑战性，因为与基于文本的 Agent 相比，此类 Agent 需要在感知、逻辑、知识以及使用更复杂工具方面拥有更强大的推理能力。为了突破这一限制，我们推出了 **WebWatcher**，一个用于 Deep Research 的多模态 Agent，它配备了增强的视觉语言推理能力。它利用高质量的合成多模态轨迹进行高效的冷启动训练，利用各种工具进行深度推理，并通过强化学习进一步增强泛化能力。为了更好地评估多模态 Agent 的能力，我们提出了 **BrowseComp-VL**，这是一个类似 BrowseComp 的基准测试，需要进行涉及视觉和文本信息的复杂信息检索。实验结果表明，WebWatcher 在四个具有挑战性的 VQA 基准测试中显著优于专有基线、RAG 工作流和开源 Agent，这为解决复杂的多模态信息搜索任务铺平了道路。
 
-# 1.介绍
+## 1.介绍
 
 <img
   src="https://i-blog.csdnimg.cn/direct/2f2e4ca8b71b423c8c4208e6d750a240.png"
@@ -36,11 +38,11 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
   style="max-width: 100%; height: auto;"
 />
 
-# 2.Data Preparation
+## 2.Data Preparation
 
 在本节中，我们介绍了我们的数据集构建方法，强调高质量数据、多步骤多模态推理以及与基于 Web 的 Agent 范式的强大兼容性。
 
-## 2.1 Dataset Overview and Structure
+### 2.1 Dataset Overview and Structure
 
 <img
   src="https://i-blog.csdnimg.cn/direct/ce38abf2d06e4643b2c646c9128cf94b.png"
@@ -56,8 +58,9 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 提示 LLM 直接从图像生成 VQA 问题是一种常见做法，但它通常会生成浅显的单跳查询，缺乏歧义性、结构化规划和更深层次的推理。此外，大多数现有的 VQA 数据集侧重于感知，很少将丰富的文本信息与知识密集型、多步骤推理相结合。为了解决这一限制，我们**首先**构建了一组多样化的、具有挑战性的文本 QA 对，专注于多跳推理和知识密集型问题。**然后**，我们将它们转化为 VQA 任务，并将它们与相关的视觉内容相结合。该流程生成了高质量的多模态数据，同时保持了视觉丰富度和文本推理的复杂性。
 
-## 2.2 VQA Pairs Construction
-### 2.2.1 Generate QA
+### 2.2 VQA Pairs Construction
+
+#### 2.2.1 Generate QA
 
 **Level 1**。受 **WebDancer** 的 CRAWL-QA 启发，我们通过从权威且知识丰富的来源（例如 arXiv、GitHub 和 Wikipedia）收集根 URL 来提升推理的深度和广度。为了模拟类似人类的浏览行为，我们递归遍历每个根域内可访问的超链接。然后，我们使用 GPT-4o 从聚合内容中合成问答对。
 
@@ -69,13 +72,13 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 为了生成多样化的推理路径，我们从整棵树中采样多个子图。我们随机选择一个节点子集，并不断扩展，直到形成一个包含 $N$ 个实体的子图。每个子图定义了一条从 $B_{root}$ 到新选定的目标实体 $B$ 的唯一推理路径，从而形成一个编码多跳关系的知识图谱。这些子图是生成不同问答对的基础。
 3. **Query Generating**：基于选定的子图和基本事实，我们首先提示 GPT-4o 生成一个标准形式，明确引用推理路径上的实体和关系。然后，将其转换为模糊版本，其中关键引用被替换为部分、模糊或定性的描述。这种设计鼓励多样化的推理模式，促使模型通过综合而非表面匹配来推断答案。
 
-### 2.2.2 QA-to-VQA Conversion
+#### 2.2.2 QA-to-VQA Conversion
 
 **Visual Context Construction for VQA**。为了确保有效的视觉基础，我们首先滤除琐碎或过于模糊的目标实体 $B$，例如那些表示时间指称或领域外部概念的实体，这些实体缺乏足够的视觉基础。对于每个保留的实体 $\hat B$，我们通过 Google SerpApi 检索一组网络图像 $\mathcal I(\hat B) = I^{\hat B}_1, I^{\hat B}_2, ..., I^{\hat B}_K$，其中在我们的实现中 $K = 2$。生成的图像 $\mathcal I(\hat B)$ 作为构建多模态推理示例的视觉基础。与现有 VQA 基准中普遍存在的合成或合成图像不同，我们的图像严格真实，从而最大限度地减少了噪声并最大限度地提高了与现实世界任务的相关性。
 
 **Entity Masking and Question Transformation**。为了从每个文本问答实例 $(q_t, a)$ 构建基于图像的 VQA 对，我们使用 GPT-4o 进行基于提示的重写。令 $q_t$ 表示包含明确提及目标实体 $\hat B$ 的原始文本问题。我们使用视觉参考 token $r_{vis}$（例如指示词（“这个实体”）或描述性短语（“图像中的物体”））对此提及进行掩蔽，以生成转换后的 VQA 查询 $q$。同时，我们生成图像查询字符串 $s_{img}(\hat B)$ 来指导 $\mathcal I(\hat B)$ 的过滤。然后将每个图像 $I^{\hat B}_k∈\mathcal I(\hat B)$ 与 $(q, a)$ 配对，形成一个不同的 VQA 实例。因此，每个文本问答对都会生成 $K$ 个多模态示例，从而从 n 个原始问题中生成总共 Kn 个 VQA 项。
 
-## 2.3 Quality Control
+### 2.3 Quality Control
 
 为了确保 VQA 样本的高质量，我们采用了包括 **Selector** 和 **Examiner** 在内的三阶段过滤流程：
 - **Selector**：首先，我们剔除转换后的 VQA 查询 $q$ 与原始问题 $q_t$ 相同的数据，并丢弃实体名称 $\hat B$ 或其别名明确出现在 $q_t$ 中的情况，因为这些情况表明实体掩蔽或问题重写失败。其次，GPT-4o 会根据原始 QA 对 $(q_t, a)$ 和转换后的 VQA 查询 $(q, a)$ 评估每幅图像 $I^{\hat B}_k∈\mathcal I(\hat B)$。GPT-4o 会评估上下文对齐、语义契合度和视觉推理的合理性。相关性得分较低的实例将被过滤掉。
@@ -83,16 +86,17 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 此外，为了减轻因缺乏世界知识而产生的假阴性，模型在验证期间被授予访问可用图像标题的权限。
 
-# 3.Trajectory Generation and Post-Training
+## 3.Trajectory Generation and Post-Training
 
 我们使用监督微调 (SFT) 作为冷启动，基于自动化流程生成的高质量 ReAct 风格轨迹，教会 Agent 进行工具增强推理。然后，我们运用强化学习进一步优化工具使用和决策。
 
-## 3.1 Automated Generation of Reasoning Trajectories
-### 3.1.1 Multimodal Tools
+### 3.1 Automated Generation of Reasoning Trajectories
+
+#### 3.1.1 Multimodal Tools
 
 我们为 **WebWatcher** 配备了一套外部工具，包括：（1）由 Google SerpApi 提供支持的 **Web Image Search**，用于检索相关图像、相应标题及其网页网址，以便更好地理解输入图像 $I$；（2）**Web Text Search**，用于开放域信息查找，检索查询的标题和网页网址；（3）来自 **Jina** 的访问，支持导航到特定 URL 获取网页摘要，并根据 LLM 操作中指定的“目标”进行定制；（4）**Code Interpreter**，支持符号计算和数值推理。（5）**OCR**，这是一个通过提示和 SFT 数据调用的内部工具，用于从输入图像中提取文本。完整的实现细节见附录 D。
 
-### 3.1.2 Automated Trajectory Annotation
+#### 3.1.2 Automated Trajectory Annotation
 
 给定来自 BrowseComp-VL 的 VQA 实例 $(I, q, a)$，我们使用 GPT-4o 自动构建工具使用轨迹，模拟人类如何通过逐步尝试不同的工具来探索和推理问题。遵循 ReAct 的思路，每个轨迹 $τ$ 包含多个“思考-行动-观察”循环。具体而言，在每次迭代 $t$ 中，语言模型将累积的上下文历史记录作为输入，并生成：
 - **Thought**：Agent 的中间推理或计划，包含在 $\text{<think>...</think>}$ 中；
@@ -109,14 +113,14 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 其中每个动作 $t_i∈T$，每个观测 $o_i$ 反映了工具执行后的环境反馈。轨迹是基于内容的规划和工具选择的演示。
 
-### 3.1.3 Trajectory Filtering and Quality Assurance
+#### 3.1.3 Trajectory Filtering and Quality Assurance
 
 为了确保稳健且有指导性的监督，我们采用三阶段轨迹选择：
 1. **Final Answer Matching**。我们保留最终答案与真实答案 *a* 一致的轨迹 τ，确保整个工具使用步骤序列能够得到正确且完整的解决方案。
 2. **Step-by-Step Consistency Check**。我们使用 GPT-4o 来验证轨迹 $τ$ 中每个中间步骤的逻辑一致性。每一对 $(t_l, o_l)$ 都会被审查，以确保工具调用与观察结果符合上下文和推理目标。包含幻觉内容、矛盾或无依据工具调用的轨迹会被舍弃。这避免了通过运气猜测而非有意义的工具使用得到正确答案的常见失败模式。
 3. **Minimum Tool Usage Requirement**。为了鼓励多步推理而非捷径，我们移除工具调用少于三次的轨迹 $τ$。这确保训练数据反映的是实质性、过程驱动的交互，而非琐碎或一步完成的结果。
 
-## 3.2 Supervised Fine-Tuning as Cold Start
+### 3.2 Supervised Fine-Tuning as Cold Start
 
 过滤后，得到的数据集由 $K$ 条高质量工具使用轨迹组成。对于第 $i$ 条轨迹中的第 $l$ 步，WebWatcher 被训练来预测正确的工具使用动作 $t_l^{(i)}$，其条件是输入图像 $I^{(i)}$、问题 $q^{(i)}$，以及所有先前的动作和观察结果 $(t_{<l}^{(i)}, o_{<l}^{(i)})$。如公式 (2) 所示，SFT 最大化目标动作 $t_l^{(i)}$ 的对数似然：
 
@@ -128,7 +132,7 @@ Deep Research Agent 代表着人工智能 (AI) 领域的一个新前沿。大语
 
 作为冷启动阶段，SFT 教会智能体有意义地使用工具，并遵循结构化的多步推理过程。
 
-## 3.3 Reinforcement Learning
+### 3.3 Reinforcement Learning
 
 在 SFT 提供冷启动初始化的基础上，我们采用 **Group-Relative Policy Optimization (GRPO)**，这是一种基于排序的 PPO 变体，用于进一步优化决策并适应复杂任务。具体而言，对于 VQA 查询 $q$，当前策略 $\pi_\theta$ 生成一个由 $K$ 条完整轨迹组成的集合 $G = \{\tau_1, \ldots, \tau_K\}$，每条轨迹分配一个标量回报 $R_i$。组相对优势在公式 (3) 中定义：
 
@@ -156,4 +160,4 @@ R = w r_f + (1-w) r_a,
 
 在我们的 GRPO 实现中，我们将 rollout 分组成 $N = 16$ 条轨迹，这为探索提供了足够的多样性，同时保持了有意义的相对优势，从而促进稳定的策略改进。
 
-# 4.Experiment
+## 4.Experiment

@@ -1,12 +1,14 @@
+# RE-TRAC: REcursive TRAjectory Compression for Deep Search Agents
+
 论文链接：https://arxiv.org/pdf/2602.02486
 
 代码链接：https://github.com/microsoft/InfoAgent
 
-# 摘要
+## 摘要
 
 基于 LLM 的深度研究智能体大多构建于 ReAct 框架之上。这种**线性设计使得智能体难以重访先前的状态、分支到其他搜索方向或在长时间上下文中保持全局感知，这往往会导致局部最优解、冗余探索和低效搜索**。我们提出了 **Re-TRAC**，一个智能体框架，它通过在每条轨迹之后生成结构化的状态表示来进行跨轨迹探索，该状态表示总结了证据、不确定性、失败和未来计划，并将后续轨迹的生成基于此状态表示。这使得智能体能够进行迭代反思和全局信息规划，从而将研究重新定义为一个渐进的过程。实证结果表明，在 BrowseComp 数据集上，使用前沿 LLM 时，Re-TRAC 的性能始终比 ReAct 高出 15%–20%。对于规模较小的模型，我们引入了 ReTRAC 感知的有监督微调方法，并在类似的规模下实现了最先进的性能。值得注意的是，Re-TRAC 的计算结果表明，随着迭代轮次的增加，工具调用次数和 token 使用量呈单调递减趋势，这表明探索过程逐渐趋于精准，并受到跨轨迹反思的驱动，而非冗余搜索。代码和模型可在 GitHub 链接中获取。
 
-# 1.Introduction
+## 1.Introduction
 
 <img
   src="https://i-blog.csdnimg.cn/direct/95b96ac01f8a4ec2829bb217aec6bf8e.png"
@@ -25,21 +27,21 @@
 
 我们的实验表明，当与前沿 LLM 结合使用时，Re-TRAC 在 BrowseComp 基准测试中比 ReAct 的性能提升了15-20%。这激励我们通过 ReTRAC 进一步拓展小型模型的性能极限。为了充分发挥 Re-TRAC 在小型模型上的优势，我们开发了一种后训练优化方案，该方案构建了由显式地基于结构化状态表示的轨迹组成的有监督微调（SFT）数据。这种训练过程教会模型基于结构化的跨轨迹摘要进行推理、规划和工具使用，而不是仅仅依赖于直接上下文。微调后，我们的 30 B 模型在 BrowseComp 测试中达到了 53% 的准确率，而4B模型达到了 30%，在同类模型中取得了目前最先进的性能。
 
-# 2.相关工作
+## 2.相关工作
 
-## 2.1 Deep Research Agents
+### 2.1 Deep Research Agents
 
 深度研究智能体的出现标志着信息检索从简单的系统检索向能够进行长远推理、战略规划和持续工具调用的自主系统转变。由专有模型驱动的智能体，例如 OpenAI Deep Research、Gemini Deep Research、Claude、Perplexity 和 Grok，利用大规模训练和深度工具集成来实现高精度。与此同时，开源模型，包括 DeepSeek、GLM、Kimi、MiniMax 和 Tongyi Deep Research，通过在广泛的智能体任务上进行专门训练，增强了其长远推理能力。此外，InfoAgent、WebSailor 和 DeepDive 等工作探索了数据合成和面向搜索的环境构建等基础性挑战。我们的工作引入了一种递归经验压缩机制，以增强智能体处理长期任务的能力。
 
-## 2.2 Agentic Context Management
+### 2.2 Agentic Context Management
 
 对于执行长上下文任务的智能体而言，有效管理上下文的能力至关重要。**近期的研究大致可分为两类：内在上下文优化和用于状态维护的外部记忆机制**。对于第一类，许多智能体 LLM，例如 DeepSeek-V3.2 和 GLM-4.7，将上下文剪枝直接集成到智能体的推理循环中，专注于压缩观察空间和剪枝冗余的轨迹历史。与上下文剪枝并行，近期的研究工作侧重于利用外部记忆。IterResearch 和 MemAgent 利用动态记忆结构在每个步骤重建任务状态，丢弃通用历史记录以模拟无限上下文。ReSum 引入了一种“总结与重置”范式，定期将探索历史压缩到紧凑的记忆中。虽然我们的工作自然地将有效上下文长度扩展到无限，但我们的主要目标是批判自身的轨迹，进行自我反思并强化正确的推理路径。
 
-## 2.3 Test-Time Scaling
+### 2.3 Test-Time Scaling
 
 传统的扩展法则侧重于增加模型参数和训练数据，而近期的研究范式已转向测试时计算扩展。测试时扩展的主流方法是扩展模型的内部推理过程。诸如思维链（CoT）扩展以及 OpenAI-o3 和 DeepSeek-R1 等推理模型鼓励扩展内部推理路径以分解问题。另一种扩展计算规模的方法是采用集成策略和智能体间验证。自洽性通过采样不同的推理路径并应用多数投票来选择最稳健的答案，从而有效地减少推理错误。多智能体辩论使得不同的 LLM 实例能够相互评判和改进彼此的回答，利用对抗性动态来提高事实准确性并减少幻觉。**我们的工作为测试时扩展引入了顺序维度，这与投票或辩论的并行性质有所不同**。我们设计了一种新的机制来促进持续的自我反思，使模型能够以高计算效率探索更广泛的可能性。
 
-# 3.Motivation
+## 3.Motivation
 
 通过对深度研究任务中的 LLM 进行系统分析，我们发现了两个阻碍其性能的根本性局限。首先，现有模型**探索不足**，常常过早地收敛到次优推理路径。虽然鼓励探索的一个简单方法是允许多次尝试（例如，多数投票或 Best-of-N），但这又引入了另一个挑战：**信息效率**。核心问题在于如何有效地利用这些不同的路径，从而合成出更优的最终输出。
 
@@ -63,11 +65,11 @@
   style="max-width: 100%; height: auto;"
 />
 
-# 4.Method: Re-TRAC Framework
+## 4.Method: Re-TRAC Framework
 
 **Re-TRAC**（**R**ecursive **TRA**jectory **C**ompression）是一个迭代的轨迹级框架。它利用标准化的压缩规范来总结之前的尝试，并将这些上下文信息传递到后续的迭代中。这种机制确保每次迭代都高效且受益于之前的经验。通过不断扩展已知的搜索空间，Re-TRAC 有效地扩大了计划覆盖范围，减少了冗余探索，并避免了陷入死胡同。
 
-## 4.1 Trajectory Compression as a Structured State Representation
+### 4.1 Trajectory Compression as a Structured State Representation
 
 <img
   src="https://i-blog.csdnimg.cn/direct/5cc20aecf7b24208be704bc6fc585e90.png"
@@ -98,7 +100,7 @@ S_t\leftarrow Compress(τ_t,S_{t-1};\mathcal C).\tag{1}
   style="max-width: 100%; height: auto;"
 />
 
-## 4.2 Recursive Execution with Structured State Representation
+### 4.2 Recursive Execution with Structured State Representation
 
 Re-TRAC 的设计本身就是递归的，这个过程可以持续多轮。初始 rollout 的功能与标准的 ReAct 执行类似，因此也存在同样的局限性，例如忽略早期规划的分支。
 
@@ -106,7 +108,7 @@ Re-TRAC 的设计本身就是递归的，这个过程可以持续多轮。初始
 
 这种递归方法具有两大优势。首先，它**提高了覆盖率**。未完成的分支会被显式地保留，并在后续的 rollout 中执行。其次，它**减少了冗余**。该模型避免了对已验证的事实重复调用工具。第一轮中遗漏的分支会被记录在状态中，并在下一轮中直接进行探索。相比之下，独立的 ReAct 轮次往往会浪费资源重新探索同一路径。经验表明，这种紧凑性能够提高 token 使用效率和工具调用次数（参见 5.3 节）。
 
-## 4.3 Application to Frontier Models
+### 4.3 Application to Frontier Models
 
 Re-TRAC 是一种无需训练的提示策略。它直接应用于推理过程中的前沿模型，无需微调。执行过程非常简单：
 
@@ -114,7 +116,7 @@ Re-TRAC 是一种无需训练的提示策略。它直接应用于推理过程中
 
 在第 5.3 节中，我们以标准基准测试其性能，包括单次运行、Best-of-N、多数投票和加权投票。
 
-## 4.4 Training Small Models for Re-TRAC
+### 4.4 Training Small Models for Re-TRAC
 
 后续 5.2 节的实验表明，不同规模的深度研究 Agent （从229B到685B不等）都能从 Re-TRAC 工作流程中获益。这启发我们去探索，如果一个小型边缘模型也配备了 Re-TRAC 工作流程，它是否也能达到具有竞争力的性能。
 
@@ -122,7 +124,7 @@ Re-TRAC 是一种无需训练的提示策略。它直接应用于推理过程中
 
 为了获得用于训练的原始提示，我们首先参考 InfoAgent，通过基于实体树的方法构建大量问答对。具体来说，我们从维基百科收集大量实体作为树的根节点。然后，对于每个实体，我们递归地搜索其相关的实体作为子节点，直到树增长到预定义的深度。相邻节点之间的边表示两个实体之间的关系。我们通过选择从根节点到叶节点的路径并将边转换为子问题来合成问题。为了增加问题的难度，我们还使用 o3 对子问题进行模糊化。通过此流程，我们总共构建了 33,000 个问答对。然后，我们收集了 GLM-4.7 在这些合成问题上的 Re-TRAC（4 轮）轨迹，过滤后得到 104,000 个训练样本，这些样本用于通过 SFT 训练我们的 RE-TRAC-4B 和 RE-TRAC-30B-A3B 模型。详细信息请参见 B 部分。
 
-# 5.Experiments
+## 5.Experiments
 
 <img
   src="https://i-blog.csdnimg.cn/direct/d52d64fa7e474258b623ce48393926cd.png"
