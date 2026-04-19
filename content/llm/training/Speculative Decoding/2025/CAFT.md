@@ -1,12 +1,14 @@
+# Improving Large Language Models with Concept-Aware Fine-Tuning
+
 论文链接：https://www.arxiv.org/pdf/2506.07833
 
 代码链接：https://github.com/michaelchen-lab/caft-llm
 
-# 摘要
+## 摘要
 
 大语言模型（LLM）已成为现代人工智能的基石。然而，现有的逐 token 预测范式从根本上限制了它们形成连贯的高级概念的能力，使其成为实现类人理解和推理的关键障碍。以短语“ ribonucleic acid ”为例：LLM 首先会将其分解为 token，即人工文本片段（“rib”→“on”→……），然后按顺序学习每个 token，而不是将整个短语理解为一个统一的、连贯的语义实体。这种碎片化的表示阻碍了更深层次的概念理解，并最终阻碍了真正智能系统的开发。为此，我们提出了 **Concept-Aware Fine-Tuning (CAFT)**，一种新的多 token 训练方法，它重新定义了 LLM 的微调方式。通过支持跨多个 token 的序列学习，该方法促进了更强大的概念感知学习。我们的实验表明，与传统的下一 token 微调方法相比，CAFT 在各种任务中均取得了显著的改进，包括文本摘要等传统应用以及从头蛋白质设计等特定领域应用。此前，多 token 预测只能在成本极高的预训练阶段实现；据我们所知，CAFT 是第一个将多 token 设置引入后训练阶段的方法，从而有效地将其优势普及到更广泛的从业者和研究人员群体中。最后，我们提出的方法出乎意料的有效性表明，它对机器学习研究领域具有更广泛的意义。所有代码和数据均可在 https://github.com/michaelchen-lab/caft-llm 获取。
 
-# 1.介绍
+## 1.介绍
 
 <img
   src="https://i-blog.csdnimg.cn/direct/299398d7531440bb98354f41f6ab24ce.png"
@@ -31,11 +33,11 @@
 
 重要的是，CAFT 对科学界具有重要意义。首先，通过将多 token 预测引入后训练阶段，我们的方法使更广泛的实践者和研究人员能够受益于多 token 预测（MTP）。这为未来在这个新兴领域的研究奠定了基础。其次，语言模型（LLM）能否预测下一个 token 之后的内容仍然是一个备受争议的问题。CAFT 的超高效率表明，这些模型无法充分学习和预测下一个 token 之前的内容；明确的多 token 目标更为有效。我们的实证研究是理解语言模型内部机制的关键一步。
 
-# 2.Concept-Aware Fine-Tuning (CAFT)
+## 2.Concept-Aware Fine-Tuning (CAFT)
 
 首先训练辅助头，以便于进行多 token 微调，我们将在第 2.2 节中描述。​​对于给定的模型，辅助头只需训练一次，并且可以由第三方提供，因此从业者只需专注于下一步：针对特定任务的多 token 微调，这将在第 2.3 节中描述。​​为了更好地说明多 token 设置，我们首先简要介绍标准的下一个 token 训练方法。
 
-## 2.1 Background on Next-token Prediction
+### 2.1 Background on Next-token Prediction
 
 传统上，语言模型使用自回归方法在大型文本语料库上进行训练，训练任务为下一个 token 预测，如图 1a 所示。给定输入 $x_1,...x_t$，模型的任务是预测 $x_{t+1}$，目标是最小化以下交叉熵损失：
 
@@ -49,7 +51,7 @@
 
 我们提出的方法 CAFT 引入了一系列新的技术和应用，旨在解决这些以前未解决的挑战，使其成为第一个实现多 token 微调的方法。
 
-## 2.2  Setting the stage: Training auxiliary heads
+### 2.2  Setting the stage: Training auxiliary heads
 
 在将 CAFT 应用于下一个 token 模型之前，必须先对其进行调整，使其能够一次性预测 n 个未来的 token。因此，需要训练一些辅助头，用于预测第 k 个 token。重要的是，这些辅助头与任务无关，可以用于各种下游微调任务。
 
@@ -69,7 +71,7 @@ p_{t+k}=softmax(F_u(F_{h_k}(z_{1:t})))\tag{2}
 
 由于大多数开源模型缺乏原始训练方案，我们构建了一个包含 10 万个样本的指令微调数据集，该数据集来源于 ShareGPT 数据集和 Tulu 3 SFT 混合数据集。它涵盖了广泛的任务，以确保辅助头与任务无关；完整的任务分类见表 X。**重要的是，为了匹配第一个（原始）头的输出分布，该数据集的真实答案是从原始头 $F_h$ 中自行提取的。换句话说，只有数据集中的问题来自外部**。
 
-## 2.3 Concept-aware fine-tuning using auxiliary heads
+### 2.3 Concept-aware fine-tuning using auxiliary heads
 
 在添加根据公式 2 训练和定义的辅助头之后，即可执行特定任务的 CAFT 算法。通常，仅对原始模型中的参数进行微调。例如，对于 LoRA 微调，除 $k > 1$ 的 $F_{h_k}$ 层（以减少内存占用）和非嵌入层 $L_u$（以提高训练稳定性）之外的所有层都会被调整。理论上，除了完整微调和 LoRA 微调之外，还可以使用其他微调方法，但这超出了本文的研究范围。
 
@@ -85,7 +87,7 @@ p_{t+k}=softmax(F_u(F_{h_k}(z_{1:t})))\tag{2}
 
 训练完成后，辅助头会被丢弃，仅保留基础模型。因此，在模型推理时无需任何额外的计算成本或代码修改。
 
-## 2.4 Practical Implementation
+### 2.4 Practical Implementation
 
 <img
   src="https://i-blog.csdnimg.cn/direct/6a9200fb439e4c24b64804950858fb0a.png"
@@ -98,8 +100,8 @@ p_{t+k}=softmax(F_u(F_{h_k}(z_{1:t})))\tag{2}
 
 给实践者的一些建议如下：首先，最好同时监控公式 3 中定义的 ($L_1$) 和 ($L_n$)（不含 $β$ 或 $γ$）。我们应预期：(i) ($L_n$) 会随着 epoch 的增加而降低，这表明模型已优化辅助损失；并且 (ii) ($L_n$) 的最终值通常低于传统微调的结果，这说明多 token 目标是有益的。其次，在实践中，我们发现当 ($L_2 > 4.0$) 时，辅助头的效果过于不稳定，此时应采用前述的头部微调策略。
 
-# 3.Experiments
+## 3.Experiments
 
-## 3.1 Training Auxiliary Heads
+### 3.1 Training Auxiliary Heads
 
-## 3.2 Downstream Tasks
+### 3.2 Downstream Tasks

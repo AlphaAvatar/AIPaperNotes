@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint"
+		"lint": "eslint",
+		"postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
 	},
 	"dependencies": {
 		"katex": "^0.16.45",
@@ -22,6 +23,7 @@
 		"@types/node": "^25.6.0",
 		"@types/react": "^19.2.14",
 		"eslint": "^10.2.0",
+		"pagefind": "^1.5.2",
 		"typescript": "^6.0.2"
 	}
 }

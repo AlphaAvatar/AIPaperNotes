@@ -1,12 +1,14 @@
+# EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test
+
 论文链接：https://arxiv.org/pdf/2503.01840
 
 代码链接：https://github.com/SafeAILab/EAGLE
 
-# 摘要
+## 摘要
 
 现代 LLM 的顺序特性导致其计算成本高昂且速度缓慢，而推测性采样已被证明是解决这一问题的有效方案。诸如 EAGLE 之类的方法在特征层执行自回归，通过重用目标模型中的顶层特征来获得比传统推测性采样更好的结果。**LLM 领域的一个发展趋势是扩展训练数据以在不增加推理成本的情况下提升模型智能**。然而，我们观察到，扩展数据对 EAGLE 的改进有限。我们发现，这种限制源于 EAGLE 的特征预测约束。在本文中，我们提出了 EAGLE-3，它放弃了特征预测，转而采用直接 token 预测，并通过一种名为训练时测试的技术，用多层特征融合取代了对顶层特征的依赖。这些改进显著提升了性能，并使 draft 模型能够充分利用扩展训练数据的优势。我们的实验包括聊天模型和推理模型，并在五个任务上进行了评估。结果表明，EAGLE-3 的加速比最高可达 6.5 倍，比 EAGLE-2 提升了约 1.4 倍。在 SGLang 框架中，EAGLE3 在批处理大小为 64 时实现了 1.38 倍的吞吐量提升。代码可在 https://github.com/SafeAILab/EAGLE 获取。
 
-# 1.介绍
+## 1.介绍
 
 <img
   src="https://i-blog.csdnimg.cn/direct/32ea1259a6324321af62f38e5fa7d71d.png"
@@ -37,9 +39,9 @@ EAGLE 和诸如 Medusa 之类的推测性采样方法会重用目标模型的顶
   style="max-width: 100%; height: auto;"
 />
 
-# 2.Preliminaries
+## 2.Preliminaries
 
-## 2.1 Speculative Sampling
+### 2.1 Speculative Sampling
 
 推测采样是一种无损 LLM 加速技术，它在 draft 生成和验证之间交替进行。draft 生成成本低，而验证则并行化，分别对应于 draft 的生成和验证过程。我们用 $t_i$ 表示第 $i$ 个 token，用 $T_{a:b}$ 表示 token 序列 $t_a, t_{a+1}, · · · , t_b$。当使用 $T_{1:j}$ 作为前缀时，推测采样的两个阶段如下。
 
@@ -47,17 +49,17 @@ EAGLE 和诸如 Medusa 之类的推测性采样方法会重用目标模型的顶
 
 在 *verification* 阶段，推测抽样调用目标模型来评估草稿 $\hat T_{j+1:j+k}$ 并记录其概率 $p$。然后，推测抽样从前到后依次确定草稿 token 的接受情况。对于 token $\hat t_{j+i}$，其接受概率由 $min(1, p_{j+i}(\hat t_{j+i})/\hat p_{j+i}(\hat t_{j+i}))$ 给出。如果该 token 被接受，则继续处理下一个 token。否则，从分布 $norm(max(0, p_{j+i} − \hat p_{j+i}))$ 中抽取一个 token 来替换 tˆj+i，并将草稿中剩余的 token 丢弃。(Leviathan et al., 2023) 的附录 A.1 证明了推测抽样与标准自回归解码的分布一致。
 
-## 2.2 EAGLE and EAGLE-2
+### 2.2 EAGLE and EAGLE-2
 
 容量有限的 draft 模型难以精确逼近大规模目标模型。EAGLE 利用目标模型的顶层特征作为附加信息，并在特征层执行自回归，从而简化草稿生成过程。EAGLE 在特征层执行自回归，然后使用目标模型的语言模型头来获取草稿 token。由于 token 层的采样结果是隐藏的，特征层自回归会引入不确定性。EAGLE 通过将前一时刻的 token 序列（即采样结果）输入草稿模型来解决这个问题。与 Vanilla 推测采样生成的链状草稿不同，EAGLE 在同一位置生成多个草稿 token，从而形成树状草稿。在验证阶段，EAGLE 使用树注意力机制来并行验证草稿树。有趣的是，EAGLE 启发了 DeepSeekv3 预训练中使用的多 token 预测技术，而 DeepSeekv3 又启发了 EAGLE-3 中的新架构设计。
 
 EAGLE 和 Medusa 等算法采用树状草稿结构，其结构预先定义、静态且与上下文无关。草稿的难度与上下文密切相关，静态草稿树会导致资源浪费。EAGLE2 利用草稿模型的置信度来近似估计接受率，并在此基础上动态生成草稿树，在草稿阶段结束时对草稿树进行剪枝。EAGLE-3 也采用了 EAGLE-2 中提出的上下文感知动态草稿树。
 
-# 3.EAGLE-3
+## 3.EAGLE-3
 
 本节将详细介绍 EAGLE-3 的实现。
 
-## 3.1 Inference Pipeline
+### 3.1 Inference Pipeline
 
 <img
   src="https://i-blog.csdnimg.cn/direct/f1afe8bda4c54b0990c91b9f5a3bc0d1.png"
@@ -72,7 +74,7 @@ EAGLE 和 Medusa 等算法采用树状草稿结构，其结构预先定义、静
 
 在步骤 1 中，前缀为“How can”，我们复用了目标模型中的 $g_{how}$ 和 $g_{can}$。在步骤 2 中，前缀变为“How can I”。理想情况下，我们应该复用目标模型中的 $g_{how}$、$g_{can}$ 和 $g_I$。然而，由于目标模型尚未检查 token “I”，我们无法获取 $g_I$，因此无法实现。取而代之的是，我们使用上一步草稿模型的输出 $a_I$ 来替换 $g_I$，并将 $a_I$ 与采样结果“do”的嵌入 $e_{do}$ 连接起来，作为步骤 1 中草稿模型的输入。在步骤 3 中，我们同样无法获取 $g_{do}$，因此我们使用 $a_{do}$ 作为替代，并将 $a_{do}$ 与 $e_{it}$ 连接起来，作为草稿模型的输入。后续步骤均采用相同的方法。
 
-## 3.2 Draft Model Training
+### 3.2 Draft Model Training
 
 <img
   src="https://i-blog.csdnimg.cn/direct/c8e668a7c4654807858826d0768af71c.png"
@@ -96,7 +98,7 @@ HASS 和 EAGLE-3 都对注意力机制进行了类似的修改，以在训练过
   style="max-width: 100%; height: auto;"
 />
 
-# 4.Experiments
+## 4.Experiments
 
 <img
   src="https://i-blog.csdnimg.cn/direct/bc839f38025a4eca800fc775e23d91be.png"
