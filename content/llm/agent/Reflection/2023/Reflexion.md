@@ -1,12 +1,14 @@
+# Reflexion: Language Agents with Verbal Reinforcement Learning
+
 论文链接：https://arxiv.org/pdf/2303.11366
 
 代码链接：https://github.com/noahshinn024/reflexion
 
-# 摘要
+## 摘要
 
 大语言模型（LLM）作为目标驱动型智能体，已被越来越多地用于与外部环境（例如游戏、编译器、API）进行交互。然而，由于传统的强化学习方法需要大量的训练样本和昂贵的模型微调，这些语言智能体难以快速高效地从试错中学习。我们提出了一种名为 **Reflexion** 的新型框架，它并非通过更新权重，而是通过语言反馈来强化语言智能体。具体来说，Reflexion 智能体会对任务反馈信号进行口头反思，并将反思文本保存在上下文记忆缓冲区中，从而在后续试验中做出更优的决策。Reflexion 具有足够的灵活性，可以整合各种类型（标量值或自由语言）和来源（外部或内部模拟）的反馈信号，并在各种任务（序列决策、编码、语言推理）中都取得了比基线智能体显著的改进。例如，Reflexion 在 HumanEval 编码基准测试中达到了 91% 的 pass@1 准确率，超越了之前最先进的 GPT-4 的 80%。我们还使用不同的反馈信号、反馈融合方法和智能体类型进行了消融和分析研究，并深入探讨了它们如何影响性能。所有代码、演示和数据集均发布在 https://github.com/noahshinn024/reflexion。
 
-# 1.Introduction
+## 1.Introduction
 
 <img
   src="https://i-blog.csdnimg.cn/direct/278ba9c4c9e24dd19499018547679767.png"
@@ -31,13 +33,13 @@
 - 我们推出了 **LeetcodeHardGym**，这是一个代码生成强化学习环境，包含 19 种编程语言的 40 道具有挑战性的 Leetcode 问题（“困难级别”）。
 - 我们证明，Reflexion 在多个任务中都比强大的基线有所改进，并在各种代码生成基准测试中取得了最先进的结果。
 
-# 2.Related work
+## 2.Related work
 
 **Reasoning and decision-making**。Self-Refine 采用迭代框架进行自我改进，通过自我评估自主提升生成能力。这些自我评估和自我改进步骤取决于给定的任务约束，例如“如何以更积极的方式编写此生成内容”。Self-Refine 效果显著，但仅限于单步骤推理任务。Pryzant et al. [21] 执行类似的语义提示编写优化，但也仅限于单步骤任务。Paul et al. [20] 对 critic 模型进行微调，以在轨迹中提供中间反馈，从而改进推理响应。Xie et al. [27] 使用基于动作的随机 beam search 来执行更高效的决策搜索策略，该策略允许智能体利用其自我评估组件带来的预见优势。Yoran et al. [31] 和  Nair et al. [16] 使用决策者模型进行多步骤推理。Kim et al. [10] 使用固定次数的重试模式，无需评估步骤。Goodman 执行定性评估步骤，向上一次生成提出优化建议。本文表明，这些概念中的几个可以通过自我反思进行增强，从而构建持久的自我反思经验记忆，使智能体能够识别自身错误，并随着时间的推移，从错误中吸取教训。
 
 **Programming**。过去和近期的一些研究工作采用了测试驱动开发或代码调试实践的变体。AlphaCode 使用隐藏的测试用例评估一组生成结果。CodeT 使用自生成的单元测试来对生成的函数实现进行评分。Self-Debugging 采用了一个调试组件，该组件利用代码执行环境的反馈来改进现有实现。CodeRL 将问题置于强化学习框架中，使用 Actor-Critic 结构来调试程序，并利用执行环境的反馈。AlphaCode、Self-Debugging 和 CodeRL 在修复不太复杂的程序错误方面是有效的，但它们依赖于会使 pass@1 失效的真实测试用例，并且没有使用自反思来弥合错误识别和实现改进之间的差距。CodeT 不访问隐藏的测试用例，也没有实现自学习步骤来改进代码编写。
 
-# 3.Reflexion: reinforcement via verbal reflection
+## 3.Reflexion: reinforcement via verbal reflection
 
 <img
   src="https://i-blog.csdnimg.cn/direct/576c6ddbd75f44dfa0cf0ce6afec4ffd.png"
@@ -58,4 +60,4 @@
 
 **The Reflexion process**。Reflexion 被形式化为一个迭代优化过程（见第1节）。在第一次试验中，Actor 通过与环境交互生成轨迹 $τ_0$。Evaluator 随后生成一个分数 $r_0$，计算公式为 $r_t = M_e(τ_0)$。$r_t$ 仅是第 $t$ 次试验的标量奖赏，其值会随着特定任务表现的提高而增加。第一次试验后，为了将 $r_0$ 放大为可供 LLM 改进的反馈形式，Self-Reflection 模型分析集合 $\{τ_0, r_0\}$，生成一个摘要信息 $sr_0$，并将其存储在记忆 mem 中。$sr_t$ 是第 $t$ 次试验的口头经验反馈。Actor、Evaluator 和 Self-Reflection 模型在一个循环中协同工作，直到 Evaluator 认为 $τ_t$ 正确为止。**如第3节所述，Reflexion 的记忆组件对其有效性至关重要**。每次试验 $t$ 后，$sr_t$ 都会被添加到 $mem$ 中。在实践中，我们通过存储经验的最大数量 $Ω$（通常设置为 1-3）来限制 mem，以遵守最大上下文 LLM 限制。
 
-# 4.Experiments
+## 4.Experiments

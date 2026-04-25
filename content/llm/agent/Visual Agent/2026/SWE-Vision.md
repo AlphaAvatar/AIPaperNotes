@@ -1,8 +1,10 @@
+# SWE-Vision: A Minimal Agent for Advancing Visual Intelligence
+
 论文链接：https://unipat.ai/blog/SWE-Vision#swe-vision-system-design
 
 代码链接：https://github.com/UniPat-AI/SWE-Vision
 
-# 摘要
+## 摘要
 
 <img
   src="https://i-blog.csdnimg.cn/direct/dd963cff49ab41a08acb9f7d4cbb0dec.png"
@@ -28,11 +30,11 @@
 
 实验结果表明，引入通用编码工具是提升前沿 LLM 在视觉任务上性能的**有效测试时扩展**方向。然而，我们也发现，相对性能提升与不同的基础模型有关，这与基础模型的函数调用、编码能力和长上下文处理能力密切相关。为了充分发挥 SWE-Vision 在智能视觉理解方面的潜力，我们需要使用深度交错的视觉编码 SFT 和 RL 数据进行更全面的训练——使模型不仅能够使用工具，还能原生地整合感知和程序推理。
 
-# Cases: Visual Test Time Scaling with Coding
+## Cases: Visual Test Time Scaling with Coding
 
 【请参考原博客文章】
 
-# SWE-Vision: System Design
+## SWE-Vision: System Design
 
 > Why Give LLMs Code Execution?
 
@@ -40,7 +42,7 @@
 
 SWE-Vision 的设计理念很简单：让模型自行决定何时以及如何使用代码。模型并非必须为每个问题编写代码——它保留在有把握的情况下直接回答问题的选项。但当任务需要精确计算、像素级分析或迭代探索时，模型可以调用其 Jupyter Notebook，系统地解决问题。
 
-## Architecture Overview
+### Architecture Overview
 
 SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code` 和 `finish`。
 
@@ -58,7 +60,7 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
 4. **Result Feedback**。执行结果（包括文本输出（stdout）、错误信息以及任何生成的图像（例如 matplotlib 图表））都会作为持续对话的一部分反馈给 LLM。生成的图像会被捕获并作为视觉内容返回，以便模型可以检查自身的图表和中间可视化结果。
 5. **Iteration**。该模型检查结果，决定是否需要更多计算，然后要么再次调用 `execute_code`，要么使用最终答案调用 `finish` 工具。
 
-## Key Design Decisions
+### Key Design Decisions
 
 **Stateful Jupyter Kernel**。与无状态代码执行不同，持久化的 Jupyter 内核允许智能体在多次工具调用中构建上下文。模型可以在一次调用中加载图像，检查其属性，在下一次调用中应用转换，并在第三次调用中计算最终结果——所有这些都无需重新加载数据或重新导入库。这与人类数据科学家在 Jupyter Notebook 中的工作方式非常相似。
 
@@ -68,7 +70,7 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
 
 **OpenAI Function Calling Interface**。SWE-Vision 使用标准的 OpenAI 函数调用（工具使用）API，因此与任何 OpenAI 兼容的接口都兼容。这两个工具——`execute_code` 和 `finish`——被定义为结构化函数模式。这意味着 SWE-Vision 不仅可以与 OpenAI 模型直接配合使用，还可以通过 OpenAI 兼容的 API 与其他模型提供商合作。
 
-## System Prompt Design
+### System Prompt Design
 
 系统提示指示模型作为专家助手运行，并具备笔记本电脑访问权限。关键要素包括：
 - 明确记录文件系统布局（`/mnt/data/`）
@@ -79,9 +81,9 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
 
 这种提示设计刻意保持简洁——它告诉模型有哪些工具可用以及如何使用它们，但并不规定何时使用代码或应用哪些算法。模型自身的推理能力决定了其解决问题的策略。
 
-# Experiments
+## Experiments
 
-## Benchmarks
+### Benchmarks
 
 我们使用五项不同的视觉基准测试来评估 SWE-Vision，这些基准测试旨在涵盖广泛的视觉推理能力：
 
@@ -92,13 +94,13 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
   style="max-width: 100%; height: auto;"
 />
 
-## Setup
+### Setup
 
 - **Model under test**: Gemini-3-Pro (high), GPT-5.2 (xhigh), Seed-2.0-Pro (high).
 - **SWE-Vision configuration**: GPT-5.2/Seed-2.0-Pro with max reasoning effort, max 100 agent iterations per task.
 - **Judge model**: GPT-5 as LLM-as-judge for answer correctness evaluation.
 
-## Results
+### Results
 
 <img
   src="https://i-blog.csdnimg.cn/direct/c9cd1b151ed44d5f9ccc310d04c3e610.png"
@@ -114,7 +116,7 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
   style="max-width: 100%; height: auto;"
 />
 
-## Analysis
+### Analysis
 
 **在所有测试的基准测试中，两种模型均取得了持续的提升**。SWE-Vision 在所有测试基准测试中都优于基础模型。使用 GPT-5.2 时，得分提升范围为 +2.3 至 +18.2 分；使用 Seed-2.0-Pro 时，得分提升范围为 +1.6 至 +3.8 分。这种在两个截然不同的模型系列中均保持一致的提升，证实了代码执行是视觉推理中一项广泛适用的能力，而非任何单一模型缺陷的体现。
 
@@ -126,7 +128,7 @@ SWE-Vision 采用 Agent 循环架构，包含两个核心工具：`execute_code`
 
 **编码能力更强的模型获益更多**。双模型评估结果显示出一个显著的规律：GPT-5.2 拥有更强大的代码生成能力，在所有五个基准测试中，其从 SWE-Vision 获得的绝对提升始终大于 Seed-2.0-Pro。这一点在 BabyVision（提升 18.2 分 vs 提升 3.8 分）和 MathVision（提升 7.9 分 vs 提升 1.9 分）中尤为明显。结果符合直觉——SWE-Vision 的强大之处在于编写和执行代码，因此，能够生成更正确、更具针对性的程序的模型将从该框架中获得更多价值。这表明，投资于模型的编码能力会带来复利效应：模型不仅会成为更优秀的程序员，而且当与 SWE-Vision 等工具增强型流程结合使用时，它还会成为更优秀的视觉推理者。
 
-# Discussions
+## Discussions
 
 以下几点局限性值得探讨：
 - **对基础模型视觉推理和编码能力的依赖**。SWE-Vision 的有效性受限于 LLM 编写正确、相关代码并正确分析结果的能力。GPT-5.2 和 Seed-2.0-Pro 之间的性能差距可能部分反映了编码能力的差异，而不仅仅是视觉能力。如果模型编写的代码存在缺陷或选择了不合适的算法，该工具可能无法提供帮助，甚至可能降低性能。

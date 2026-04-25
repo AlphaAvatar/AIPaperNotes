@@ -1,12 +1,14 @@
+# OWL: Optimized Workforce Learning for General Multi-Agent Assistance in Real-World Task Automation
+
 论文链接：https://arxiv.org/pdf/2505.23885
 
 代码链接：https://github.com/camel-ai/owl
 
-# 摘要
+## 摘要
 
 基于大语言模型（LLM）的多智能体系统在自动化现实世界任务方面展现出巨大潜力，但由于其领域特定性，难以跨领域迁移。现有方法面临两大关键缺陷：应用于新领域时，需要对所有组件进行完全的架构重新设计和重新训练。我们提出了 **WORKFORCE**，一个分层多智能体框架，它通过模块化架构将策略规划与专门执行解耦，该架构包含：（i）一个与领域无关的 **Planner**，用于任务分解；（ii）一个 **Coordinator**，用于子任务管理；以及（iii）具有领域特定工具调用能力的专用 **Workers**。这种解耦使得 WORKFORCE 在推理和训练阶段均能实现跨领域迁移：在推理阶段，WORKFORCE 通过添加或修改 Workers 无缝适应新领域；为了进行训练，我们引入了**OPTIMIZED WORKFORCE LEARNING (OWL)**，它通过利用来自真实世界的反馈进行强化学习，优化一个与领域无关的 Planner，从而提高跨领域的泛化能力。为了验证我们的方法，我们在 GAIA 基准测试集上评估了 WORKFORCE，该基准测试集涵盖了各种真实的多领域智能体任务。实验结果表明，WORKFORCE达到了开源领域最先进的性能（69.70%），比 OpenAI 的 Deep Research 等商业系统高出2.34%。更值得注意的是，我们用 OWL 训练的 32B 模型达到了 52.73% 的准确率（+16.37%），并且在具有挑战性的任务上展现出了与 GPT-4o 相当的性能。总而言之，通过实现可扩展的泛化和模块化的领域迁移，我们的工作为下一代通用人工智能助手奠定了基础。
 
-# 1.Introduction
+## 1.Introduction
 
 <img
   src="https://i-blog.csdnimg.cn/direct/14479fb9ac3d430d8a4c2ce161651842.png"
@@ -29,7 +31,7 @@
 3. **Efficient and Effective Training Paradigm**。OWL 显著增强了模型能力，同时开销极小，使 Qwen2.5-32B-Instruct 能够实现 16.37% 的性能提升，并在具有挑战性的任务上达到与 GPT-4o 相当的性能。
 4. **Fully Open-Source**。我们发布所有代码、模型和数据，以支持开放研究。
 
-# 2.Preliminary
+## 2.Preliminary
 
 **基于大语言模型（LLM）的智能体**是能够在各种环境中感知、推理和行动的自主系统。这些智能体在一个 perception-reasoning-action 循环中运行，它们观察环境，通过语言模型处理信息，确定适当的行动，并执行这些行动以实现目标。
 
@@ -37,9 +39,9 @@
 
 **通用型人工智能助手**最初由 GAIA 提出。这些系统旨在处理跨多个领域和模态的各种复杂任务。作为首个评估通用型人工智能助手的问答基准测试，GAIA 旨在使基于 LLM 的智能体能够在真实世界环境中收集信息，并测试其包括多模态理解、网页浏览、推理和复杂问题解决在内的基本能力。近年来，众多公司发布了通用型人工智能助手产品（例如 OpenAI 的 Deep Research）。虽然开源框架取得了显著进展（例如 Huggingface 的 Open Deep Research），但它们仍然落后于商业解决方案。本文旨在弥合开源和商业专有智能体框架之间的差距。我们提出的 WORKFORCE 的性能比 OpenAI 的 Deep Research 高出 2.34%，而我们的训练方法 OWL 则显著提升了 Qwen2.5-32B-Instruct 的性能，提升幅度达 16.37%。
 
-# 3.Multi-Agent Inference: WORKFORCE
+## 3.Multi-Agent Inference: WORKFORCE
 
-## 3.1 WORKFORCE
+### 3.1 WORKFORCE
 
 <img
   src="https://i-blog.csdnimg.cn/direct/0ec5ca56f6c74decac6b677decd14f8e.png"
@@ -58,11 +60,11 @@
 
 **Replanning Mechanism**。在任务执行过程中，Worker 会自行评估所分配的子任务是否失败。当 Worker 判定某个子任务失败时，它会将失败信息发布到任务通道。任务通道随后会检测到此失败，并提示 Planner 根据反馈信息生成新的子任务。这种重规划机制能够通过动态调整其方法以适应日益复杂的任务，从而实现测试时的扩展性，这在第 5 节中得到了验证。
 
-## 3.2 Generalist Multi-Agent Assistance
+### 3.2 Generalist Multi-Agent Assistance
 
 为了构建一个能够处理各种现实世界任务的通用型多智能体助手，我们实例化了 WORKFORCE，其中包含三个 worker 智能体，每个智能体都配备了特定领域的工具包：（i）**Web Agent**，能够执行网络搜索、提取网页内容并模拟浏览器操作；（ii）**Document Processing Agent**，旨在处理文档和多模态数据，包括文本、图像、音频、视频、电子表格和各种文件格式；以及（iii）**Reasoning/Coding Agent**，负责处理分析推理和代码执行任务。worker 智能体及其对应工具包的详细信息请参见附录 D.3。
 
-## 3.3 Experiments
+### 3.3 Experiments
 
 **Baselines**。我们选择了一套全面的基准系统，并将其分为四大类：（i）**Proprietary frameworks**，用于确定商业性能的上限，包括 OpenAI 的 Deep Research、h2oGPTe Agent 等商业智能系统。（ii）**Open-source frameworks**，用于展现社区的进步，包括 HuggingFace 的 Open Deep Research、Trase Agent 等强大的基准系统。（iii）采用多步骤工具调用的  **Single Agent** 基准系统。（iv）**Role Playing** 系统，由两个智能体（用户智能体和辅助智能体）组成，它们通过结构化对话协作完成任务。需要注意的是，为了控制实验变量，单智能体基准系统和角色扮演系统均使用与 WORKFORCE 相同的工具集。
 
@@ -72,27 +74,27 @@
 - **Workforce 在开源框架中实现了最先进的性能**。我们的 Workforce 准确率达到 69.70%，在所有难度级别上均持续优于以往的开源框架。在严格控制的设置下，使用相同的模型和工具包，我们基于 GPT-4o 的 Workforce 准确率达到 60.61%，比单智能体高出 23.03%，比多智能体基线角色扮演高出 6.06%。
 - **Workforce 的性能与商业专有框架相比毫不逊色，甚至更胜一筹**。虽然之前的开源框架与闭源框架相比存在显著的性能差距，但 Workforce 大大缩小了这一差距。据我们所知，Workforce 是首个超越 OpenAI Deep Research 的开源系统，性能提升达 2.34%，并且以 1.89% 的优势超越 Langfun Agent v2.1，创下新的 Level 1 最佳纪录。
 
-# 4.Multi-Agent Training: OPTIMIZED WORKFORCE LEARNING
+## 4.Multi-Agent Training: OPTIMIZED WORKFORCE LEARNING
 
-## 4.1 Training Strategy
+### 4.1 Training Strategy
 
 **Motivation**。WORKFORCE 架构将与领域无关的规划与特定领域的执行分离，使我们能够通过简单地添加或替换 worker 节点来适应新的领域，同时保持核心规划机制不变。我们引入了 **OPTIMIZED WORKFORCE LEARNING (OWL)**，它专注于增强一个能够处理各种真实世界场景的通用规划 Agent。这种设计显著降低了训练开销，因为只有规划 Agent 需要进行密集优化，而 worker 节点只需进行最小的调整即可利用现有的特定领域工具。这种“稳定核心，可变外围”的方法能够实现跨领域的高效知识迁移，并且无需为新的应用程序重新训练整个系统，从而在保持性能一致性的同时大幅降低计算成本。
 
 **Implementation**。更具体地说，我们采用两阶段训练范式：（i）在第一阶段，我们使用有监督微调（SFT）初始化 Planner Agent，使其具备从专家数据中提取的基本任务分解技能。（ii）随后，我们利用强化学习进一步优化经 SFT 初始化的 Planner Agent。我们选择直接偏好优化（DPO）作为优化算法，因为该阶段能够提升分解策略的质量，使其超越简单的模仿演示，从而使 Planner Agent 发展出更复杂的决策能力。
 
-## 4.2 Task Curriculum
+### 4.2 Task Curriculum
 
 **Motivation**。WORKFORCE 的核心创新在于其架构上将领域无关的规划与领域特定的执行分离。为了使这种设计有效，Planner Agent 必须具备跨不同问题领域的强大泛化能力。这就带来了一个根本性的矛盾：Planner Agent 必须同时保持对不同领域的深刻理解，并避免过度拟合特定的任务模式或领域。为了应对这一挑战，我们开发了一套策略性平衡的任务课程，该课程有意涵盖通用智能所需的多个能力维度。我们的课程设计遵循两个关键原则：（i）**能力覆盖**：使 Planner Agent 接触不同的推理模式和问题结构。（ii）**迁移学习**：优先培养能够跨领域迁移的互补认知技能，而非领域特定知识。
 
 **Implementation**。更具体地说，如表2所示，我们精心挑选了四个数据集，每个数据集都针对不同的智能体认知能力维度：（i）**HotpotQA**：该数据集要求基于在线信息进行多跳推理，挑战 Planner 协调复杂的信息检索行为。（ii）**WikiTableQuestions**：该数据集要求 Planner 制定策略来导航、筛选和处理表格信息。（iii）**Math-related Problems**：这是一个精心策划的数学问题集，需要通过推理或编程来解决，涵盖各种数学领域。这些问题有助于 Planner 培养逻辑推理和计算问题解决能力。（iv）**Infinity-MM**：作为一个多模态数据集，Infinity-MM 挑战 Planner 协调多模态信息处理，包括视觉、文本和结构化数据。
 
-## 4.3 Trajectory Synthesis
+### 4.3 Trajectory Synthesis
 
 **Supervised Fine-tuning**。我们采用 WORKFORCE 方法（§3.1）结合 GPT-4o-mini 来合成专家轨迹，这些轨迹由 Planner 生成的子任务和 worker 生成的执行轨迹组成。为了过滤掉低质量数据，我们对不同的数据集应用了不同的评估指标：对于 HotpotQA 和 WikiTableQuestions，我们使用了准确率指标；对于 Infinity-MM，我们使用了文本余弦相似度，并将真实答案与生成答案之间的阈值设为 0.7；对于数学相关问题，我们实现了 LLM 作为评判器，以比较真实答案和 worker 生成的解决方案。最终，如表 2 和表 6 所示，我们获得了 1599 条经过过滤的轨迹用于有监督微调，每条轨迹平均包含 3.41 个子任务。
 
 **Reinforcement Learning**。我们使用 SFT 初始化的模型为 DPO 生成成对轨迹。具体来说，对于我们收集的数据集中的每个问题，我们生成 $n=4$ 条不同的轨迹。这些生成轨迹的评估方法与SFT阶段相同。然后，​​我们基于评估结果，从每个问题生成的 $n$ 条轨迹中构建偏好对。对于数学、HotpotQA和WikiTableQuestions任务，正确的轨迹被标记为“chosen”，错误的答案被标记为“rejected”。对于Infinity-MM 数据集，最终文本余弦相似度得分超过与SFT阶段相同阈值（0.7）的轨迹被标记为“chosen”，低于该阈值的轨迹被标记为“rejected”。如表2所示，我们收集了 1009 对经过筛选的轨迹。
 
-## 4.4 Experiments
+### 4.4 Experiments
 
 **Baselines**。我们将我们的方法与多个专有和开源模型作为基准进行比较，包括 GPT-4o 系列、Claude-3.7-Sonnet 和 Qwen2.5 系列。这些模型代表了不同规模和架构下语言模型能力的当前最先进水平。
 
@@ -106,6 +108,6 @@
 
 如图 3a 所示，基于过滤轨迹训练的模型始终优于基于未过滤数据训练的模型，这表明对于有效的 Planner 训练而言，数据质量比数据数量更为重要。
 
-# 5.Analysis
+## 5.Analysis
 
-# 6.Related Work
+## 6.Related Work
