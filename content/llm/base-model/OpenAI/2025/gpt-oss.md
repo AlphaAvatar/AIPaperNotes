@@ -1,3 +1,5 @@
+# gpt-oss-120b & gpt-oss-20b Model Card
+
 论文链接：https://cdn.openai.com/pdf/419b6906-9da6-406c-a19d-1bb078ac7637/oai_gpt-oss_model_card.pdf
 
 代码链接：https://github.com/openai/gpt-oss

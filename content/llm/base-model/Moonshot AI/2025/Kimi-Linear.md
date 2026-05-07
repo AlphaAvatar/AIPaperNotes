@@ -1,3 +1,5 @@
+# KIMI LINEAR: AN EXPRESSIVE, EFFICIENT ATTENTION ARCHITECTURE
+
 论文链接：https://arxiv.org/pdf/2510.26692
 
 代码链接：https://github.com/MoonshotAI/Kimi-Linear
