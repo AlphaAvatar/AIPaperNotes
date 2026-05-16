@@ -10,7 +10,12 @@
 
 ## 1.介绍
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bb3c6c0f26bf41d19558a04ac94ab82a.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/bb3c6c0f26bf41d19558a04ac94ab82a.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 在大语言和多模态模型时代，文档解析已成为预训练和检索的核心数据引擎，因为它决定了能够从海量的PDF、扫描件和屏幕截图（这些文档存储着现实世界的知识）中恢复多少可靠的结构化监督信息。然而，文档不仅通过文本传递信息，还通过图表、示意图、流程图、用户界面元素和科学插图等图形来传递信息。现有的文档解析流程仍然主要以文本为中心：它们专注于识别和组织文本内容，而将非文本元素视为图形区域，并简单地将其裁剪为像素。因此，文档图形中编码的大量结构和语义信息被丢弃，使得当前的文档解析本质上是有损的，并限制了可以从文档中提取的监督信息量。
 
@@ -27,7 +32,12 @@
 - 我们的系统 dots.mocr 提出了一种统一的学习公式，通过归一化和训练稳定化，使生成的代码与渲染保真度保持一致，从而在稀疏和非唯一程序监督下实现大规模的实用性，并由完全从头开始训练的视觉编码器提供支持。
 - dots.mocr 在文档解析和结构化图形重建方面表现出强劲而均衡的性能（图 2），在 OCR Arena Elo 排行榜上仅次于 Gemini 3 Pro，在 olmOCR-Bench 上创造了新的最先进水平，在图像到 SVG 基准测试中超越了 Gemini 3 Pro，并且在 OCRBench 上除了解析之外，还保持了强大的视觉基础和推理性能，所有这些都在一个紧凑的 3B 参数模型中。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ed9d0c5d50f14918b70bed2ca8578fad.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/ed9d0c5d50f14918b70bed2ca8578fad.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 ## 2. Related Work
 
@@ -37,7 +47,12 @@
 
 ### 2.2 Structured Graphics Parsing
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/87d46836359940fcb572a12f9bcdd985.png)
+<img
+  src="https://i-blog.csdnimg.cn/direct/87d46836359940fcb572a12f9bcdd985.png"
+  alt=""
+  referrerpolicy="no-referrer"
+  style="max-width: 100%; height: auto;"
+/>
 
 结构化图形解析将文本解析扩展到布局、几何形状和样式线索（例如形状、线条和空间关系）的恢复，旨在将图像转换为可执行、可渲染的表示形式（例如 HTML、LaTeX、SVG 或 Python），而不是字符级转录。网站和 UI 解析通过将屏幕截图转换为类似 DOM 的结构或前端代码来体现这一方向：Pix2Struct 预训练视觉到文本的转换，以从蒙版网页图像中生成简化的 HTML；Design2Code 对屏幕截图到实现的生成进行基准测试并突出显示持续存在的保真度差距；OmniParser 直接从像素中提取 UI 元素。**除了 HTML 之外，目标语言通常也是领域驱动的**，例如 Plot2Code、ChartMimic 和 ChartMaster 通过 Python 程序渲染来重建图表，而 ChemDraw 风格的设置则将分子图映射到 SMILES 等结构化字符串。SVG 已成为一种特别富有表现力的目标格式，因为它能够显式地编码几何形状和样式；最近的一些方法将图像转换为 SVG 格式，用于图标和矢量图形，例如 StarVector、OmniSVG 和 UniSVG。虽然像 OCRVerse 这样的更广泛的统一方案通过提示将 OCR、图表解析、SVG 重建、网页布局生成和其他结构化目标整合到一个单一的视觉语言模型中，但一个持续存在的挑战是如何在保持对复杂结构化图像的强大泛化能力的同时，使专门的系统能够胜任特定的任务。
 
@@ -53,7 +68,9 @@ MOCR 的设计理念是将页面级解析任务统一到一个模型中，包括
 
 给定输入图像 $\textbf I$，任务是生成带解析结果的有序序列 $\textbf S$：
 
-$$\textbf S=[(\mathcal B_1,c_1,p_1),...,(\mathcal B_K,c_K,p_K)].\tag{1}$$
+```math
+\textbf S=[(\mathcal B_1,c_1,p_1),...,(\mathcal B_K,c_K,p_K)].\tag{1}
+```
 
 其中，每个组成元素由以下部分定义：$\mathcal B_k$，空间区域或边界框；$c_k$，语义类别或元素类型；$p_k$，关联的 payload。序列 $\textbf S$ 按照以人为中心的阅读顺序生成，使模型能够通过生成序列和专用分隔符隐式地编码结构层次和逻辑关系，而无需依赖外部关系模块。
 
