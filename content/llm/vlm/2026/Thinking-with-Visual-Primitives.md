@@ -1,8 +1,8 @@
 # Thinking with Visual Primitives
 
-论文链接：https://arxiv.org/pdf/2602.02276
+论文链接：
 
-代码链接：https://huggingface.co/moonshotai/Kimi-K2.5
+代码链接：https://github.com/mitkox/Thinking-with-Visual-Primitives
 
 ## 摘要
 
