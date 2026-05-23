@@ -4,7 +4,6 @@ export default {
   'base-model': 'Base Model',
   dataset: 'Dataset',
   'long-sequence': 'Long Sequence',
-  omni: 'Omni',
   prompt: 'Prompt',
   quantization: 'Quantization',
   speech: 'Speech',
