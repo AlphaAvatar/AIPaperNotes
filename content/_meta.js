@@ -22,6 +22,10 @@ export default {
     title: 'LLM',
     type: 'page'
   },
+  omni: {
+    title: 'Omni',
+    type: 'page'
+  },
   'visual-encoder': {
     title: 'Visual Encoder',
     type: 'page'

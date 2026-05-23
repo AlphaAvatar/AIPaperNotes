@@ -1,12 +1,15 @@
+# DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning
+
 论文链接：https://arxiv.org/pdf/2501.12948
 
 代码链接：
 
-# 摘要
+## 摘要
 
 我们介绍了第一代推理模型 DeepSeek-R1-Zero 和 DeepSeek-R1。DeepSeek-R1-Zero 是一个通过大规模强化学习 (RL) 训练的模型，无需预先进行有监督微调 (SFT)，展现出卓越的推理能力。通过强化学习，DeepSeek-R1-Zero 自然而然地展现出许多强大而有趣的推理行为。然而，它面临着诸如可读性差、语言混合等挑战。为了解决这些问题并进一步提升推理性能，我们推出了 DeepSeek-R1，它在强化学习之前结合了多阶段训练和冷启动数据。DeepSeek-R1 在推理任务上取得了与 OpenAI-o1-1217 相当的性能。为了支持研究社区，我们开源了 DeepSeek-R1-Zero、DeepSeek-R1 以及基于 Qwen 和 Llama 从 DeepSeek-R1 中提炼出的六个密集模型（1.5B、7B、8B、14B、32B、70B）。
 
-# 1.Introduction
+## 1.Introduction
+
 <img
   src="https://i-blog.csdnimg.cn/direct/c6d4c5a8f6b542638e99cff5ffa07b36.png"
   alt=""
@@ -24,7 +27,7 @@
 
 我们进一步探索了从 DeepSeek-R1 到更小稠密模型的**蒸馏**。使用 Qwen2.5-32B 作为基础模型，直接从 DeepSeek-R1 蒸馏的结果优于在其上应用强化学习。这表明，更大的基础模型发现的推理模式对于提升推理能力至关重要。我们开源了蒸馏后的 Qwen 和 Llama 系列。值得注意的是，我们蒸馏后的 14B 模型的性能远超当时最先进的开源模型 QwQ-32B-Preview，而蒸馏后的 32B 和 70B 模型则在稠密模型的推理基准测试中创下了新纪录。
 
-## 1.1. Contributions
+### 1.1. Contributions
 
 **Post-Training: Large-Scale Reinforcement Learning on the Base Model**
 - 我们直接将强化学习应用于基础模型，而无需依赖有监督微调 (SFT) 作为初步步骤。这种方法使模型能够探索解决复杂问题的思维链 (CoT)，从而促成了 DeepSeek-R1-Zero 的开发。DeepSeek-R1-Zero 展示了自我验证、反思和生成长思维链 (CoT) 等功能，标志着研究界的一个重要里程碑。值得注意的是，这是首个验证 LLM 的推理能力可以纯粹通过强化学习来激励，而无需 SFT 的开放式研究。这一突破为该领域的未来发展铺平了道路。
@@ -34,23 +37,23 @@
 - 我们证明了，大型模型的推理模式可以蒸馏到小模型中，从而获得比通过强化学习在小模型上发现的推理模式更佳的性能。开源的 DeepSeek-R1 及其 API 将助力研究社区在未来提炼出更优的小模型。
 - 利用 DeepSeek-R1 生成的推理数据，我们对研究社区中广泛使用的多个稠密模型进行了微调。评估结果表明，经过提炼的较小稠密模型在基准测试中表现出色。DeepSeekR1-Distill-Qwen-7B 在 AIME 2024 上达到了 55.5%，超越了 QwQ-32B-Preview。此外，DeepSeek-R1-Distill-Qwen-32B 在 AIME 2024 上达到了 72.6%，在 MATH-500 上达到了 94.3%，在 LiveCodeBench 上达到了 57.2%。这些结果显著优于之前的开源模型，并与 o1-mini 相当。我们已将基于 Qwen2.5 和 Llama3 系列的 1.5B、7B、8B、14B、32B 和 70B checkpoint 开源给社区。
 
-## 1.2. Summary of Evaluation Results
+### 1.2. Summary of Evaluation Results
 
 - **Reasoning tasks**：(1) DeepSeek-R1 在 AIME 2024 上取得了 79.8% 的 Pass@1 分数，略高于 OpenAI-o1-1217。在 MATH-500 上，它取得了令人印象深刻的 97.3% 的成绩，与 OpenAI-o1-1217 相当，并显著超越其他模型。(2) 在编程相关任务中，DeepSeek-R1 在 Codeforces 上获得了 2,029 的 Elo 评分，超越了 96.3% 的人类参赛者，展现出专家级的编程水平。在工程相关任务中，DeepSeek-R1 的表现略优于 DeepSeek-V3，这将有助于开发者完成实际任务。
 - **Knowledge**：在MMLU、MMLU-Pro和GPQA Diamond等基准测试中，DeepSeek-R1取得了优异的成绩，显著超越DeepSeek-V3，MMLU得分为90.8%，MMLU-Pro得分为84.0%，GPQA Diamond得分为71.5%。虽然DeepSeek-R1在这些基准测试中的表现略低于OpenAI-o1-1217，但它超越了其他闭源模型，展现了其在教育任务中的竞争优势。在事实类基准测试SimpleQA中，DeepSeek-R1的表现优于DeepSeek-V3，展现了其处理基于事实的查询的能力。OpenAI-o1也呈现出类似的趋势，在该基准测试中超越了4o。
 - **Others**：DeepSeek-R1 在创意写作、通用问答、编辑、摘要等一系列任务中也表现出色。它在 AlpacaEval 2.0 上取得了令人印象深刻的 87.6% 的长度控制胜率，在 ArenaHard 上更是达到了 92.3% 的胜率，展现了其强大的智能处理非考试导向型问题的能力。此外，DeepSeek-R1 在需要长上下文理解的任务上也表现出色，在长上下文基准测试中的表现远超 DeepSeek-V3。
 
-# 2.Approach
+## 2.Approach
 
-## 2.1 Overview
+### 2.1 Overview
 
 先前的研究严重依赖大量有监督数据来提升模型性能。在本研究中，我们证明，即使不使用有监督微调 (SFT) 作为冷启动，大规模强化学习 (RL) 也能显著提升推理能力。此外，加入少量冷启动数据可以进一步提升性能。在以下章节中，我们将介绍：(1) DeepSeek-R1-Zero，它将 RL 直接应用于基础模型，无需任何 SFT 数据；(2) DeepSeek-R1，它将 RL 从使用数千个长思维链 (CoT) 示例微调的检查点开始应用。3) 将 DeepSeek-R1 的推理能力蒸馏到小型密集模型中。
 
-## 2.2. DeepSeek-R1-Zero: Reinforcement Learning on the Base Model
+### 2.2. DeepSeek-R1-Zero: Reinforcement Learning on the Base Model
 
 强化学习在推理任务中展现出显著的有效性，这一点我们之前的研究成果已得到证实。然而，这些研究严重依赖于有监督数据，而这些数据的收集非常耗时。在本节中，我们将探索 LLM 在无需任何监督数据的情况下发展推理能力的潜力，重点关注其通过纯强化学习过程实现自我进化。我们首先简要概述我们的强化学习算法，然后展示一些激动人心的成果，希望能够为社区带来宝贵的见解。
 
-### 2.2.1 Reinforcement Learning Algorithm
+#### 2.2.1 Reinforcement Learning Algorithm
 
 **Group Relative Policy Optimization**。为了节省强化学习的训练成本，我们采用了 Group Relative Policy Optimization (GRPO)，它放弃了通常与策略模型大小相同的 critic 模型，而是根据组得分来估计基线。具体来说，对于每个问题 $q$，GRPO 从旧策略 $\pi_{\theta_{old}}$ 中采样一组输出 $\{o_1, o_2, · · · , o_G\}$，然后通过最大化以下目标来优化策略模型 $\pi_{\theta}$：
 
@@ -69,7 +72,7 @@
 A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
 ```
 
-### 2.2.2 Reward Modeling
+#### 2.2.2 Reward Modeling
 
 奖赏是训练信号的来源，决定了强化学习的优化方向。为了训练 DeepSeek-R1-Zero，我们采用了基于规则的奖赏系统，该系统主要包含两种类型的奖赏：
 - **Accuracy rewards**：准确率奖赏模型评估答案是否正确。例如，对于结果确定的数学问题，模型需要以指定格式（例如，在方框内）提供最终答案，从而实现基于规则的可靠正确性验证。同样，对于 LeetCode 问题，可以使用编译器根据预定义的测试用例生成反馈。
@@ -77,7 +80,8 @@ A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
 
 在开发 DeepSeek-R1-Zero 时，我们没有应用结果或过程神经奖赏模型，因为我们发现神经奖赏模型在大规模强化学习过程中可能会受到奖赏黑客攻击，并且重新训练奖赏模型需要额外的训练资源，并且会使整个训练流程变得复杂。
 
-### 2.2.3 Training Template
+#### 2.2.3 Training Template
+
 <img
   src="https://i-blog.csdnimg.cn/direct/1c1a6dd6b62744a3a804618cda1d2b90.png"
   alt=""
@@ -87,7 +91,7 @@ A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
 
 为了训练 DeepSeek-R1-Zero，我们首先设计一个简单的模板，用于指导基础模型遵循我们指定的指令。如表 1 所示，该模板要求 DeepSeek-R1-Zero 首先生成一个推理过程，然后给出最终答案。我们特意将约束限制在这种结构格式上，避免任何针对特定内容的偏见（例如强制进行反思性推理或推广特定的问题解决策略），以确保我们能够准确观察模型在强化学习过程中的自然进展。
 
-### 2.2.4 Performance, Self-evolution Process and Aha Moment of DeepSeek-R1-Zero
+#### 2.2.4 Performance, Self-evolution Process and Aha Moment of DeepSeek-R1-Zero
 
 <img
   src="https://i-blog.csdnimg.cn/direct/dd29bd423116475e8217f7d4f02a10c8.png"
@@ -126,11 +130,11 @@ A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
 
 **Drawback of DeepSeek-R1-Zero**。尽管 DeepSeek-R1-Zero 展现出强大的推理能力，并能够自主开发出意想不到的强大推理行为，但它也面临着一些问题。例如，DeepSeek-R1-Zero 面临着可读性差、语言混杂等挑战。为了提升推理过程的可读性并与开放社区分享，我们探索了 DeepSeek-R1 方法，这种方法将强化学习与人性化的冷启动数据相结合。
 
-## 2.3 DeepSeek-R1: Reinforcement Learning with Cold Start
+### 2.3 DeepSeek-R1: Reinforcement Learning with Cold Start
 
 受 DeepSeek-R1-Zero 良好结果的启发，我们自然而然地想到了两个问题：1）通过引入少量高质量数据作为冷启动，能否进一步提升推理性能或加速收敛？2）如何训练一个用户友好的模型，使其不仅能够生成清晰连贯的思维链 (CoT)，还能展现出强大的通用能力？为了解答这些问题，我们设计了一个训练 DeepSeek-R1 的流程。该流程包含四个阶段，概述如下。
 
-### 2.3.1 Cold Start
+#### 2.3.1 Cold Start
 
 与 DeepSeek-R1-Zero 不同，为了避免基础模型在强化学习训练早期冷启动阶段不稳定的问题，DeepSeek-R1 会构建并收集少量长 CoT 数据，作为初始强化学习 actor 对模型进行微调。为了收集此类数据，我们探索了多种方法：以长 CoT 为例进行小样本提示；直接提示模型通过反思和验证生成详细答案；以可读格式收集 DeepSeek-R1-Zero 的输出；以及通过人工注释人员的后期处理来优化结果。
 
@@ -138,11 +142,11 @@ A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
 - **Readability**：DeepSeek-R1-Zero 的一个关键限制是其内容通常不适合阅读。响应可能混合多种语言，或者缺乏 Markdown 格式来为用户突出显示答案。相比之下，在为 DeepSeek-R1 创建冷启动数据时，我们设计了一种可读模式，在每个响应末尾包含一个摘要，并过滤掉那些不太易于阅读的响应。在这里，我们将输出格式定义为 $\text{|special_token|<reasoning_process>|special_token|<summary>}$，其中推理过程是输入问题的 CoT，摘要用于总结推理结果。
 - **Potential**：通过精心设计冷启动数据模式，并结合人类先验知识，我们观察到其性能优于 DeepSeek-R1-Zero。我们相信迭代训练是推理模型的更佳方法。
 
-### 2.3.2 Reasoning-oriented Reinforcement Learning
+#### 2.3.2 Reasoning-oriented Reinforcement Learning
 
 在冷启动数据上对 DeepSeek-V3-Base 进行微调后，我们采用与 DeepSeek-R1-Zero 相同的大规模强化学习训练流程。此阶段专注于提升模型的推理能力，尤其是在**编码、数学、科学和逻辑推理**等推理密集型任务中，这些任务涉及定义明确的问题和清晰的解决方案。在训练过程中，我们观察到 CoT 经常出现语言混合的情况，尤其是在强化学习任务涉及多种语言时。为了缓解语言混合的问题，我们在强化学习训练中引入了语言一致性奖赏，其计算方式为 CoT 中目标语言词汇的比例。虽然消融实验表明这种对齐会导致模型性能略有下降，但这种奖赏符合人类的偏好，使其更具可读性。最后，我们将推理任务的准确率和语言一致性奖赏直接相加，得到最终奖赏。然后，我们对微调后的模型进行强化学习训练，直到其在推理任务上实现收敛。
 
-### 2.3.3 Rejection Sampling and Supervised Fine-Tuning
+#### 2.3.3 Rejection Sampling and Supervised Fine-Tuning
 
 当基于推理的强化学习收敛时，我们会利用生成的 checkpoint 来收集用于下一轮的 SFT（有监督微调）数据。与最初主要关注推理的冷启动数据不同，此阶段会整合来自其他领域的数据，以增强模型在写作、角色扮演和其他通用任务中的能力。具体来说，我们会按如下所述生成数据并对模型进行微调。
 
@@ -152,14 +156,14 @@ A_i=\frac{r_i-mean(\{r_1,r_2,...,r_G\})}{std({r_1,r_2,...,r_G})}.\tag{3}
 
 我们使用上述约 800k 个样本的数据集对 DeepSeek-V3-Base 进行了两个 epoch 的微调。
 
-### 2.3.4 Reinforcement Learning for all Scenarios
+#### 2.3.4 Reinforcement Learning for all Scenarios
 
 为了进一步使模型与人类偏好保持一致，我们实现了二阶段强化学习，旨在提升模型的有用性和无害性，同时优化其推理能力。具体而言，我们使用奖赏信号和不同的提示分布来训练模型。对于推理数据，我们遵循 DeepSeek-R1-Zero 中概述的方法，该方法利用基于规则的奖赏来指导数学、代码和逻辑推理领域的学习过程。对于通用数据，我们采用奖赏模型来捕捉复杂且细微场景中的人类偏好。我们基于 DeepSeek-V3 流程构建，并采用类似的偏好对和训练提示分布。对于有用性，我们专注于最终的摘要，确保评估强调响应对用户的实用性和相关性，同时最大限度地减少对底层推理过程的干扰。对于无害性，我们评估模型的整个响应，包括推理过程和摘要，以识别并减轻生成过程中可能出现的任何潜在风险、偏见或有害内容。最终，奖赏信号和多样化数据分布的整合使我们能够训练一个擅长推理同时优先考虑有用性和无害性的模型。
 
-## 2.4 Distillation: Empower Small Models with Reasoning Capability
+### 2.4 Distillation: Empower Small Models with Reasoning Capability
 
 为了使更高效的小型模型具备类似 DeepSeek-R1 的推理能力，我们使用 DeepSeek-R1 收集的 80 万个样本，直接对 Qwen 和 Llama 等开源模型进行了微调，详情请参阅 §2.3.3。我们的研究结果表明，这种直接的蒸馏方法显著提升了小型模型的推理能力。我们使用的基础模型包括 Qwen2.5-Math-1.5B、Qwen2.5-Math-7B、Qwen2.5-14B、Qwen2.5-32B、Llama-3.1-8B 和 Llama-3.3-70B-Instruct。我们选择 Llama-3.3 是因为它的推理能力略优于 Llama-3.1。
 
 对于蒸馏模型，我们仅应用 SFT，而不包含 RL 阶段，尽管引入 RL 可以显著提升模型性能。我们的主要目标是证明蒸馏技术的有效性，而 RL 阶段的探索则留给更广泛的研究社区。
 
-# 3.Experiment
+## 3.Experiment
