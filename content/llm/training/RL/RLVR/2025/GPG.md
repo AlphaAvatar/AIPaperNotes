@@ -1,12 +1,14 @@
+# GPG: A Simple and Strong Reinforcement Learning Baseline for Model Reasoning
+
 论文链接：https://arxiv.org/pdf/2504.02546
 
 代码链接：https://github.com/AMAP-ML/GPG
 
-# 摘要
+## 摘要
 
 强化学习 (RL) 可以直接增强大语言模型的推理能力，而无需过度依赖有监督微调 (SFT)。在本研究中，我们重新审视了传统的策略梯度 (PG) 机制，并提出了一种极简的强化学习方法，称为组策略梯度 (GPG)。与传统方法不同，**GPG 直接优化原始强化学习目标，从而消除了对替代损失函数的需求**。通过消除 critic 模型和 reference 模型、避免 KL 散度约束以及解决优势模型和梯度估计偏差，我们的方法与组相对策略优化 (GRPO) 相比显著简化了训练过程。我们的方法无需依赖辅助技术或调整即可实现卓越的性能。如图 1 所示，大量实验表明，我们的方法不仅降低了计算成本，而且在各种单模态和多模态任务中始终优于 GRPO。我们的代码可在 https://github.com/AMAP-ML/GPG 获取。
 
-# 1.介绍
+## 1.介绍
 
 <img
   src="https://i-blog.csdnimg.cn/direct/ffa3e0bfb4bb472d99a69de33a84f601.png"
@@ -35,9 +37,9 @@
 
 我们的代码和实现细节都是开源的。
 
-# 2.方法
+## 2.方法
 
-## 2.1 Preliminary and Task Formulation
+### 2.1 Preliminary and Task Formulation
 
 强化学习是一种通过交互进行学习的计算方法，其中 Agent 通过在环境中选择最优动作来寻求最大化累积奖赏。强化学习问题通常由策略 $π_θ$ 定义，该策略将状态映射到动作，旨在优化期望回报。策略梯度方法的核心思想是利用梯度上升来迭代调整策略参数。学习目标是最大化回报 $\mathcal J(θ)$，
 
@@ -71,7 +73,7 @@ A^{\pi_{\theta}}(s_t,a_t)=Q^{\pi_{\theta}}(s_t,a_t)-V^{\pi_{\theta}}(s_t),\tag{4
 
 然而，设计或获取中间步骤的准确奖赏并非易事。为了应对这一挑战，我们将问题简化如下。给定一个问题和提示 $s$，我们从策略 $π_θ$ 中采样一个动作 $a$，并获得最终的奖赏信号 $r$。注意，策略分布 $π_θ$ 是以自回归方式建模的。在这种情况下，我们可以利用策略梯度方法来优化策略。
 
-## 2.2 Group Policy Gradient
+### 2.2 Group Policy Gradient
 
 <img
   src="https://i-blog.csdnimg.cn/direct/cefd8cf106e44147b7b109a5c0b53e8d.png"
@@ -136,12 +138,12 @@ $F_{norm}$ 是一种可选的归一化技术，通常与奖赏裁剪结合使用
   style="max-width: 100%; height: auto;"
 />
 
-# 3.Experiments
+## 3.Experiments
 
-## 3.1 Experimental Setup
+### 3.1 Experimental Setup
 
-## 3.2 Unimodal Task Evaluation
+### 3.2 Unimodal Task Evaluation
 
-## 3.3 Multimodal Task Evalutaion
+### 3.3 Multimodal Task Evalutaion
 
-## 3.4 Ablation Study and Discussion
+### 3.4 Ablation Study and Discussion
