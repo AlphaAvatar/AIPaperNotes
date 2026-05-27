@@ -1,10 +1,12 @@
+# Understanding R1-Zero-Like Training: A Critical Perspective
+
 论文链接：https://arxiv.org/pdf/2503.20783
 
 代码链接：https://github.com/sail-sg/understand-r1-zero
 
-# 摘要
+## 摘要
 
-DeepSeek-R1-Zero 已证明，大规模强化学习 (RL) 无需有监督微调即可直接提升 LLM 的推理能力。本研究通过分析其两个核心组件：基础模型和强化学习 (RL)，对类似 R1-Zero 的训练进行了批判性研究。我们研究了包括 DeepSeek-V3-Base 在内的多种基础模型，以**了解预训练特性如何影响 RL 性能**。分析表明，DeepSeek-V3-Base 已展现出“顿悟时刻”，而 Qwen2.5 基础模型即使在没有提示模板的情况下也展现出强大的推理能力，这表明预训练可能存在偏差。此外，我们还发现组相对策略优化 (GRPO) 中存在优化偏差，它会在训练过程中人为地增加响应长度（尤其是对于错误输出）。为了解决这个问题，我们引入了 Dr.GRPO，这是一种无偏差的优化方法，可以在保持推理性能的同时提高 token 效率。利用这些见解，我们提出了一种极简的 R1-Zero 方案，使用 7B 基础模型在 AIME 2024 上实现了 43.3% 的准确率，建立了新的最佳水平。
+DeepSeek-R1-Zero 已证明，大规模强化学习 (RL) 无需有监督微调即可直接提升 LLM 的推理能力。本研究通过分析其两个核心组件：基础模型和强化学习 (RL)，对类似 R1-Zero 的训练进行了批判性研究。我们研究了包括 DeepSeek-V3-Base 在内的多种基础模型，以**了解预训练特性如何影响 RL 性能**。分析表明，DeepSeek-V3-Base 已展现出“顿悟时刻”，而 Qwen2.5 基础模型即使在没有提示模板的情况下也展现出强大的推理能力，这表明预训练可能存在偏差。此外，我们还发现组相对策略优化 (GRPO) 中存在优化偏差，它会在训练过程中人为地增加响应长度（尤其是对于错误输出）。为了解决这个问题，我们引入了 **Dr.GRPO**，这是一种无偏差的优化方法，可以在保持推理性能的同时提高 token 效率。利用这些见解，我们提出了一种极简的 R1-Zero 方案，使用 7B 基础模型在 AIME 2024 上实现了 43.3% 的准确率，建立了新的最佳水平。
 
 # 1.Introduction
 <img
@@ -35,11 +37,11 @@ DeepSeek-R1-Zero 引入了类似 R1-Zero 的训练范式，彻底革新了大语
   style="max-width: 100%; height: auto;"
 />
 
-# 2.Analysis on Base Models
+## 2.Analysis on Base Models
 
 在本节中，我们仔细研究了各种基础模型，包括 Qwen-2.5 系列、Llama-3.1 和 DeepSeek 系列，向它们询问从 MATH 训练集中抽取的 500 个问题并分析它们的回答。
 
-## 2.1 R1-Zero Trainability: Templates Construct Exploratory Base Policies
+### 2.1 R1-Zero Trainability: Templates Construct Exploratory Base Policies
 
 由于从基础模型进行训练是 R1-Zero 类范式的基本设定，我们首先研究广泛使用的开源基础模型（通常用于句子补全，即 $p_θ(x)$）是否可以通过适当的模板有效地激发其问答能力，从而充当问答基础策略 $π_θ(·|q)$。除了 Guo et al. (2025) 中的 R1 模板（模板 1）之外，我们还考虑了 Zeng et al. (2025) 使用的 Qwen-Math 模板（模板 2）以及 No template（模板 3）：
 
@@ -53,7 +55,7 @@ DeepSeek-R1-Zero 引入了类似 R1-Zero 的训练范式，彻底革新了大语
 
 **Results**。图 3 左图展示了基础模型（是否使用模板）对所提问题的回答效果。我们观察到，Llama 和 DeepSeek 模型均通过使用合适的模板（R1 模板）提升了回答能力。然而，Qwen2.5 模型在不使用模板时效果最佳（回答率高达 100%）。这一有趣的特性激发了进一步的研究，正如第 2.2 节所述。同时，**不使用模板时最低的回答率表明 DeepSeek-V3-Base 是一个近乎纯粹的基础模型**。这一观察结果促使我们探索像 DeepSeek-V3-Base 这样的纯粹基础模型是否能够展现出“顿悟时刻”（Aha moment）（第 2.3 节）。图 3 中图展示了不同基础模型（使用模板）在不同采样温度下的 pass@8 准确率。该指标可以作为基础策略探索能力的指标。例如，如果一个基础策略甚至无法采样一条能够得出正确最终答案的轨迹，那么强化学习就无法改进该策略，因为没有奖赏信号。我们的结果表明，所有测试模型都是探索性的（因此可以用于强化学习），其中 Qwen2.5 模型表现最佳（甚至超过了 DeekSeek-V3-Base）。这或许可以部分解释为什么大多数 R1-Zero 项目都基于 Qwen2.5 模型。
 
-## 2.2  Qwen-2.5 Models Unlock the Best Performance When Discarding Template
+### 2.2  Qwen-2.5 Models Unlock the Best Performance When Discarding Template
 
 <img
   src="https://i-blog.csdnimg.cn/direct/849de231f87449deabb68cfacc323674.png"
@@ -86,7 +88,7 @@ DeepSeek-R1-Zero 最鼓舞人心的成果之一是，通过纯强化学习训练
 
 另一个重要问题是，**自我反思行为是否与强化学习训练后模型性能的提升相关**。为了探究这一点，我们托管了 DeepSeek-R1-Zero，并分析了其对 MATH 数据集中相同问题的响应。虽然自我反思行为在 R1-Zero 中出现的频率更高，但我们观察到这些行为并不一定意味着更高的准确率。详细分析请参见附录 D。
 
-# 3.Analysis on Reinforcement Learning
+## 3.Analysis on Reinforcement Learning
 
 语言模型生成可以表述为一个 token 级的马尔可夫决策过程 (MDP) $\mathcal M = (\mathcal S, \mathcal A,r, \mathcal p_{\mathcal Q})$。在每个生成步骤 $t$，状态 $s_t ∈ \mathcal S$ 是输入问题与迄今为止生成的输出响应的拼接：$s_t = \textbf q; \textbf o_{<t} = [q_1, ..., q_M, o_1, ..., o_{t−1}]$。策略 $π_θ (·|s_t)$ 将从词表 $\mathcal A$ 中选择下一个token $o_t$，从而确定性地过渡到下一个状态 $s_{t+1} = s_t;[o_t]$。生成过程从从一组问题中采样初始状态 $s_1 = \textbf q ∼ p_{\mathcal Q}$ 开始，并在自回归策略生成 [eos] 个 token 或耗尽预算时停止。
 
@@ -107,7 +109,7 @@ DeepSeek-R1-Zero 最鼓舞人心的成果之一是，通过纯强化学习训练
 
 其中 $π_{θ_old}$ 是更新前的策略，$ϵ$ 是裁剪超参数，$\hat A_t$ 是第 t 个 token 的优势函数估计器。估计 $\hat A_t$ 的标准方法是使用学习到的价值模型 $V_ϕ$ 来计算广义优势估计 (GAE)。然而，在 LLM RL 调优的背景下，学习价值模型的计算成本很高，因此不使用 $V_ϕ$ 来估计 $\hat A_t$ 的方法实际上更受欢迎。例如，Shao et al. (2024) 提出了 GRPO，它首先对每个问题采样一组响应 $\{\textbf o_1, ...,\textbf o_G\}$ 并计算它们的回报 $\textbf R = \{R_1, ..., R_G\}$，然后将 $o_i$ 中所有 token 的优势设为 $\hat A_t =\frac{R_i−mean(\textbf R)}{std(\textbf R)}$。
 
-## 3.1 GRPO Leads to Biased Optimization
+### 3.1 GRPO Leads to Biased Optimization
 
 <img
   src="https://i-blog.csdnimg.cn/direct/2ed44701332f4c46806cdd803769747b.png"
@@ -118,6 +120,7 @@ DeepSeek-R1-Zero 最鼓舞人心的成果之一是，通过纯强化学习训练
 
 在 Deepseek-R1-Zero 中，一个显著的趋势是响应长度在整个训练过程中持续增加。这通常被解读为高级推理能力（例如自我反思）发展的标志。近期研究使用各种算法和实现方式复制了这一现象。然而，我们认为，观察到的响应长度增加也可能归因于 GRPO 目标函数中固
 有的偏差：
+
 ```math
 \mathcal J_{GRPO}(\pi_{\theta})=\mathbb E_{\textbf q\sim p_{\mathcal Q},\textbf o\sim\pi_{\theta}(\cdot|\textbf q)}\\
 \frac{1}{G}\sum^{|\textbf G|}_{i=1}\frac{1}{|o_i|}\sum^{|\textbf o_i|}_{t=1}\{min[\frac{\pi_{\theta}(o_{i,t}|\textbf q,\textbf o_{i,<t})}{\pi_{\theta_{old}}(o_{i,t}|\textbf q,\textbf o_{i,<t})}\hat A_{i,t},clip(\frac{\pi_{\theta}(o_{i,t}|\textbf q,\textbf o_{i,<t})}{\pi_{\theta_{old}}(o_{i,t}|\textbf q,\textbf o_{i,<t})},1-ϵ, 1+ϵ)\hat A_{i,t}]\},\tag{3}
@@ -137,8 +140,8 @@ DeepSeek-R1-Zero 最鼓舞人心的成果之一是，通过纯强化学习训练
 
 **Length Bias Also Exists in Open-Source PPO Implementations**。我们还研究了几种流行的用于 LLM 后训练的 vanilla PPO 算法的开源实现。令人惊讶的是，所有这些实现都根据响应长度对损失进行归一化（参见清单 1 和表 2），这与公式 (2) 中定义的 PPO 目标不一致。这种公式实现上的不一致甚至在 GRPO 发布之前就已存在。我们推测这种不一致可能源于预训练阶段，在此阶段，所有 token 都被打包到固定长度的上下文中，并且根据上下文长度对损失进行归一化（即计算 loss.mean(-1)）可以提高数值稳定性。然而，在 RL 调优阶段，典型的实现根据响应长度对损失进行归一化，而响应长度并非常数，从而引入了意想不到的长度偏差。
 
-## 3.2  Dr. GRPO: Group Relative Policy Optimization Done Right
+### 3.2  Dr. GRPO: Group Relative Policy Optimization Done Right
 
 为了避免 GRPO 中上述优化偏差，我们建议直接删除 $\frac{1}{|o_i|}$ 和 $std(\{R(\textbf q,\textbf o_1), ..., R(\textbf q,\textbf o_G)\})$ 归一化项。同时，为了准确实现无偏优化目标，我们可以将 List1 中 MASK 均值函数中的 mask.sum(axis=dim) 替换为一个常量值（例如，生成预算），如绿色线条所示。值得注意的是，这些简单的修改恢复了公式 (2) 中的 PPO 目标，其优势函数通过蒙特卡洛回报估计得出，且基线为无偏。我们在附录 A 中给出了详细的推导。我们将新的优化算法称为 Dr. GRPO。接下来，我们将通过实验验证其有效性。
 
-## 3.3 A Duet of Template and Question Set Coverage in RL dynamics
+### 3.3 A Duet of Template and Question Set Coverage in RL dynamics
