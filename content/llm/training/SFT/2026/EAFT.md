@@ -1,12 +1,14 @@
+# Entropy-Adaptive Fine-Tuning: Resolving Confident Conflicts to Mitigate Forgetting
+
 论文链接：https://arxiv.org/pdf/2601.02151
 
 代码链接：https://github.com/PRIS-CV/EAFT
 
-# 摘要
+## 摘要
 
 有监督微调 (SFT) 是领域自适应的标准范式，但它常常导致灾难性遗忘。与之形成鲜明对比的是，on-policy Reinforcement Learning (RL) 能够有效地保留通用能力。**我们研究了这种差异，并发现了一个根本性的分布差距：RL 遵循模型的内部信念，而 SFT 则迫使模型适应外部监督**。这种不匹配通常表现为“**Confident Conflicts**”——即概率低但熵低的 token。在这种情况下，模型对其预测结果非常自信，但却被迫学习一个发散的真实值，从而触发破坏性的梯度更新。为了解决这个问题，我们提出了 **Entropy-Adaptive Fine-Tuning (EAFT)**。与仅依赖预测概率的方法不同，EAFT 利用 token 级熵作为门控机制来区分**认知不确定性**和**知识冲**突。这使得模型能够从不确定的样本中学习，同时抑制冲突数据上的梯度。在数学、医学和智能体领域，我们对 Qwen 和 GLM 系列（参数量从 4B 到 32B 不等）进行了广泛的实验，结果证实了我们的假设。EAFT 在显著降低通用能力下降的同时，始终保持与标准 SFT 相同的下游性能。
 
-# 1.介绍
+## 1.介绍
 
 <img
   src="https://i-blog.csdnimg.cn/direct/3c9d85e4a5094d33a62d1a543b7f37dc.png"
@@ -45,7 +47,7 @@
   style="max-width: 100%; height: auto;"
 />
 
-# 2.Related Work
+## 2.Related Work
 
 **Post-training Paradigms: SFT vs. RL**。后训练方法，主要是有监督微调（SFT）和强化学习（RL），被广泛用于校准预训练的语言模型。SFT 优化模型以最大化其与真实标签的匹配度（off-policy）。相比之下，RL 基于模型自身生成的响应，并在奖赏信号的引导下进行优化（on-policy）。这些信号通常来源于参数化的奖赏模型或可验证信号。
 
@@ -61,11 +63,11 @@
 
 然而，现有的动态方法主要依赖概率或 KL 散度作为难度或漂移的代理指标。**我们认为，仅凭概率不足以作为统计量：低概率的样本既可以代表认知不确定性（待学习的有效知识），也可以代表“置信冲突”（与模型强先验相矛盾的破坏性样本）**。通过强制模型基于概率来拟合这些冲突，以往的方法可能会加速遗忘。我们的工作通过引入熵作为门控信号来改进这一方法。
 
-# 3.Empirical Analysis & Methodology
+## 3.Empirical Analysis & Methodology
 
 本节系统地研究了 SFT 中灾难性遗忘的成因，并提出了一种针对性的解决方案。首先，我们在第 3.1 节中定义了问题设置和关键指标。然后，我们在第 3.2 节中通过实证分析，确定了“置信冲突”是破坏性梯度的主要来源。最后，基于这些发现，我们在第 3.3 节中介绍了我们的方法—— **EntropyAdaptive Fine-Tuning (EAFT)**。
 
-## 3.1 Preliminaries
+### 3.1 Preliminaries
 
 SFT 是将基础模型 $θ$（由其概率分布 $P_θ$ 表示）适配到目标数据集 $\mathcal D = \{(\textbf x, \textbf y)_i\}^N_{i=1}$ 的标准过程。对于每个样本，响应是一个 token 序列 $y = (y_1, . . . , y_T)$，其中 $T$ 表示序列长度。适配通常通过最小化交叉熵 (CE) 损失来实现，该损失最大化目标序列的似然性：
 
@@ -79,7 +81,7 @@ SFT 是将基础模型 $θ$（由其概率分布 $P_θ$ 表示）适配到目标
 1. **Probability**。$p_t=P_{\theta}(y_t|\textbf x,\textbf y_{\lt t})$表示模型在真实 token 上的置信度。
 2. **Predictive Entropy**。令 $P_t(v) ≜ P_θ(v|\textbf x,\textbf y_{<t})$ 表示步骤 $t$ 的分布。熵定义为：$H_t = −\sum_{v∈\mathcal V} P_t(v) log P_t(v)$， 这衡量模型对词表 $\mathcal V$ 的预测不确定性。
 
-## 3.2 Analysis: The Origins of Forgetting
+### 3.2 Analysis: The Origins of Forgetting
 
 为了理解为什么 SFT 会导致遗忘而 on-policy 的强化学习不会，我们将标准 SFT 数据的 token 级统计数据与模型生成的 rollout（on-policy 的强化学习的数据来源）进行比较。图 1 可视化了两个数据集的概率 $p_t$ 和熵 $H_t$ 的分布。
 
@@ -91,7 +93,7 @@ SFT 是将基础模型 $θ$（由其概率分布 $P_θ$ 表示）适配到目标
 
 **Theoretical Insight**。我们分析优化动态过程以理解这种损害。考虑 CE 损失（公式1）。当模型对与目标相矛盾的预测结果非常有信心时（低熵，低概率），CE 损失会导致非常大的梯度。由于模型强烈倾向于另一个 token，拟合目标需要大量的参数更新，这可能会覆盖基础模型中的一般表示。相反，当模型存在不确定性时（高熵），梯度较小，更新也更平缓，有助于保持模型的原始能力。
 
-## 3.3 Entropy-Adaptive Fine-Tuning (EAFT)
+### 3.3 Entropy-Adaptive Fine-Tuning (EAFT)
 
 虽然试点研究验证了我们的假设，但强制 MASK 策略存在两个局限性：它会丢弃训练数据，导致目标域学习效果不佳，并且依赖于敏感的超参数 $(τ, δ)$。为了解决这些问题，我们提出了 **Entropy-Adaptive Fine-Tuning (EAFT)**，这是一种软门控机制，能够根据模型的不确定性动态调整学习信号。
 
@@ -111,7 +113,7 @@ SFT 是将基础模型 $θ$（由其概率分布 $P_θ$ 表示）适配到目标
 -  **Conflict Suppression** ($\tilde H_t → 0$)：当模型固执（低熵）时，权重会下降，从而有效地掩盖来自冲突标签的破坏性梯度。
 - **Knowledge Acquisition** ($\tilde H_t → 1$)：当模型不确定（高熵）或处于探索阶段时，权重保持较高，恢复了学习新模式的标准 SFT 目标。
 
-# 4.Experiments
+## 4.Experiments
 
 <img
   src="https://i-blog.csdnimg.cn/direct/e8c2f6bb61bb453b98e7864cdb2107b9.png"
