@@ -18,6 +18,10 @@ export default {
     title: 'Embedding',
     type: 'page'
   },
+  infrastructure: {
+    title: 'Infrastructure',
+    type: 'page'
+  },
   llm: {
     title: 'LLM',
     type: 'page'
