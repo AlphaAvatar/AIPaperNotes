@@ -1,4 +1,4 @@
-# Qwen3 Technical Report翻译
+# Qwen3 Technical Report
 
 论文链接：https://arxiv.org/pdf/2505.09388
 
