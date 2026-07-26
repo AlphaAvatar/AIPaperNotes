@@ -30,8 +30,12 @@ export default {
     title: 'Omni',
     type: 'page'
   },
-  'visual-encoder': {
-    title: 'Visual Encoder',
+  speech: {
+    title: 'Speech Model',
+    type: 'page'
+  },
+  visual: {
+    title: 'Visual Model',
     type: 'page'
   }
 }

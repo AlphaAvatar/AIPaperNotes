@@ -1,12 +1,14 @@
+# Audio Flamingo 3: Advancing Audio Intelligence with Fully Open Large Audio Language Models
+
 论文链接：https://arxiv.org/pdf/2507.08128
 
 代码链接：https://github.com/NVIDIA/audio-flamingo
 
-# 摘要
+## 摘要
 
 我们推出了 Audio Flamingo 3 (AF3)，这是一个完全开放的、最先进的大型音频语言模型，旨在提升语音、声音和音乐的推理和理解能力。AF3 引入了以下功能：(i) **AF-Whisper**，这是一个统一的音频编码器，采用一种新的策略进行训练，以实现语音、声音和音乐三种模态的联合表征学习；(ii) **flexible, on-demand thinking**，允许模型在回答问题前进行思路链式推理；(iii) 多轮多音频聊天；(iv) 长达 10 分钟的长音频理解和推理（包括语音）；以及 (v) 语音交互。为了实现这些功能，我们提出了几个采用新策略精心设计的大规模训练数据集，包括 AudioSkills-XL、LongAudio-XL、AF-Think 和 AF-Chat，并采用一种新的五阶段课程式训练策略对 AF3 进行训练。 AF3 仅基于开源音频数据进行训练，在超过 20 个（长）音频理解和推理基准上取得了新的 SOTA 结果，超越了在更大数据集上训练的开放权重和闭源模型。
 
-# 1.介绍
+## 1.介绍
 
 <img
   src="https://i-blog.csdnimg.cn/direct/ef1faf0503f14ccb9f0f4b8ee66602ca.png"
@@ -33,7 +35,7 @@
   style="max-width: 100%; height: auto;"
 />
 
-# 2.Related Work
+## 2.Related Work
 
 **Audio Language Models**。LLM 的快速发展催生了多模态 LLM (MLLM) 的发展，MLLM 能够理解和推理包括音频在内的多种数据模态。在这一领域，ALM 专门针对语音、声音和音乐等听觉输入进行推理。**ALM 通常遵循两种主要的架构范式**：(i) 仅编码器的 ALM，它学习音频和文本的联合嵌入空间，从而支持跨模态检索等任务。代表性模型包括 CLAP、Wav2CLIP 和 AudioCLIP。(ii) 编码器/解码器 ALM，也称为 LALM，它使用音频编码器增强的纯解码器的 LLM 。值得注意的例子包括 LTU、LTU-AS、SALMONN、Pengi、Audio Flamingo、Audio Flamingo 2、AudioGPT、GAMA、Qwen-Audio 和 Qwen2-Audio。这些 LALM 在核心音频理解任务上的性能显著提升，例如自动语音识别 (ASR)、音频字幕和声学场景分类。更重要的是，它们实现了诸如开放式音频问答等新功能，而这需要复杂的推理和外部世界知识。
 
@@ -43,9 +45,9 @@
 
 与此同时，人们也致力于通过改进推理数据集、多模态感知方面的进步以及诸如思路链 (CoT) 提示等新兴范式（鼓励模型“先思考后回答”）来增强 LLM 和 MLLM 的推理能力。在开发 AF3 的过程中，我们结合了这些进步——整合了可控推理监督、长上下文训练和模态多样性——使模型具备强大的推理能力和长上下文理解能力，包括语音理解。
 
-# 3.Methodology
+## 3.Methodology
 
-## 3.1 Audio Flamingo 3 Architecture
+### 3.1 Audio Flamingo 3 Architecture
 
 <img
   src="https://i-blog.csdnimg.cn/direct/cd0562158b844ce5b2c48f358396d526.png"
@@ -68,7 +70,7 @@
 
 **Streaming TTS**。为了实现语音交互，我们采用了一个 TTS 模块来生成流式语音，并支持流式输入和输出。我们的 TTS 模块采用纯解码器的 Transformer 架构：它根据来自 LLM 的输入子词文本 token 和先前生成的音频 token 的历史记录，预测后续的音频 token。类似的流式 TTS 技术已在 LLM 中得到探索（用于 LLM 输出的语音输出），但尚未在 LALM（我们将其定义为旨在感知和推理不同音频输入的模型）的背景下进行探索。由于这并非我们工作的核心创新点，我们将在附录一中提供更多细节，包括训练和架构。
 
-# 4.Audio Flamingo 3 Training Data
+## 4.Audio Flamingo 3 Training Data
 
 <img
   src="https://i-blog.csdnimg.cn/direct/482e309c24de418e8f25322d7bed1b65.png"
@@ -79,7 +81,7 @@
 
 表 11 展示了用于训练 AF3 的所有数据集的详细统计数据。AF3 共有 5 个训练阶段，每个阶段都采用独立的数据集组合，并赋予其独特的权重（即该阶段对该数据集的遍历次数）。对于第 1 阶段和第 2 阶段，我们使用已转换为 QA 格式的开源、专注于识别的基础数据集。在接下来的小节中，我们将介绍第 3、3.5 和 4 阶段中使用的四个新的且独立的数据集，每个数据集都配有定制的数据管理策略，这些数据集构成了本研究的核心贡献。
 
-## 4.1 AudioSkills-XL: Expanding AudioSkills with Reasoning-Focused QAs
+### 4.1 AudioSkills-XL: Expanding AudioSkills with Reasoning-Focused QAs
 
 基于基础基准测试（例如，自动语音识别 (ASR)、声学事件分类）的音频问答对不足以训练专家级推理模型。因此，在第三阶段的微调中，我们优先考虑开发推理和解决问题的能力，方法是收集大规模、高质量的音频问答数据。受 AF2 的启发，我们将此阶段限制为短音频片段（≤30 秒），并将长音频推理推迟到后续阶段。我们在 AudioSkills 数据集中新增了 **450** 万个音频问答对（主要基于多项选择题 (MCQ)），从而创建了包含 800 万个音频问答对的高质量语料库 AudioSkills-XL，并采用了以下两种策略：
 
@@ -87,7 +89,7 @@
 
 （2）**我们用 YouTube8M、LibriSpeech（朗读语音）、GigaSpeech（对话）和 VoxCeleb2（访谈）等数据集中的 100 万条语音问答样本扩充了 AudioSkills**。从 YouTube8M 中，我们引入了一项新任务：Speech-in-Sound 问答，其中模型必须推理语音内容和环境声音才能理解复杂的听觉场景。为了创建这些问答，我们创建了 Speech-in-Sound-Caps，这是一个包含约 200 万条来自 YouTube8M 的语音感知听觉场景字幕的新数据集。为了整理这个数据集，我们首先过滤数据集中的英语语音（使用 AF2），并使用 Whisper-Large-v3 转录口述内容。然后，我们生成两种类型的描述：一种捕捉声音事件，另一种总结语音特征，例如声调、情感和音高（均使用 AF2 和自定义提示；参见附录 26）。最后，我们提示 GPT-4.1 合成语音感知场景字幕。这些字幕通过提供更全面的音频表示，显著提升了最终音频字幕的质量（与仅使用声音信息相比）。对于 LibriSpeech 和 GigaSpeech，我们将较短的片段连接成 15-30 秒的片段，并通过提示 LLM 筛选出信息密集的片段。为了超越大多数当前数据集中常见的基本口语内容理解，我们设计了五种不同类型的语音问答系统，它们需要不同的推理技能（下一节将对此进行解释）。
 
-## 4.2 LongAudio-XL: Expanding LongAudio with Long Speech QA
+### 4.2 LongAudio-XL: Expanding LongAudio with Long Speech QA
 
 <img
   src="https://i-blog.csdnimg.cn/direct/a64698936cf34ab78f19ab3b6e61dec0.png"
@@ -105,7 +107,7 @@
 5. **Summarization**：生成演讲内容的简明摘要。
 6. **Order**：i) 时间顺序：理解演讲中主题的顺序；ii) 时间属性：理解主题如何随时间变化；iii) 时间引用：解析对特定时间点的引用（例如，“在最后”）iv) 时间基础：确定音频中何时讨论特定主题。
 
-## 4.3 AF-Think: Towards flexible, on-demand reasoning
+### 4.3 AF-Think: Towards flexible, on-demand reasoning
 
 最近的研究表明，让 LLM 进行类似于思维链 (CoT) 提示的“思考”，可以提升 LLM 的推理性能，尤其是在编码和数学等复杂任务中（例如 DeepSeek-R1、OpenAI-o1）。视觉 MLLM 也受益于这种范式。在音频领域，Audio-CoT、Audio-Reasoner 和 R1-AQA 等早期尝试探索了 CoT 式推理，但通常收益有限，并且涉及复杂或低效的训练程序。此外，与 [73] 中的发现一致，我们观察到深度、显式思考并不总能提高音频理解任务的性能。
 
@@ -113,7 +115,7 @@
 
 为了生成 AF-Think，我们首先从 AudioSkillsXL 和 LongAudio-XL 中采样一组多项选择推理问答题（最初仅包含正确选项作为答案）。接下来，我们用输入音频、问题和答案提示 Gemini 2.0 Flash，以生成简短的思考前缀。我们发现，与从零开始生成 CoT 相比，Gemini 在以真实答案为指导时，幻觉更少，推理更准确。我们将此过程限制在高质量数据集上，并过滤掉噪声实例。
 
-## 4.4 AF-Chat: Multi-turn Multi-audio Chat Data
+### 4.4 AF-Chat: Multi-turn Multi-audio Chat Data
 
 虽然单轮单音频问答训练使 LALM 能够对单个音频输入进行推理，但要实现自由形式、多轮多音频对话，则需要专门的聊天对齐微调阶段，类似于 LLM 使用的指令微调阶段。当需要跨轮次整合多个音频输入时，聊天会变得更加复杂，需要模型跟踪上下文，推理过去和当前输入之间的关系，并生成连贯的后续内容。尽管聊天非常重要，并且是 LLM 最常用的应用，但由于缺乏开放的高质量训练数据，这项功能在 LALM 中仍未得到充分探索。
 
@@ -121,10 +123,10 @@
 
 接下来，我们使用精心设计的专家样本（图 36 和 35）提示 GPT-4.1 在以下约束条件下生成自然的多轮聊天会话：(i) 模型可以选择相似/不相似音频的任意子集（最多 10 轮），并优先考虑对话质量；(ii) 并非所有轮次都需要新的音频——鼓励后续提问和澄清问题；(iii) 后续轮次可以参考之前的音频或回复，以模拟真实的对话基础。AF-Chat 的设计基于大量的内部人工研究，以反映用户如何自然地与音频语言模型交互。因此，它提供了丰富多样的监督，用于校准 LALM 来处理复杂、情境化且自然的音频对话。最后，我们为测试集（称为 AF-Chat-test）选择了 200 个高质量样本，并确保这些实例中的音频包含训练期间未见过的音频片段。
 
-# 5.Audio Flamingo 3 Training Strategy
+## 5.Audio Flamingo 3 Training Strategy
 
 AF3 采用五阶段策略进行训练，旨在通过增加音频上下文长度、提升数据质量和多样化任务来逐步增强其能力。附录 11 提供了每个阶段使用的完整数据集列表。
 
 **阶段 1：对齐预训练**。在此阶段，我们仅训练音频 adpter 层，同时保持音频编码器和 LLM 不变。此步骤将编码器表征与语言模型对齐。**阶段 2：编码器微调**。此阶段的主要目的是使 AF-Whisper 适应不同的数据集，并扩展和提升其音频理解能力。我们在保持 LLM 不变的情况下对音频编码器和 adapter 进行微调。在阶段 1 和阶段 2 中，音频上下文长度均限制为 30 秒，并且训练使用以识别为重点的数据集（例如，分类、字幕和 ASR）。**阶段 3：全面微调**。此阶段的主要目的是强调 LALM 的推理和技能习得。如前所述，由于特定技能数据在短音频上易于扩展，因此我们在此阶段仍然坚持使用短音频，并使用高质量的基础和 QA 数据集以及我们提出的 AudioSkills-XL。但是，为了适应 AudioSkills 中中等长度的音频，我们现在将音频上下文长度增加到 2.5 分钟。阶段 3.5 结束时生成的模型称为 AF3。**阶段 3.5：上下文扩展和思考**。此阶段侧重于扩展上下文长度并鼓励 CoT 式推理。除了阶段 3 的数据混合之外，我们还结合了 LongAudio-XL 和 AF-Think。我们采用基于 LoRA 的训练（类似于 LTU 和 GAMA），方法是冻结模型的原始权重并为 LLM 训练 LoRA adapter。这种方法允许最终用户根据需要灵活地增强模型的推理和长上下文理解能力。**阶段 4：聊天和语音微调**。此阶段侧重于实现多轮、交互式和基于语音的对话。我们在我们提出的 AF-Chat 数据集上对整个模型进行微调，以使 AF3 具备对话式音频理解和回复生成功能。第 4 阶段结束时生成的模型称为 AF3-Chat。
 
-# 6.Experiments
+## 6.Experiments
