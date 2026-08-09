@@ -1,12 +1,14 @@
+# Efficient Training of Language Models to Fill in the Middle
+
 论文链接：https://arxiv.org/pdf/2207.14255
 
 代码链接：
 
-# 摘要
+## 摘要
 
 我们证明，在对数据集进行简单的转换（即简单地将一段文本从文档中间移到末尾）后，自回归语言模型可以学习填充文本。虽然这种数据增强近年来引起了广泛关注，但我们提供了大量证据表明，使用大量以这种方式转换的数据来训练模型，不会损害其原有的从左到右的生成能力，这一点已通过困惑度和在广泛尺度上的采样评估来衡量。鉴于训练模型进行中间填充 (FIM) 的实用性、简便性和效率，我们建议未来的自回归语言模型默认使用 FIM 进行训练。为此，我们对关键超参数（例如数据转换频率、转换结构以及填充跨度的选择方法）进行了一系列消融。我们使用这些消融来规定训练 FIM 模型的强大默认设置和最佳实践。我们已经在 API 中发布了使用最佳实践训练的最佳填充模型，并发布了填充基准测试以支持未来的研究。
 
-# 1.Introduction
+## 1.Introduction
 
 自 Transformer 推出以来，基于各种互联网规模数据集训练的大语言模型 (LLM) 取得了显著成功。这些模型能够根据自然语言提示生成连贯且合理的补全，并在阅读理解、问答、逻辑推理和常识推理等多项基准测试中取得了最佳性能。
 
@@ -33,7 +35,7 @@
 
 下文中，我们使用术语“FIM 模型”来指代任何基于 FIM 变换数据和正常从左到右数据混合训练的模型。我们将未使用任何 FIM 数据（即 FIM 率为 0%）训练的模型称为 AR 模型。
 
-## 1.1  Our contributions
+### 1.1  Our contributions
 
 <img
   src="https://i-blog.csdnimg.cn/direct/4f3df049594844e7968bcc9c9fe04268.png"
@@ -41,6 +43,7 @@
   referrerpolicy="no-referrer"
   style="max-width: 100%; height: auto;"
 />
+
 <img
   src="https://i-blog.csdnimg.cn/direct/9799c6cb5a864cb59773d475d49951d1.png"
   alt=""
@@ -61,17 +64,17 @@
 
 除了研究 FIM 训练对从左到右能力的影响之外，证明模型实际上正在从 FIM 训练中学习填充也很重要。图 2 在 FIM 测试损失的背景下提供了这方面的证据。我们将在第 4 节和附录 H 中更深入地研究模型的填充能力。
 
-# 2.Evaluation
+## 2.Evaluation
 
 我们使用 AR 和 FIM 评估基准来分析模型的能力。Vanilla AR 评估对于量化 FIM 训练对从左到右能力的影响非常重要，并且能够让我们证明 1.1 节中提到的 FIM-for-free 特性。FIM 评估对于理解不同超参数对 FIM 训练的影响以及扩展趋势也至关重要。
 
 在本文中，我们交替使用“AR”和 left-to-right 这两个术语。AR 损失指的是正常从左到右数据的交叉熵损失，而 FIM 损失指的是 100% FIM 变换数据的损失。所有测试损失均以每 token 单元的 nats 为单位。在所有基于采样的基准测试中，我们使用核采样，核参数为 0.95。
 
-## 2.1 Autoregressive evaluation
+### 2.1 Autoregressive evaluation
 
 对于所有领域，我们按典型自回归顺序评估测试损失，以表明即使使用 FIM 增强，学习曲线和扩展趋势也保持不变。除了测试损失之外，我们还在标准基准上进行评估，以证明模型的能力不受 FIM 训练的影响。对于自然语言，我们使用 PIQA、Winograd 和 WinoGrande 进行常识推理，使用 DROP 和 QuAC 进行阅读理解，使用 HellaSwag、LAMBADA 和 StoryCloze 进行完成任务。除 DROP 和 QuAC 外，**所有基准均采用少样本提示进行评估**。对于代码，我们测量 HumanEval 上的通过率。
 
-## 2.2 Infilling evaluation
+### 2.2 Infilling evaluation
 
 为了创建 FIM 测试，我们将 FIM 变换应用于 FIM 率为 100% 的 AR 测试集中的示例。**在 FIM 和 AR 测试集中使用相同的底层示例，可以比较 FIM 和 AR 测试的损失**。此外，我们还创建了这些测试集的 MASK 版本，仅测量中间跨度 token 的损失。后一个测试集用于测量 FIM 模型的 P(middle∣prefix,suffix) 和 AR 模型的 P(middle∣prefix)，这使我们能够探究 FIM 模型通过对后缀进行条件处理所获得的信息量。
 
@@ -90,7 +93,7 @@
 
 在第 3 部分中，**我们发现 FIM 可以通过两种不同的方式准备，分别记为 PSM 和 SPM**。为简洁起见，我们仅报告 SPM 填充结果，除非使用 PSM 会改变结论。
 
-# 3.FIM training and inference
+## 3.FIM training and inference
 
 我们对数据集应用随机变换来实现 FIM。**我们尝试了两种不同的实现方式：文档级和上下文级**。两者的区别在于 FIM 转换发生在数据加载流程的哪个阶段。这种选择很自然，因为长文档可以分解成多个上下文，或者当文档较小时，一个上下文可以包含多个文档。我们首先描述文档级的情况，然后在 3.2 节中描述实现上下文级 FIM 所需的更改。
 
@@ -115,11 +118,12 @@
   referrerpolicy="no-referrer"
   style="max-width: 100%; height: auto;"
 />
+
 我们继续从模型中采样，直到它生成 $\texttt{<EOT>}$ token，这是模型传达它已连接前缀和后缀的方式。
 
 如果模型未能在合理分配的推理 token 预算内生成 $\texttt{<EOT>}$ token，这通常表明模型在连接前缀和后缀时遇到了困难，并且生成的样本通常质量较差，这促使我们采用 EOT 感知的 best-of-n 采样方法。更多讨论请参阅附录 H。
 
-## 3.1 SPM mode
+### 3.1 SPM mode
 
 <img
   src="https://i-blog.csdnimg.cn/direct/8183423ed5014c7b9a47f41af164f16b.png"
@@ -134,8 +138,8 @@
 
 尽管 SPM 模式的理念很简单，但在 SPM 中特殊 token 的放置有一些微妙之处，这在 SPM 和 PSM 联合训练时尤为重要。我们将在附录 D 中介绍这些细节。
 
-##  3.2 Context-level FIM
+###  3.2 Context-level FIM
 
 在语言模型训练中，文档通常使用边界 token（称为 $\texttt{<EOT>}$）进行连接，然后根据模型上下文长度进行分块。将 FIM 应用于长文档时，此操作可能会导致 FIM 数据碎片化，其中整个前缀或后缀可能会在分块过程中从上下文中被截断。为了解决这个问题，我们可以在分块步骤之后应用 FIM。一个上下文切片可能包含多个文档，这些文档通过 $\texttt{<EOT>}$ 边界 token 进行连接。因此，我们根据 $\texttt{<EOT>}$ 进行拆分，将部分文档转换为 FIM 示例，其概率由 FIM rate 给出，然后再使用 $\texttt{<EOT>}$ 连接这些示例。然后将生成的切片修剪为模型上下文长度。有关 FIM 转换的更多详细信息，请参阅附录 C。在 4.4 节中，我们展示了此技术如何提升相对于文档级 FIM 的性能，并在本研究的所有主要 FIM 运行中都采用了上下文级 FIM。
 
-# 4.Pretraining results
+## 4.Pretraining results
