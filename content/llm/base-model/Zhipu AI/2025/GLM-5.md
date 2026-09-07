@@ -1,12 +1,14 @@
+# GLM-5: from Vibe Coding to Agentic Engineering
+
 论文链接：https://arxiv.org/pdf/2602.15763
 
 代码链接：https://github.com/zai-org/GLM-5
 
-# 摘要
+## 摘要
 
 我们提出了 GLM-5，这是一个旨在将 Vibe Coding 范式过渡到智能体工程的新一代基础模型。GLM-5 基于其前代产品的智能体、推理和编码 (ARC) 能力，并采用 DSA 来显著降低训练和推理成本，同时保持长上下文保真度。为了提升模型对齐和自主性，我们实现了一种新的异步强化学习基础设施，通过将生成与训练解耦，大幅提高了后训练的效率。此外，我们还提出了新的异步智能体强化学习算法，进一步提升了强化学习的质量，使模型能够更有效地从复杂的长时程交互中学习。凭借这些创新，GLM-5 在主要的开放基准测试中取得了最先进的性能。最重要的是，GLM-5 在实际编码任务中展现了前所未有的能力，在处理端到端软件工程挑战方面超越了以往的基线模型。代码、模型和更多信息可在 https://github.com/zai-org/GLM-5 获取。
 
-# 1.Introduction
+## 1.Introduction
 
 <img
   src="https://i-blog.csdnimg.cn/direct/af423dceda4343fa8c87165d129f477b.png"
@@ -63,11 +65,11 @@ GLM-5 在人工智能指数 v4.0 中获得 50 分，成为新的开放权重模�
 
 凭借这些进步，GLM-5 不仅是一个更强大的模型，而且为下一代人工智能代理提供了更高效、更实用的基础。我们向社区发布 GLM-5，以进一步推进高效、自主通用智能的发展。
 
-# 2. Pre-Training
+## 2. Pre-Training
 
 与 GLM-4.5 类似，GLM-5 的基础模型也经历两个阶段：预训练阶段用于培养通用语言和编码能力，中期训练阶段用于培养智能体和长上下文能力。我们扩展了 GLM-5 所有训练阶段的训练 token 预算，基础模型的总 token 数达到 28.5 万亿。
 
-## 2.1 Architecture
+### 2.1 Architecture
 
 <img
   src="https://i-blog.csdnimg.cn/direct/7467eaaf749148f3b65884a9a5cd396d.png"
@@ -93,7 +95,7 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
   style="max-width: 100%; height: auto;"
 />
 
-### 2.1.1 Continued Pre-Training with DeepSeek Sparse Attention (DSA)
+#### 2.1.1 Continued Pre-Training with DeepSeek Sparse Attention (DSA)
 
 <img
   src="https://i-blog.csdnimg.cn/direct/e32818a6c3b247d29db43406e8241acd.png"
@@ -106,7 +108,7 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
 
 **DSA 训练从中期训练结束时的基础模型开始**。预热阶段包含 1000 个步骤，每个步骤使用 14 个序列（每个序列包含 202,752 个 token）进行训练，最大学习率为 5e-3。稀疏自适应阶段使用中期训练的训练数据和超参数，并处理 200 亿个 token。虽然训练预算远小于 DeepSeek-V3.2（9437 亿个 token），但我们发现这足以使 DSA 模型自适应到与原始 MLA 模型性能相当的水平。如表 3 所示，DSA 模型的长上下文性能与 MLA 模型接近。为了进一步验证 DSA 训练的有效性，我们分别使用相同的 SFT 数据集对 DSA 和 MLA 模型进行微调，发现两个模型在训练损失和评估基准方面表现一致。
 
-### 2.1.2 Ablation Study of Efficient Attention Variants
+#### 2.1.2 Ablation Study of Efficient Attention Variants
 
 <img
   src="https://i-blog.csdnimg.cn/direct/2b18b7babc45430ba4fb09b3a1c4186e.png"
@@ -142,7 +144,7 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
   style="max-width: 100%; height: auto;"
 />
 
-## 2.2 Pre-training Data
+### 2.2 Pre-training Data
 
 **Web**。基于 GLM-4.5 数据管道，我们优化了针对海量网络数据集的选择标准。我们引入了基于句子嵌入的 DCLM 分类器，用于识别和聚合标准分类器无法获取的高质量数据。为了应对长尾知识的挑战，我们利用 World Knowledge 分类器（通过维基百科条目和 LLM 标注数据进行优化）从原本质量中等偏低的数据中提取有价值的信息。
 
@@ -150,7 +152,7 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
 
 **Math & Science**。我们从网页、书籍和论文中收集高质量的数学和科学数据，以进一步提升推理能力。具体而言，我们改进了网页内容提取流程和书籍、论文的PDF解析机制，以提高数据质量。我们采用大型语言模型对候选文档进行评分，并仅保留最具教育意义的内容。对于长上下文文档，我们开发了一种分块聚合评分算法，以提高评分准确率。我们实施了过滤流程，严格避免使用合成数据、AI生成数据或基于模板的数据。
 
-## 2.3 Mid-Training
+### 2.3 Mid-Training
 
 在 GLM-4.5 中引入的中期训练框架的基础上，我们在 GLM-5 中扩大了训练量和最大上下文长度，以进一步增强模型的推理能力、长上下文能力和智能能力。
 
@@ -160,9 +162,9 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
 
 **Long-context data**。我们的长上下文训练集包含自然数据和合成数据。自然数据来自书籍、学术论文和通用预训练语料库中的文档，采用多阶段过滤（PPL、去重、长度过滤）和对​​知识密集型领域的上采样方法进行筛选。在合成数据构建方面，我们受到 NextLong 和 EntropyLong 的启发，采用了多种技术来构建长程依赖关系。**高度相似的文本通过交错打包进行聚合以生成序列，旨在缓解中间丢失现象，并提高模型在各种长上下文任务中的性能**。在 20 万条数据阶段，我们还加入了一小部分类似 MRCR 的数据，并设计了多个变体来扩展 OpenAI 的原始范式，以增强模型在扩展的多轮对话中的召回率。实验结果表明，增加数据多样性可以逐步提升模型的长上下文性能。值得注意的是，在最初的 128K 阶段的基础上，随后的 200K 中期训练阶段进一步增强了模型的性能，即使在 128K 上下文窗口中也是如此。
 
-## 2.4 Training Infrastructure
+### 2.4 Training Infrastructure
 
-### 2.4.1 Memory Efficiency
+#### 2.4.1 Memory Efficiency
 
 **Flexible MTP placement**。在交错流水线并行化中，模型组件可以灵活地分配到各个阶段。MTP 模块包含嵌入、Transformer和输出组件。与其他模块相比，它的内存使用量显著更高，导致阶段级内存分配不平衡。为了实现参数共享，我们将MTP的输出层与主输出层置于最终阶段，同时将其嵌入和Transformer组件放置在前一个阶段。这降低了最终阶段的内存压力，并改善了流水线各阶段之间的内存平衡。
 
@@ -174,7 +176,7 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
 
 **Sequence-chunked output projection for peak memory reduction**。输出投影和交叉熵损失会因存储反向传播所需的激活值以及在损失计算过程中将其提升至更高精度而产生瞬态内存开销。为了降低这种开销，我们将输入序列分割成更小的块，并在每个块上独立计算投影和损失，在进行下一步之前完成前向和反向传播并释放激活值。因此，随着块数的增加，峰值内存使用量会降低。通过适当的块数，这种方法可以缓解输出层的内存压力，同时保持与非分块执行相当的性能。
 
-### 2.4.2 Parallelism Efficiency
+#### 2.4.2 Parallelism Efficiency
 
 **Efficient deferred weight gradient computation**。为了减少流水线气泡，我们延迟计算关键路径上的部分权重梯度。通过优化存储和通信重叠，细粒度的延迟处理可以在保持内存开销有限的同时提高吞吐量。
 
@@ -184,11 +186,11 @@ MLA 的另一个缺点是解码过程中计算量大。在解码过程中，MLA�
 
 为了在低精度下提供更高的准确率，**我们在 SFT 阶段应用了 INT4 QAT**。此外，为了进一步降低训练时间开销，我们开发了一种量化核，该量化核既适用于训练，也适用于离线权重量化，从而确保训练和推理过程中的位级一致性。
 
-# 3.Post-Training
+## 3.Post-Training
 
 GLM-5 的后训练阶段旨在将基础模型转化为具备强大推理、编码和智能体能力的高级助手。如图 5 所示，我们的流程遵循渐进式对齐策略：首先进行多任务有监督微调 (SFT)，并引入复杂的交错思维模式；随后进行专门针对推理和智能体任务的强化学习 (RL) 阶段；最后进行通用的 RL 阶段，实现类人风格的对齐。通过利用**on-policy 跨阶段蒸馏**作为最终的优化步骤，GLM-5 能够有效缓解能力退化，同时充分利用每个训练阶段的性能提升。
 
-## 3.1 Supervised Fine-Tuning
+### 3.1 Supervised Fine-Tuning
 
 <img
   src="https://i-blog.csdnimg.cn/direct/e44886b9ff5c435da298e6ae7c1a0cdc.png"
@@ -215,7 +217,7 @@ GLM-5 通过在行动之间进行思考并保持回合间的一致性，在复�
 
 对于 **Coding and Agent tasks**，与 GLM-4.5 相比，GLM-5 构建了大量的执行环境以获得高质量的轨迹，尤其侧重于真实场景和长周期任务。我们进一步利用专家强化学习和拒绝采样改进了 SFT 数据集。轨迹中的错误片段被保留，但在损失函数中被屏蔽，这使得模型能够在不强化错误行为的情况下学习纠错行为。
 
-## 3.2 Reasoning RL
+### 3.2 Reasoning RL
 
 **RL algorithm backbone**。我们的强化学习算法基于GRPO，并结合了 IcePop 技术来缓解训练-推理不匹配问题，即强化学习优化过程中推理分布与训练分布之间的差异。我们明确区分了用于梯度更新的训练策略 $\pi^{train}$ 和用于轨迹采样的推理策略 $\pi^{infer}$。与原始 IcePop 公式相比，我们移除了 KL 正则化项以加速强化学习的改进。最终的优化损失为：
 
@@ -252,13 +254,13 @@ r_{i,t}=\frac{\pi^{train}_{\theta}(y_{i,t}|x,y_{i,<t})}{\pi^{train}_{\theta_{old
 
 **Mixed domain reasoning RL**。在推理强化学习阶段，我们对四个领域进行混合强化学习训练：数学、科学、代码和工具集成推理（TIR）。对于数学和科学领域，我们从开源数据集和与外部标注供应商共同开发的数据集中收集数据。我们进一步应用**难度过滤**，将训练重点放在 GLM-4.7 很少能正确解决或总是失败的问题上，而这些问题仍然可以被更强大的教师模型（例如 GPT-5.2 xhigh 和 Gemini 3 Pro Preview）解决。对于代码领域，我们涵盖了竞赛编程风格的任务和科学编程任务。前者主要来自 Codeforces 和一些代表性数据集，例如 TACO 和 SYNTHETIC-2-RL，而后者则是通过将问题分解为实现正确答案所需的最小代码实现，从内部问题库中构建而成。对于 TIR，我们重用了数学和科学强化学习数据中更具挑战性的子集，并与标注供应商共同构建专门设计用于使用外部工具回答的 STEM 问题。在强化学习训练过程中，我们为训练模型分配特定领域和来源的评判模型或评估系统，以产生二元结果奖赏。我们保持四个领域之间的整体混合比例大致平衡，并在混合强化学习设置下，在每个领域都观察到稳定且显著的提升。
 
-## 3.3 Agentic RL
+### 3.3 Agentic RL
 
 为了提升 GLM-5 的智能体性能，我们开发了一个完全异步且解耦的强化学习框架，并针对编码和搜索智能体任务优化了 GLM-5。传统的同步强化学习在长时域智能体部署过程中会面临严重的 GPU 空闲问题。通过中央多任务部署协调器解耦推理引擎和训练引擎，我们实现了跨多种智能体工作负载的高吞吐量联合训练。
 
 为了在异步 off-policy 条件下保持训练稳定性，我们引入了两个关键机制。首先，Token-in-Token-out (TITO) 网关通过保留精确的动作级对应关系来**消除重新 tokenizer 不匹配**。其次，我们采用直接**双边重要性采样**，该采样对展开的对数概率应用 token-level 裁剪机制 ($[1−ϵ_ℓ, 1+ϵ_h]$)，同时在不跟踪历史策略检查点的情况下有效控制 off-policy 偏差。此外，我们还采用了一种动态规划感知路由，以在大规模 MoE 模型的长上下文推理期间**最大化 KV-cache 的重用**，从而加速训练。为了扩展智能体环境，我们在三个领域扩展了可验证的训练环境：超过 1 万个真实世界的软件工程 (SWE) 任务、终端任务和高难度多跳搜索任务。有关智能体强化学习的更多细节，请参见后续的第 4 节。
 
-## 3.4 General RL
+### 3.4 General RL
 
 **Multi-dimensional optimization objectives**。我们将通用强化学习的优化目标分解为三个互补的维度：基础正确性、情商和特定任务质量。
 
@@ -274,7 +276,7 @@ r_{i,t}=\frac{\pi^{train}_{\theta}(y_{i,t}|x,y_{i,<t})}{\pi^{train}_{\theta_{old
 
 **Human-in-the-loop style alignment**。我们通用强化学习流程的一个显著特点是明确地融入了高质量的人工撰写的回复。我们并非仅仅依赖模型生成的回复，而是引入专家撰写的回复作为风格和质量的参考标准。这是基于这样的观察：纯粹由模型生成的优化往往会趋向于明显的“模型式”模式——通常冗长、公式化，或者缺乏熟练人类写作的细微差别。通过让模型接触人工撰写的范例，我们鼓励它采用更自然、更符合人类习惯的回复模式。
 
-## 3.5 On-Policy Cross-Stage Distillation
+### 3.5 On-Policy Cross-Stage Distillation
 
 在我们的多阶段强化学习流程中，针对不同目标进行顺序优化会导致先前习得能力的累积退化。为了缓解这个问题，我们在最后阶段执行 on-policy 跨阶段蒸馏，采用 on-policy 蒸馏算法来快速恢复在早期 SFT 和强化学习阶段（推理强化学习和通用强化学习）习得的技能。
 
@@ -286,21 +288,21 @@ r_{i,t}=\frac{\pi^{train}_{\theta}(y_{i,t}|x,y_{i,<t})}{\pi^{train}_{\theta_{old
 
 目前，我们利用推理引擎获取教师模型的 logits。未来，我们计划将推理后端迁移到训练引擎，并统一采用 MLA 的多查询注意力（MQA）模式进行推理（$π^{infer}_{θ_{teacher}} → π^{train}_{θ_{teacher}}$）。训练过程中，GRPO 算法中的组大小设置为1以提高数据吞吐量，批大小设置为1024。现阶段这样做是可行的，因为不再需要为每个提示维护大量的样本来估计优势；优势可以直接通过与教师模型的差距来计算。
 
-## 3.6 RL Training Infrastructure: The slime Framework
+### 3.6 RL Training Infrastructure: The slime Framework
 
 我们继续使用 *slime* 作为 GLM-5 的统一后训练基础设施，从而实现大规模端到端强化学习 (RL)。GLM-5 没有引入新的系统组件，而是充分利用 slime 的各项功能，(1) 通过自由形式的部署定制和基于服务器的执行模型扩展任务覆盖范围；(2) 通过混合精度训练/部署以及 MTP 和预填充解码 (PD) 分解显著提高吞吐量——尤其适用于多轮强化学习工作负载；(3) 通过心跳驱动的部署容错和路由器级服务器生命周期管理提高鲁棒性。
 
-### 3.6.1 Scaling Out: Flexible Training via Highly Customizable Rollouts
+#### 3.6.1 Scaling Out: Flexible Training via Highly Customizable Rollouts
 
-### 3.6.2 Scaling Up: Tail-Latency Optimization for RL Rollouts
+#### 3.6.2 Scaling Up: Tail-Latency Optimization for RL Rollouts
 
-### 3.6.3 Rollout Robustness: Heartbeat-Driven Fault Tolerance
+#### 3.6.3 Rollout Robustness: Heartbeat-Driven Fault Tolerance
 
-# 4.Agentic Engineering
+## 4.Agentic Engineering
 
 本届描述了从 “vibe coding”（人工提示）到智能体工程的转变。在 vibe coding 中，人类提示人工智能模型编写代码。而在智能体工程中，人工智能体自行编写代码。它们进行规划、实现和迭代。为了支持这些长期任务，GLM-5 采用完全异步和解耦的强化学习框架，通过减少智能体部署期间的空闲时间，显著提升了 GPU 利用率。为了扩展智能体环境，我们开发了环境构建流水线。对于编码任务，我们创建了超过 10,000 个可验证的训练场景，模拟了真实世界的软件工程问题和最终任务。对于搜索智能体，我们开发了一个自动且可扩展的复杂多步骤推理数据合成流水线，用于构建智能体训练数据。
 
-## 4.1 Asynchronous RL for Agentic Tasks
+### 4.1 Asynchronous RL for Agentic Tasks
 
 为了对智能体任务进行强化学习，我们设计了一个完全异步和解耦的强化学习基础设施，可以高效地处理长期智能体部署，并支持跨不同智能体框架的灵活多任务强化学习训练。
 
@@ -312,13 +314,13 @@ L(\theta)=\mathbb E_{x\sim \mathcal D}\left[\frac{1}{K}\sum^K_{i=1}(r(x,y_i)-\ba
 
 其中 $\bar r(x)=\frac{1}{K}\sum^K_{i=1}r(x,y_i)$ 是采样响应的平均奖赏。需要注意的是，优化过程中仅使用模型生成的 token，损失计算中忽略了环境反馈。
 
-### 4.1.1  Asynchronous RL Design for Agentic Training
+#### 4.1.1  Asynchronous RL Design for Agentic Training
 
 由于部署过程具有长尾特性，原生的同步强化学习训练在部署阶段会因智能体任务生成严重不平衡而引入大量“气泡”，导致GPU空闲时间过长。为了提高训练吞吐量，我们采用完全异步的智能体强化学习训练范式来提升GPU利用率和训练效率。具体来说，我们将训练引擎和推理引擎解耦到不同的GPU设备上。推理引擎持续生成轨迹。一旦生成的轨迹数量达到预设阈值，该批次轨迹就会被发送到训练引擎以更新模型。为了减少策略延迟并保持训练大致符合策略，部署引擎使用的模型权重会定期与训练引擎的权重同步。**训练引擎每进行 K 次梯度更新，就会更新模型参数并将新的权重推送回推理引擎**。虽然异步训练可以显著提高整体训练效率，但也意味着不同的模型版本可能会生成不同的轨迹，从而引入严重的偏离策略问题。**由于权重更新会因部署策略的变化而考虑不同的优化问题，因此我们在推理引擎每次权重更新后都会重置优化器**。
 
 **Server-based multi-task training design**。为了解决多任务强化学习中轨迹生成的异构性问题（不同任务通常依赖于不同的工具集和任务特定的部署逻辑），我们引入了一个基于服务器的多任务部署编排器，用于多任务强化学习训练。该组件旨在通过一个拥有多个已注册任务服务的中央编排器，确保 slime 强化学习训练框架与各种下游任务之间的无缝兼容性。**具体来说，每个任务都以独立微服务的形式实现自身的部署和奖赏逻辑，并注册到中央编排器进行管理和调度**。在部署阶段，中央编排器控制每个任务的部署比例和生成速度，以实现跨任务的均衡数据采集。至关重要的是，我们将所有智能体任务的轨迹标准化为统一的消息列表表示。这使得复杂智能体框架（例如软件工程任务）能够进行联合训练，同时支持对异构工作负载进行集中式后处理和日志记录。这种设计将任务特定的逻辑与核心训练循环清晰地隔离开来，从而实现了与多任务强化学习训练的无缝集成。作为 GLM-5 训练基础设施的骨干，该协调器支持超过 1000 个并发部署，并可自动、动态地调整任务采样率，以及对任务进度进行精细监控。
 
-### 4.1.2  Optimizing Asynchronous Training Stability
+#### 4.1.2  Optimizing Asynchronous Training Stability
 
 **Token-in-Token-out vs. Text-in-Text-out**。在强化学习的 rollout 设置中，*token-in-token-out* (TITO) 指的是训练流程直接使用推理引擎生成的精确分词和解码后的 token 流来构建学习轨迹。相比之下，*text-in-text-out* 将 rollout 引擎视为一个黑盒，它返回最终的文本；训练器随后通过重新分词（通常还需要重新计算边界和截断）来重建轨迹，然后再计算损失。这种看似微小的选择却至关重要：重新分词可能会在 token 边界、空格/归一化处理、截断或特殊 token 放置等方面引入细微的不匹配，进而破坏动作与奖励/优势之间的步长对齐——尤其是在 rollouts 被流式传输、截断或交错地分配给多个参与者时。我们发现，对于异步强化学习训练而言，token-in-token-out (TITO) 机制至关重要，因为它能够精确地保留采样内容与优化内容之间的动作级对应关系，同时允许参与者立即发出轨迹片段（token ID + 元数据），而无需进行有损的文本往返传输，也无需等待学习器端进行事后重新分词。在实践中，我们实现了一个 TITO 网关，用于拦截来自部署任务的所有生成请求，并记录每个轨迹的 token ID 和元数据。这种设计将繁琐的 token ID 处理与下游 Agent rollout 逻辑隔离开来，同时避免了强化学习训练期间的重新分词不匹配。
 
@@ -358,18 +360,18 @@ x, & if~1-ϵ_l<x<1+ϵ_h\\
 
 为了防止长期负载不均衡，我们将哈希与对哈希空间的轻量级动态负载均衡相结合。该设计避免了冗余的 prefill 计算，同时无需在不同 DP rank 之间进行 KV 同步。随着 rollout 长度增加，prefill 成本保持与增量 token 成正比，而不是与总上下文长度成正比。最终结果是：在长上下文的 agent 推理场景中，端到端延迟得到改善，同时有效吞吐量也更高。
 
-## 4.2 Environment Scaling for Agents
+### 4.2 Environment Scaling for Agents
 
 为了支持各种智能体任务中的强化学习，我们构建了可验证、可执行的环境，为以代码为中心和以内容生成为中心的工作流程提供基于实际情况的反馈。对于智能体编码任务，我们开发了两个环境构建流程，用于构建可验证的可执行环境：一个是基于真实软件工程问题构建的环境设置流程，另一个是用于终端智能体环境的合成流程。除了编码之外，我们还引入了一个幻灯片生成环境，在该环境中，智能体可以对结构化的 HTML 进行操作，并进行可执行的渲染和基于布局的验证。
 
-### 4.2.1 Software Engineering (SWE) Environments
+#### 4.2.1 Software Engineering (SWE) Environments
 
-### 4.2.2 Terminal Environments
+#### 4.2.2 Terminal Environments
 
-### 4.2.3  Search Tasks
+#### 4.2.3  Search Tasks
 
-### 4.2.4 Inference with Context Management for Search Agents
+#### 4.2.4 Inference with Context Management for Search Agents
 
-### 4.2.5 Slide Generation
+#### 4.2.5 Slide Generation
 
-# 5.Adapting GLM-5 to Chinese Chip Infrastructure
+## 5.Adapting GLM-5 to Chinese Chip Infrastructure
