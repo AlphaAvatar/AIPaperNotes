@@ -15,7 +15,7 @@ export default {
     type: 'page'
   },
   embedding: {
-    title: 'Embedding',
+    title: 'Embeddin Model',
     type: 'page'
   },
   infrastructure: {
