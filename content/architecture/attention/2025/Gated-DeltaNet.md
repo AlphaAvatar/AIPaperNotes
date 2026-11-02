@@ -56,7 +56,7 @@ Mamba2 通过引入一种简单的门控更新规则 $\textbf S_t = \alpha_t \te
 
 ```math
 \textbf o_t=\sum^t_{i=1}\left(\textcolor{blue}{\frac{\gamma_t}{\gamma_i}}\textbf v_i\textbf k^T_i\right)\textbf q_t=\sum^t_{i=1}\textbf v_i\left(\textcolor{blue}{\frac{\gamma_t}{\gamma_i}}\textbf k^T_i\textbf q_t\right),\quad\textbf O=((\textbf Q\textbf K^T)\odot\textcolor{blue}{\Gamma})\textbf V
-```math
+```
 
 其中，$\textcolor{blue}{\Gamma \in \mathbb{R}^{L \times L}}$ 是一个考虑了衰减机制的因果掩码（causal mask），满足：当 $i \ge j$ 时，$\textcolor{blue}{\Gamma_{ij} = \frac{\gamma_i}{\gamma_j}}$；否则，$\textcolor{blue}{\Gamma_{ij} = 0}$。这种并行形式与循环形式之间的等价性，也被称为 Dao 和 Gu (2024a) 所提出的“**状态空间对偶性**”（State Space Duality, SSD）。这种循环结构也出现在其他多种架构中，包括 Gated RFA、xLSTM 和 Gated RetNet。当 $\gamma_t$ 与数据无关（data-independent）时，该公式便退化为 RetNet 和 Lightning-Attention。此外，若将 $\gamma_t$ 从标量扩展为矩阵，且采用外积结构进行参数化，依然可以实现高效的训练算法；这一点已由 Yang 等人 (2024a) 证明，并被 Yang 等人 (2024a)、Peng 等人 (2024)、Qin 等人 (2024b)、Zhang 等人 (2024)、Chou 等人 (2024)、He 等人 (2025) 以及 Lu 等人 (2025) 等研究工作所采用。
 
