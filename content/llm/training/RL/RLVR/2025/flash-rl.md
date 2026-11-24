@@ -1,12 +1,14 @@
+# Your Efficient RL Framework Secretly Brings You Off-Policy RL Training
+
 论文链接：https://fengyao.notion.site/off-policy-rl#246721e3f6c480ff9fabc9015cc3f970
 
 代码链接：https://github.com/yaof20/verl/tree/flash-rl/recipe/flash_rl
 
-# 摘要
+## 摘要
 
 在现代强化学习训练框架（例如 VeRL）中，不同的实现方式分别用于生成 rollout（例如 vLLM）和训练模型（例如 FSDP）。本文指出，这种实现方式的差异会隐式地将 on-policy 强化学习转化为 off-policy 强化学习，并讨论了一种简单而有效的权重采样技术来处理这种差异。
 
-# The Mismatch Problem
+## The Mismatch Problem
 
 <img
   src="https://i-blog.csdnimg.cn/direct/45a18dd8cdfb4c69aa6a793615f54d67.png"
@@ -31,9 +33,9 @@
 
 观察到意外的部署训练不匹配。如图 1 所示，尽管 $\textcolor{blue}{\pi_{\text{fsdp}}}$ 和 $\textcolor{red}{\pi_{\text{vllm}}}$ 共享相同的模型参数 $\theta$，但它们产生的 token 概率却可能显著不同。对于某些 token $a$，它们甚至会产生相互矛盾的预测，即 $\textcolor{red}{\pi_{\text{vllm}}}(a, \theta)\!=\!1$ 和 $\textcolor{blue}{\pi_{\text{fsdp}}}(a, \theta)\!=\!0$。这种出乎意料的行为隐含地打破了 **on-policy** 假设，使得强化学习训练实际上变成了 **off-policy** 训练。
 
-# How to Fix It?
+## How to Fix It?
 
-## Mitigate the system-level mismatch
+### Mitigate the system-level mismatch
 
 更高精度的 vLLM 是否有帮助？我们最初假设 vLLM 是根本原因，因此我们对 vLLM 进行了修补，以解决两个常见的导致匹配错误问题的因素。
 - **Inaccessible true sampling probabilities**：vLLM v1 引擎[不支持](https://docs.vllm.ai/en/v0.10.0/usage/v1_guide.html?h=immediately#semantic-changes-to-logprobs)直接返回用于采样的调整概率，从而引入了额外的差距。
@@ -43,7 +45,7 @@
 
 然而，如图 1 所示，应用这两个补丁后，不匹配问题仍然存在。
 
-## Embrace the mismatch — Apply algorithm-level fix
+### Embrace the mismatch — Apply algorithm-level fix
 
 我们不打算在系统层面缓解分布不匹配的问题，而是提出调整模型更新方式，使其能够感知这种不匹配。一种简单的方法是通过重要性采样校正。具体来说，我们通过在模型更新中加入重要性比率来处理 $\textcolor{blue}{\pi_{\text{learner}}}$ 和 $\textcolor{red}{\pi_{\text{sampler}}}$ 之间的不匹配，即改变当前的梯度计算方式。
 
@@ -65,7 +67,7 @@
 
 其中 $C$ 为超参数。
 
-## Extension to Other Algorithms
+### Extension to Other Algorithms
 
 上述分析很容易推广到其他算法，因为可以将梯度计算的具体形式从 REINFORCE $R(a) \cdot\nabla \log {\pi}(a, \theta)$ 替换为任何形式。这里，我们以常用的 PPO 算法为例，提供类似的分析。
 
@@ -103,7 +105,7 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 其中 $C$ 为超参数。
 
-### Additional Discussion on PG, Sequence, and Token
+#### Additional Discussion on PG, Sequence, and Token
 
 我们上面的讨论并没有涉及状态和动作的具体形式。我们将探讨 token 级和序列级的策略梯度，它们之间的联系，以及学习器与采样器不匹配的影响：
 
@@ -111,9 +113,9 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 [策略梯度、序列和 token——第二部分：学习器与采样器不匹配](https://www.notion.so/Policy-Gradient-Sequence-and-Token-Part-II-Learner-Sampler-Mismatch-28b721e3f6c480f8a4b0e1f8301d90ac?pvs=21)
 
-## Connection to Classical Wisdom
+### Connection to Classical Wisdom
 
-### Importance Sampling 
+#### Importance Sampling 
 
 **当直接使用蒙特卡罗方法估计目标分布下的期望值较为困难时，重要性抽样允许我们从另一个分布中进行抽样**。在本例中，目标分布为 $\textcolor{blue}{\pi_{\text{learner}}}$，但从中抽样速度极慢。使用单独的后端（例如 vLLM）进行部署生成意味着我们改用 $\textcolor{red}{\pi_{\text{sampler}}}$ 进行抽样。然后，通过为每个样本赋予一个重要性比率来校正这种差异：
 
@@ -124,21 +126,21 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 \right].
 ```
 
-### Decoupled PPO
+#### Decoupled PPO
 
 [Decoupled PPO](https://arxiv.org/pdf/2110.00641) 是利用重要性采样弥合 rollout 生成和梯度计算之间差距的一个特例，已被[AReaL](https://arxiv.org/pdf/2505.24298#page=6)等异步强化学习框架所采用。值得一提的是，AReaL并没有像我们这里讨论的那样实现截断重要性比率。相反，如果重要性比率超过预定义的阈值，AReaL[将完全丢弃训练样本](https://github.com/inclusionAI/AReaL/blob/main/realhf/impl/model/utils/ppo_functional.py#L127)。
 
-# Experiments
+## Experiments
 
 我们进一步进行了实证分析，以详细说明分布差距的影响以及所提出的截断重要性抽样 (TIS) 修复的有效性。
 
-## Does the gap matter a lot?
+### Does the gap matter a lot?
 
 我们使用 Qwen2.5-32B 稠密模型，并采用流行的 [DAPO](https://github.com/volcengine/verl/tree/main/recipe/dapo) 配方进行实验。数据处理遵循 [社区指南](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k/discussions/3)。结果可视化结果如图 1 所示。
 
 由于资源限制，我们只完成了训练的前 250 步，但考虑分布差距的修正TIS已经显著提升了性能。由于这两次运行的唯一区别在于引入了 TIS，即$\min(\frac{\textcolor{blue}{\pi_{\text{fsdp}}}(a, \theta)}{\textcolor{red}{\pi_{\text{vllm}}}(a, \theta)}, C)$，因此性能的提升凸显了分布差距的潜在影响。
 
-## How well can TIS fix it?
+### How well can TIS fix it?
 
 <img
   src="https://i-blog.csdnimg.cn/direct/4659e98a2aec4860a48f54f33db6632d.png"
@@ -157,7 +159,7 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 更多分析请参见下文的“分析部分”。
 
-## Does TIS always help? 
+### Does TIS always help? 
 
 <img
   src="https://i-blog.csdnimg.cn/direct/e3fe712964d84bd89f194b1debb59c88.png"
@@ -168,9 +170,9 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 **我们还观察到，在概率差异相对较小的情况下，引入额外的截断重要性采样项并不能带来性能提升**。同时值得一提的是，在严格的基于策略的强化学习设置中，重要性采样比率项的值将为 1.0。
 
-# TIS Analysis
+## TIS Analysis
 
-## Analysis about different TIS-Variants
+### Analysis about different TIS-Variants
 
 我们还总结了两种缓解分布差距的替代方案。
 
@@ -199,7 +201,7 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
   style="max-width: 100%; height: auto;"
 />
 
-### 为什么这里的两个变体（PPO-IS 和 vanilla-IS）会导致训练不稳定？
+#### 为什么这里的两个变体（PPO-IS 和 vanilla-IS）会导致训练不稳定？
 
 1. **Vanilla-IS v.s. TIS**
 
@@ -213,11 +215,11 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 此外，我们注意到，**PPO 信赖域技术旨在约束 rollout $\theta_{\rm old}$与当前模型 $\theta$ 之间的概率比接近 1**，以近似 on-policy REINFORCE 梯度。然而，在 PPO-IS 中，即使 $\theta=\theta_{\rm old}$，由于不匹配，概率比$\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\theta_{\rm old})}$也已不等于1——这导致裁剪的概率很高，训练信息量也大大减少。此外，在我们的 TIS 方法中，我们分别裁剪 $\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\theta_{\mathrm{old}})}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\theta_{\mathrm{old}})}$ 和 $\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})}$，因此更加温和；注意当 $\theta=\theta_{\rm old}$ 时，$\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta)}{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\mathrm{old}})}$ 等于 1，这适用于信赖域约束。
 
-## From Ill-conditioned to Benign
+### From Ill-conditioned to Benign
 
 除了加速 rollout 之外，rollout 量化还可以作为有效的测试平台，用于检验 rollout 生成和梯度计算之间分布差距的影响。我们证明，使用量化 rollout 的强化学习训练会表现出一些特征性的不稳定性，这些不稳定性在其他未解决此差距的场景中也经常观察到。此外，引入 TIS 项可以使强化学习训练更加稳定和良性。
 
-## Entropy Collapse and Abnormal Response Length
+### Entropy Collapse and Abnormal Response Length
 
 先前的许多研究表明，LLM 中的 RL 训练会导致熵崩溃—— Token 级别的类别分布接近 one-hot 分布，有效地限制了 RL 训练的探索。
 
@@ -239,7 +241,7 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
   style="max-width: 100%; height: auto;"
 />
 
-## On the Impact of Distribution Gap: A Case Study on KL Estimation
+### On the Impact of Distribution Gap: A Case Study on KL Estimation
 
 对于 $\rm{KL}(\textcolor{blue}{\pi_{\rm old}^{\rm fsdp}} \Vert \textcolor{blue}{\pi^{\rm fsdp}})$，一个无偏的 kl 估计量是 $k_1$ [估计量](http://joschu.net/blog/kl-approx.html): $\log \textcolor{blue}{\pi_{\rm old}^{\rm fsdp}}(a) - \log \textcolor{blue}{\pi^{\rm fsdp}} (a)$，其中 $a\sim \textcolor{blue}{\pi_{\rm old}^{\rm fsdp}}(a)$。然而，现代 RL 训练框架从 $\textcolor{red}{\pi_{\rm old}^{\rm vllm}}$ 而不是 $\textcolor{blue}{\pi_{\rm old}^{\rm fsdp}}$ 生成 rollout，从而给 kl 估计引入偏差，类似于前面讨论的梯度估计偏差。
 
@@ -247,11 +249,11 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 同时，当将 TIS 融入强化学习训练中时，尽管 $k_1$ 估计器仍然受到底层分布不匹配的影响，但在大部分训练过程中仍保持正值。这种对预期符号的保留表明TIS成功地恢复了良好的训练行为。
 
-## Biased Reward in Training Log
+### Biased Reward in Training Log
 
 集成 TIS的一个有趣现象是，它可能导致奖赏日志记录质量下降，但同时带来更好的下游性能。这是因为 $\textcolor{red}{\pi_{\text{sampler}}}$ 和 $\textcolor{blue}{\pi_{\text{learner}}}$ 之间的差距不仅会引入梯度估计偏差，还会影响日志记录中的奖赏估计。特别地，日志记录的奖赏来自 rollout 策略，即 $E_{\textcolor{red}{\pi_{\text{sampler}}}}[{\rm R}]$，而不是 $E_{\textcolor{blue}{\pi_{\text{learner}}}}[{\rm R}]$。具体而言，如图 6 (右侧两个子图) 所示，对数奖赏指标显示 BF16-Rollout 优于 BF16-Rollout w. TIS。然而，如果我们观察 AIME 准确率的下游性能，则 BF16-Rollout w. TIS 的性能显著优于原始的 BF16-Rollout。
 
-## Intuitions of TIS’s Working Mechanism
+### Intuitions of TIS’s Working Mechanism
 
 虽然 TIS 的确切机制仍是一个开放性问题，但我们提供了关于 TIS 如何缓解分配差距的高层次直觉。
 
@@ -259,11 +261,11 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 同时，TIS 坚持使用未截断的重要性比率 $\frac{\textcolor{blue}{\pi_{\mathrm{learner}}}(a,\;\theta_{\rm old})}{\textcolor{red}{\pi_{\mathrm{sampler}}}(a,\;\theta_{\rm old})} < 1$，从而消除了该子集 rollout 的偏差，并破坏了这种机制。
 
-# Rollout-Training Mismatch Analysis
+## Rollout-Training Mismatch Analysis
 
 我们进行了一系列受控实验，以识别导致或加剧 rollout 生成与梯度计算之间差异的因素。**具体而言，我们发现并行策略的差异和较长的响应长度是造成这种不匹配的原因**，而采样器后端的选择本身影响甚微。
 
-## Analysis Setup
+### Analysis Setup
 
 **Model & Data**。我们使用两个具有代表性的模型——[DAPO-32B](https://huggingface.co/BytedTsinghua-SIA/DAPO-Qwen-32B) 和 [Polaris-7B](https://huggingface.co/POLARIS-Project/Polaris-7B-Preview) 进行实验，这两个模型分别使用 [DAPO](https://arxiv.org/pdf/2503.14476) 和 [POLARIS](/1dfa954ff7c38094923ec7772bf447a1?pvs=25) 强化学习配方进行训练。为了进行评估，我们使用 [DAPO-Math-17k](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k) 数据集中的前 512 个提示来评估采样器和学习器输出之间的差异。
 
@@ -282,7 +284,7 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
   style="max-width: 100%; height: auto;"
 />
 
-## Larger Parallelism Difference, Larger Max Gap
+### Larger Parallelism Difference, Larger Max Gap
 
 <img
   src="https://i-blog.csdnimg.cn/direct/b1ab0e96aec94cc38c93eeffb8fa3b8e.png"
@@ -293,31 +295,31 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 我们观察到采样器和学习器之间的并行性差异对最大不匹配度量有显著影响。
 
-### Simplest Setting
+#### Simplest Setting
 
 使用 DAPO-32B 模型，我们从最简单的配置开始：采样器运行在 TP1 的 vLLM 上，学习器使用 SP1 的 FSDP。由于采样器和学习器具有相同的并行度设置，我们称之为“same parallelism”，其分布差距归因于并行度差异以外的其他因素。
 
-### Adding Tensor Parallelism
+#### Adding Tensor Parallelism
 
 为了研究 TP 差异的影响，我们将采样器从 TP1 更改为 TP2，同时保持学习器为 SP1（Different TP）。如图 7 左图所示，随着并行度差异的增大，最大不匹配度较高（> 0.5）的响应数量也随之增加。相同并行度情况下仅产生一个此类响应，而不同TP情况下则增加到两个。
 
-### Adding Sequence Parallelism
+#### Adding Sequence Parallelism
 
 为了研究 [Ulysses序列并行](https://arxiv.org/abs/2309.14509) 差异的影响，我们将学习器从 SP1 更改为 SP8（TP和 SP 不同）。如图 7 中间所示，SP差异的增加使最大不匹配次数从两位数增加到两位数。
 
-### Disentangling Parallelism and Sharding
+#### Disentangling Parallelism and Sharding
 
-### Mean Mismatch and KL
+#### Mean Mismatch and KL
 
-## Longer Response, Larger Max Gap
+### Longer Response, Larger Max Gap
 
-## Altering Sampler Alone, Gap Still There
+### Altering Sampler Alone, Gap Still There
 
-## What’s More
+### What’s More
 
-# Discussion
+## Discussion
 
-## The gap can be amplified in MoE RL
+### The gap can be amplified in MoE RL
 
 虽然我们目前的实验和分析主要集中在密集模型上，但我们认为这种分布差异在多专家强化学习（MoE RL）中也存在，甚至可能更为严重。主要原因有二：
 
@@ -327,4 +329,4 @@ PPO 的策略梯度 $\nabla_\theta L^{\mathrm{CLIP}}(\theta)$ 定义为：
 
 这些特性共同作用，会显著放大分布不匹配，使得像 TIS 这样的解决方案在 MoE RL 中尤为重要。
 
-## TIS is orthogonal and compatible with existing GxPOs
+### TIS is orthogonal and compatible with existing GxPOs
