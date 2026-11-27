@@ -5,9 +5,9 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
-		"start": "next start",
+		"start": "node scripts/preview.mjs",
 		"lint": "eslint",
-		"postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
+		"postbuild": "node -e \"require('node:fs').rmSync('out/_pagefind', { recursive: true, force: true })\" && pagefind --site .next/server/app --output-path out/_pagefind"
 	},
 	"dependencies": {
 		"katex": "^0.16.45",

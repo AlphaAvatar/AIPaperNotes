@@ -3,6 +3,9 @@ import { useMDXComponents as getMDXComponents } from '../../mdx-components'
 
 export const generateStaticParams = generateStaticParamsFor('mdxPath')
 
+// Only paths generated at build time exist; anything else is a 404
+export const dynamicParams = false
+
 export async function generateMetadata(props: {
   params: Promise<{ mdxPath?: string[] }>
 }) {
